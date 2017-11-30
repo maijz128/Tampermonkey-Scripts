@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BT之家下载助手
 // @namespace    https://github.com/maijz128
-// @version      0.2
+// @version      0.2.1
 // @description  替换下载地址为真实地址，页面自动滚动至最新BT处，BT页面自动点击下载；默认隐藏介绍。
 // @author       MaiJZ
 // @match        *://www.btbtt.co/attach-dialog-*.htm
@@ -31,8 +31,8 @@
 
         }, 1000);
 
-        hideIntroduction();      
-        
+        hideIntroduction();
+
         scrollToBT();
     }
 
@@ -74,7 +74,9 @@ function hideIntroduction() {
 
         $('head:first').prepend(strFun1);
 
-        var strButton = '<button onclick="toggleIntroduction()">toggle</button>';
+        var strButton = '<button onclick="toggleIntroduction()" ' +
+            'style="width:100%;height:30px;">toggle</button>';
+
         $('.post_td:first').prepend(strButton);
     }
 
@@ -84,11 +86,11 @@ function hideIntroduction() {
 // end
 
 // start 滚动至最新的bt
-    function scrollToBT(){
-        $('html, body').animate({  
-            scrollTop: $(".post td a:last").offset().top  - 100
-        }, 1000);  
-    }
+function scrollToBT() {
+    $('html, body').animate({
+        scrollTop: $(".post td a:last").offset().top - 100
+    }, 1000);
+}
 // end
 
 
