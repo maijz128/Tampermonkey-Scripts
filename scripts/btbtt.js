@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BT之家下载助手
 // @namespace    https://github.com/maijz128
-// @version      0.2.1
+// @version      0.2.2
 // @description  替换下载地址为真实地址，页面自动滚动至最新BT处，BT页面自动点击下载；默认隐藏介绍。
 // @author       MaiJZ
 // @match        *://www.btbtt.co/attach-dialog-*.htm
@@ -12,7 +12,6 @@
 // @match        *://www.btbtt.me/thread-index-fid-*.htm
 // @match        *://www.btbtt.net/thread-index-fid-*.htm
 // @match        *://www.btbtt.pw/thread-index-fid-*.htm
-// @require      http://code.jquery.com/jquery-2.2.4.min.js
 // @grant        none
 // ==/UserScript==
 
