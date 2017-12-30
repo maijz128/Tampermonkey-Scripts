@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         虾米网页播放器-快捷键
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      0.1.1
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
 // @match        *://www.xiami.com/play*
@@ -47,7 +47,6 @@ function addShortcutKeySwitch() {
         const el = document.querySelector(".player-controls");
         if (el) {
             const elCheckbox = document.createElement("lable");
-            elCheckbox.style
             elCheckbox.innerHTML = 
             '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
 
