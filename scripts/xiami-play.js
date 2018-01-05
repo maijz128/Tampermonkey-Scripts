@@ -5,6 +5,7 @@
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
 // @match        *://www.xiami.com/play*
+// @match        *://www.xiami.com/radio/play/*
 // @grant        none
 // ==/UserScript==
 
@@ -20,87 +21,163 @@ const G = {
     UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F
 };
 
-(function () {
-    main();
-})();
 
 function main() {
+    if (isRadioWebsite()) {
+        //new Radio();
+    } else {
+        new OnlinePlayer();
+    }
+}
+
+function isRadioWebsite() {
+    const URL = "www.xiami.com/radio/play/";
+    return window.location.href.indexOf(URL) > -1;
+}
+
+function Radio() {
+
+    onKeyDown();
+
+    function canShortcutKey() {
+        // const elSwitch = document.getElementById("mjz_shortcutkeyswitch");
+        // if (elSwitch) {
+        //     return elSwitch.checked;
+        // }
+        return true;
+    }
+
+    function onKeyDown() {
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && canShortcutKey()) {
+                handleKeyDown(e.keyCode);
+            }
+        };
+    }
+
+    function handleKeyDown(keyCode) {
+        const player_main = document.getElementById("radioPlayer");
+        switch (keyCode) {
+            case G.UpVolume:
+                console.log(keyCode + ": UpVolume");
+                fireKeyEvent(player_main, "keydown", KEYS.UP);
+                break;
+
+            case G.DownVolume:
+                console.log(keyCode + ": DownVolume");
+                fireKeyEvent(player_main, "keydown", KEYS.DOWN);
+                break;
+
+            case G.PrevSong:
+                console.log(keyCode + ": PrevSong");
+                fireKeyEvent(player_main, "keydown", KEYS.LEFT);
+                break;
+
+            case G.NextSong:
+                console.log(keyCode + ": NextSong");
+                fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
+}
+
+function OnlinePlayer() {
     playerHQ();
     addShortcutKeySwitch();
     onKeyDown();
-}
-
-function playerHQ() {
-    var timeout = 3000;
-    setTimeout(function () {
-        const elHQ = document.getElementById("J_playerHQ");
-        if (elHQ) {
-            elHQ.click();
-        }
-    }, timeout);
-}
 
 
-function addShortcutKeySwitch() {
-    var timeout = 1000;
-    setTimeout(function () {
-        const el = document.querySelector(".player-controls");
-        if (el) {
-            const elCheckbox = document.createElement("lable");
-            elCheckbox.innerHTML = 
-            '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
-
-            el.appendChild(elCheckbox);
-        }
-    }, timeout);
-}
-function isShortcutKey() {
-    const elSwitch = document.getElementById("mjz_shortcutkeyswitch");
-    if (elSwitch) {
-        return elSwitch.checked;
+    function playerHQ() {
+        var timeout = 2000;
+        setTimeout(function () {
+            const elHQ = document.getElementById("J_playerHQ");
+            if (elHQ) {
+                elHQ.click();
+                closeDialog_clt();
+            }
+        }, timeout);
     }
-    return true;
-}
 
-function onKeyDown() {
-    document.onkeydown = function (event) {
-        var e = event || window.event || arguments.callee.caller.arguments[0];
-        if (e && isShortcutKey()) {
-            handleKeyDown(e.keyCode);
-        }
-    };
-}
-
-function handleKeyDown(keyCode) {
-    const player_main = document.getElementById("player-main");
-    switch (keyCode) {
-        case G.UpVolume:
-            console.log(keyCode + ": UpVolume");
-            fireKeyEvent(player_main, "keydown", KEYS.UP);
-            break;
-
-        case G.DownVolume:
-            console.log(keyCode + ": DownVolume");
-            fireKeyEvent(player_main, "keydown", KEYS.DOWN);
-            break;
-
-        case G.PrevSong:
-            console.log(keyCode + ": PrevSong");
-            fireKeyEvent(player_main, "keydown", KEYS.LEFT);
-            break;
-
-        case G.NextSong:
-            console.log(keyCode + ": NextSong");
-            fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
-            break;
-
-        default:
-            break;
+    // 当点击切换音质时，出现付费提示，自动关闭它
+    function closeDialog_clt() {
+        var timeout = 500;
+        setTimeout(function () {
+            const el_dialog_clt = document.getElementById("dialog_clt");
+            // 官方方法
+            closedialog();
+        }, timeout);
     }
+
+
+    function addShortcutKeySwitch() {
+        var timeout = 1000;
+        setTimeout(function () {
+            const el = document.querySelector(".player-controls");
+            if (el) {
+                const elCheckbox = document.createElement("lable");
+                elCheckbox.innerHTML =
+                    '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
+
+                el.appendChild(elCheckbox);
+            }
+        }, timeout);
+    }
+    function isShortcutKey() {
+        const elSwitch = document.getElementById("mjz_shortcutkeyswitch");
+        if (elSwitch) {
+            return elSwitch.checked;
+        }
+        return true;
+    }
+
+    function onKeyDown() {
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && isShortcutKey()) {
+                handleKeyDown(e.keyCode);
+            }
+        };
+    }
+
+    function handleKeyDown(keyCode) {
+        const player_main = document.getElementById("player-main");
+        switch (keyCode) {
+            case G.UpVolume:
+                console.log(keyCode + ": UpVolume");
+                fireKeyEvent(player_main, "keydown", KEYS.UP);
+                break;
+
+            case G.DownVolume:
+                console.log(keyCode + ": DownVolume");
+                fireKeyEvent(player_main, "keydown", KEYS.DOWN);
+                break;
+
+            case G.PrevSong:
+                console.log(keyCode + ": PrevSong");
+                fireKeyEvent(player_main, "keydown", KEYS.LEFT);
+                break;
+
+            case G.NextSong:
+                console.log(keyCode + ": NextSong");
+                fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
 }
 
-// http://blog.csdn.net/lovelyelfpop/article/details/52471878
 // Usage: fireKeyEvent(input元素, 'keydown', 13);  
+// http://blog.csdn.net/lovelyelfpop/article/details/52471878
 function fireKeyEvent(el, evtType, keyCode) {
     var doc = el.ownerDocument;
     var win = doc.defaultView || doc.parentWindow,
@@ -132,3 +209,8 @@ function fireKeyEvent(el, evtType, keyCode) {
         el.fireEvent('on' + evtType, evtObj);
     }
 }
+
+
+(function () {
+    main();
+})();
