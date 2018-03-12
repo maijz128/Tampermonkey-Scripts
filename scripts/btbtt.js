@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         BT之家下载助手
 // @namespace    https://github.com/maijz128
-// @version      0.2.2
-// @description  替换下载地址为真实地址，页面自动滚动至最新BT处，BT页面自动点击下载；默认隐藏介绍。
+// @version      0.2.3
+// @description  替换下载地址为真实地址，页面可以自动滚动至最新BT处，BT页面自动点击下载；可以隐藏介绍。
 // @author       MaiJZ
 // @match        *://www.btbtt.co/attach-dialog-*.htm
 // @match        *://www.btbtt.me/attach-dialog-*.htm
@@ -14,6 +14,8 @@
 // @match        *://www.btbtt.pw/thread-index-fid-*.htm
 // @grant        none
 // ==/UserScript==
+
+const strContainerID = "btbtt-helper";
 
 (function () {
     'use strict';
@@ -27,8 +29,9 @@
     else if (url.indexOf("thread-index-fid") > -1) {
         setTimeout(function () {
             BT_Open_Handle();
-
         }, 1000);
+
+        addContainer();
 
         hideIntroduction();
 
@@ -59,36 +62,89 @@ function autoClickDownload() {
 }
 /////////////////////////////////////////////////////////////////////
 
+// 添加容器
+function addContainer() {
+    var strContainer = '<div id="' + strContainerID + '" style="font-size: medium;"></div> ';
+    $('.post_td:first').prepend(strContainer);
+
+    var style = "#" + strContainerID + " span {";
+    style += "margin-right: 10px;"
+    style += "}"
+    addStyle(style);
+}
+
 // start 隐藏介绍
 function hideIntroduction() {
+    var elContainer = $('#' + strContainerID);
 
     // 添加toggle按钮
     {
+        var fun_toggleIntroduction = '<script>function toggleIntroduction(){';
+        fun_toggleIntroduction += '$(".post_td .post:first").toggle();';
+        fun_toggleIntroduction += '}</script>';
 
-        var strFun1 = '<script>function toggleIntroduction(){';
-        strFun1 += 'const el = document.querySelector(".post_td .post");';
-        strFun1 += 'if(el.style.display=="block") {el.style.display="none";}';
-        strFun1 += 'else {el.style.display="block";}';
-        strFun1 += '}</script>';
-
-        $('head:first').prepend(strFun1);
+        $('head:first').append(fun_toggleIntroduction);
 
         var strButton = '<button onclick="toggleIntroduction()" ' +
-            'style="width:100%;height:30px;">toggle</button>';
+            'style="width:100%;height:30px;">隐藏/显示介绍</button>';
 
-        $('.post_td:first').prepend(strButton);
+        elContainer.prepend(strButton);
     }
 
-    // 隐藏介绍
-    $('.post_td:first .post').hide();
+    // 添加选项按钮：是否自动隐藏介绍
+    {
+        var fun_toggleAutoHideIntroduction = '<script>function toggleAutoHideIntroduction(){';
+        fun_toggleAutoHideIntroduction += 'localStorage.isHideIntroduction = $("#cb-HideIntroduction").attr("checked");';
+        fun_toggleAutoHideIntroduction += '}</script>';
+        $('head:first').append(fun_toggleAutoHideIntroduction);
+
+        var strCheckbox_HideIntroduction = '<span><input type="checkbox" id="cb-HideIntroduction"';
+        strCheckbox_HideIntroduction += ' onchange="toggleAutoHideIntroduction()">';
+        strCheckbox_HideIntroduction += '自动隐藏介绍<span>';
+        elContainer.append(strCheckbox_HideIntroduction);
+
+    }
+
+
+
+    var isHideIntroduction = localStorage.isHideIntroduction || "false";
+    if (isHideIntroduction === "true") {
+        // 隐藏介绍
+        $('.post_td:first .post').hide();
+
+        $("#cb-HideIntroduction").attr("checked", true);
+    }
+
 }
 // end
 
 // start 滚动至最新的bt
 function scrollToBT() {
-    $('html, body').animate({
-        scrollTop: $(".post td a:last").offset().top - 100
-    }, 1000);
+    var elContainer = $('#' + strContainerID);
+
+    // 添加选项按钮：是否自动滚动
+    {
+        var fun_toggleAutoScrollToBT = '<script>function toggleAutoScrollToBT(){';
+        fun_toggleAutoScrollToBT += 'localStorage.isScrollToBT = $("#cb-ScrollToBT").attr("checked");';
+        fun_toggleAutoScrollToBT += '}</script>';
+        $('head:first').append(fun_toggleAutoScrollToBT);
+
+        var strCheckbox_HideIntroduction = '<span><input type="checkbox" id="cb-ScrollToBT"';
+        strCheckbox_HideIntroduction += ' onchange="toggleAutoScrollToBT()">';
+        strCheckbox_HideIntroduction += '自动滚动至最新发布的BT<span>';
+        elContainer.append(strCheckbox_HideIntroduction);
+
+    }
+
+    var isScrollToBT = localStorage.isScrollToBT || "false";
+    if (isScrollToBT === "true") {
+        $("#cb-ScrollToBT").attr("checked", true);
+
+        $('html, body').animate({
+            scrollTop: $(".post td a:last").offset().top - 100
+        }, 1000);
+    }
+
 }
 // end
 
@@ -129,67 +185,8 @@ function BT_Open_Handle() {
     });
 }
 
-    /*
-    function addOpenButton(el_attachlist) {
-        const Q = " table > tbody > tr:nth-child(1) > td.bold";
-        const elTD = el_attachlist.querySelector(Q);
-
-        const elBtn = document.createElement("button");
-        elBtn.innerText = "下载所有BT";
-        // elBtn.style.marginLeft = "50px";
-        elBtn.style.float = "right";
-        elBtn.style.right = "0px";
-        elBtn.style.opacity = "0.8";
-
-        elTD.appendChild(elBtn);
-
-        return elBtn;
-    }
-
-    function OpenHandle(el_attachlist) {
-        const self = this;
-        self.el_attachlist = el_attachlist;
-    }
-    // OpenHandle.prototype.open = function () {
-    //     const self = this;
-    //     const hrefList = self.getAttachHrefList(self.el_attachlist);
-    //     if (hrefList.length > 0) {
-    //         console.log(hrefList);
-    //         for (var i = 0; i <hrefList.length; i++) {
-    //             // window.location.href = href;
-    //             const href = hrefList[i];
-    //
-    //             setTimeout(function () {
-    //                 window.open(href);
-    //
-    //             }, 1000);
-    //         }
-    //
-    //     }
-    //     console.assert(hrefList.length > 0, "没找到BT链接");
-    // };
-    OpenHandle.prototype.open = function () {
-        const self = this;
-        var elA_list = self.el_attachlist.querySelectorAll("a");
-        if (elA_list) {
-            for (var i = 0; i < elA_list.length; i++) {
-                //const href = elA_list[i].getAttribute("href");
-                elA_list[i].click();
-            }
-        }
-    };
-    OpenHandle.prototype.getAttachHrefList = function (el_attachlist) {
-        const result = [];
-        var elA_list = el_attachlist.querySelectorAll("a");
-        if (elA_list) {
-            for (var i = 0; i < elA_list.length; i++) {
-                const href = elA_list[i].getAttribute("href");
-                result.push(href);
-            }
-        }
-        return result;
-    };
-
-    */
-    ////////////////////////////////////////////////////////////////////////
-
+function addStyle(styleContent) {
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    document.head.appendChild(elStyle);
+}
