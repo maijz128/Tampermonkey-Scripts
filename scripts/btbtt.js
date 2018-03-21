@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      0.4.1
+// @version      0.4.2
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
 // @match        *://www.btbtt.co/*.htm
 // @match        *://www.btbtt.me/*.htm
 // @match        *://www.btbtt.net/*.htm
 // @match        *://www.btbtt.pw/*.htm
+// @match        *://www.btbtt.la/*.htm
 // @require      https://greasyfork.org/scripts/39499-go-to-top/code/Go%20to%20Top.js
 // @grant        none
 // ==/UserScript==
