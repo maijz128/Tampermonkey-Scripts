@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         虾米网页播放器-快捷键
+// @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.1.1
+// @version      0.2
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
 // @match        *://www.xiami.com/play*
 // @match        *://www.xiami.com/radio/play/*
+// @match        *://www.xiami.com
 // @grant        none
 // ==/UserScript==
 
@@ -21,18 +22,26 @@ const G = {
     UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F
 };
 
+(function () {
+    main();
+})();
 
 function main() {
-    if (isRadioWebsite()) {
+    if (matchURL('/radio/play/')) {
         //new Radio();
-    } else {
+    } else if (matchURL('xiami.com/play')) {
         new OnlinePlayer();
+    } else {
+        tosign();
     }
 }
 
-function isRadioWebsite() {
-    const URL = "www.xiami.com/radio/play/";
-    return window.location.href.indexOf(URL) > -1;
+// 自动签到
+function tosign() {
+    var b_tosign = $(' div.content  div.action .tosign');
+    if (b_tosign) {
+        b_tosign.click();
+    }
 }
 
 function Radio() {
@@ -211,6 +220,13 @@ function fireKeyEvent(el, evtType, keyCode) {
 }
 
 
-(function () {
-    main();
-})();
+function matchURL(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+}
+
+function addStyle(styleContent) {
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    document.head.appendChild(elStyle);
+}
