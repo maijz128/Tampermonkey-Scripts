@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Goto StoreTorrents
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      0.2.0
 // @description  Goto StoreTorrents; 支持BtKitty、CiLiSoBa
 // @author       MaiJZ
 // @match        *://*.cnbtkitty.com/search/*
+// @match        *://*.cnbtkitty.net/search/*
 // @match        *://*.cilisoba.net/h/*
 // @grant        none
 // ==/UserScript==
@@ -43,7 +44,7 @@ function searchMagnetHash(str) {
 }
 
 function isBtKitty() {
-    const URL = "cnbtkitty.com";
+    const URL = "cnbtkitty";
     return location.href.indexOf(URL) > -1;
 }
 

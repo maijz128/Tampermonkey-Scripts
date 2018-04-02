@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.2
+// @version      0.2.1
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
 // @match        *://www.xiami.com/play*
@@ -32,7 +32,9 @@ function main() {
     } else if (matchURL('xiami.com/play')) {
         new OnlinePlayer();
     } else {
-        tosign();
+        setTimeout(function () {
+            tosign();
+        }, 1000);
     }
 }
 
