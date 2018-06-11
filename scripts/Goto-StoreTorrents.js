@@ -1,13 +1,20 @@
 // ==UserScript==
 // @name         Goto StoreTorrents
 // @namespace    https://github.com/maijz128
-// @version      0.2.0
+// @version      0.3.0
 // @description  Goto StoreTorrents; 支持BtKitty、CiLiSoBa
 // @author       MaiJZ
-// @match        *://*.cnbtkitty.com/search/*
-// @match        *://*.cnbtkitty.net/search/*
+// @match        *://*.cnbtkitty.com/*
+// @match        *://*.cnbtkitty.net/*
+// @match        *://*.cnbtkitty.org/*
 // @match        *://*.cilisoba.net/h/*
-// @grant        none
+// @require      http://code.jquery.com/jquery-1.12.4.min.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_setClipboard
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
 
@@ -15,17 +22,15 @@
 const URL_StoreTorrents = "http://storetorrents.com/hash/";
 
 (function () {
-
     main();
 })();
 
 
-
 function main() {
 
-    if (isBtKitty()) {
+    if (matchURL("btkitty")) {
         btKitty();
-    } else if (isCiLiSoBa()) {
+    } else if (matchURL("cilisoba")) {
         cilisoba();
     }
 }
@@ -43,49 +48,67 @@ function searchMagnetHash(str) {
     }
 }
 
-function isBtKitty() {
-    const URL = "cnbtkitty";
-    return location.href.indexOf(URL) > -1;
-}
 
 function btKitty() {
-    const elBT_List = document.querySelectorAll(".list-con");
-    elBT_List.forEach(function (element) {
+    if (matchURL("/search/")) {
+        btkitty_search();
+    } else if (matchURL("/item/")) {
+        btkitty_item();
+    }
 
-        const list_con_html = element.innerHTML;
-        const magnet_hash = searchMagnetHash(list_con_html);
+    function btkitty_search() {
 
-        if (magnet_hash) {
-            const elOption = element.querySelector(".option");
-            if (elOption) {
-                const href = ' href="' + getURL(magnet_hash) + '" ';
-                const gotoStoreTorrents_html = '<span><a target="_blank" ' + href + "> [StoreTorrents] </a></span> ";
+        const elBT_List = document.querySelectorAll(".list-con");
+        elBT_List.forEach(function (element) {
 
-                var option_html = elOption.innerHTML;
-                option_html = gotoStoreTorrents_html + option_html;
-                elOption.innerHTML = option_html;
+            const list_con_html = element.innerHTML;
+            const magnet_hash = searchMagnetHash(list_con_html);
+
+            if (magnet_hash) {
+                const elOption = element.querySelector(".option");
+                if (elOption) {
+                    const href = ' href="' + getURL(magnet_hash) + '" ';
+                    const gotoStoreTorrents_html = '<span><a target="_blank" ' + href + "> [StoreTorrents] </a></span> ";
+
+                    var option_html = elOption.innerHTML;
+                    option_html = gotoStoreTorrents_html + option_html;
+                    elOption.innerHTML = option_html;
+                } else {
+                    console.error("StoreTorrents：找不到 .option 元素！");
+                }
             } else {
-                console.error("StoreTorrents：找不到 .option 元素！");
+                console.error("StoreTorrents：匹配不到 hash 值！");
             }
-        } else {
-            console.error("StoreTorrents：匹配不到 hash 值！");
+        });
+    }
+
+    function btkitty_item() {
+        var infohash = $('.infohash:first').text();
+        var magnet = $('.magnet a:first').text();
+
+        // jump to StoreTorrents
+        if (infohash && matchURL("#download")) {
+            window.location.href = URL_StoreTorrents + infohash;
         }
-    });
+
+        // auto copy magnet
+        if (magnet && matchURL("#magnetlink")) {
+            copyToClipboard(magnet);
+            window.close();
+        }
+
+    }
 }
 
-function isCiLiSoBa() {
-    const URL = "cilisoba.net";
-    return location.href.indexOf(URL) > -1;
-}
 
 function cilisoba() {
     const elBT_List = document.querySelectorAll(".tr-magnet-link");
     const elBT2 = elBT_List[1];
-    if(elBT2){
+    if (elBT2) {
         const elHtml = elBT2.innerHTML;
         const magnet_hash = searchMagnetHash(elHtml);
 
-        if(magnet_hash){
+        if (magnet_hash) {
             const elTd = elBT2.querySelector("td");
             if (elTd) {
                 const href = ' href="' + getURL(magnet_hash) + '" ';
@@ -97,9 +120,31 @@ function cilisoba() {
             }
         } else {
             console.error("StoreTorrents：匹配不到 hash 值！");
-            setTimeout(function() {
+            setTimeout(function () {
                 cilisoba();
             }, 1000);
         }
     }
 }
+
+function copyToClipboard(content) {
+    GM_setClipboard(content);
+}
+
+function matchURL(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+}
+
+function matchURLAbsolute(url) {
+    const href = window.location.href;
+    const len = href.length;
+    return href.indexOf(url) > -1 && url.length == len;
+}
+
+function addStyle(styleContent) {
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    document.head.appendChild(elStyle);
+}
+
