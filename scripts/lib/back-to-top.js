@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Back to Top
 // @namespace    https://github.com/maijz128
-// @version      0.2
+// @version      0.3
 // @description  Scroll Back To Top Button
 // @author       MaiJZ
 // @grant        none
@@ -11,12 +11,11 @@
 (function () {
     'use strict';
 
-    const BUTTON_ID = "btnBackToTop";
-    const TOP_FUNCTION_NAME = "btnBackToTop_TopFunction";
+    var BUTTON_ID = "btnBackToTop";
+    var TOP_FUNCTION_NAME = "btnBackToTop_TopFunction";
 
     addButtonStyle();
     addFunction();
-    addButton();
 
     function addButtonStyle() {
         var style = '#' + BUTTON_ID + '{';
@@ -33,11 +32,17 @@
 
     function addFunction() {
         window.addEventListener("scroll", function () {
+            var button = document.getElementById(BUTTON_ID);
+            if(!button){
+                addButton();
+                button = document.getElementById(BUTTON_ID);
+            }
+
             var minScrollTop = 50;
             if (document.body.scrollTop > minScrollTop || document.documentElement.scrollTop > minScrollTop) {
-                document.getElementById(BUTTON_ID).style.display = "block";
+                button.style.display = "block";
             } else {
-                document.getElementById(BUTTON_ID).style.display = "none";
+                button.style.display = "none";
             }
         });
 
@@ -65,7 +70,7 @@
         elButton.setAttribute('title', "Back to Top");
         elButton.innerHTML = strSVG;
 
-        document.body.appendChild(elButton);
+        if(document.body) document.body.appendChild(elButton);
     }
 
 
