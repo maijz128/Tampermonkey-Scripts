@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.3.0
+// @version      0.4.0
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
-// @match        *://www.xiami.com/play*
-// @match        *://www.xiami.com/radio/play/*
-// @match        *://www.xiami.com
-// @match        *://www.xiami.com/index
+// @match        *://www.xiami.com/*
+// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
 
@@ -32,9 +30,10 @@ function main() {
         new Radio();
     } else if (matchURL('xiami.com/play')) {
         new OnlinePlayer();
-    } else if (matchURL('https://www.xiami.com/')){
-        NewUI_Player();
     } else {
+        window._NewUI_Player = new NewUI_Player();
+
+        // old index ui
         setTimeout(function () {
             tosign();
         }, 1000);
@@ -42,14 +41,82 @@ function main() {
 }
 
 function NewUI_Player(){
+    var self = this;
+    this.isHide = false;
 
+    addShortcutKeySwitch();
     onKeyDown();
+    addToggleButton();
 
+
+    function addToggleButton(){
+        var timeout = 1000;
+        setTimeout(function () {
+            var container = document.querySelector(".play-bar");
+            if (container) {
+                var style='';
+                style += '.player-toggle-button { float: right; height: 72px; cursor: pointer; background: #fff; border: 1px solid #ccc;}';
+                style += '.player-hide .audio-progress, .player-hide .play-bar { display: none !important; } ';
+                style += '.player-hide  .player-toggle-button { position: absolute; left: 0; bottom: 0;} ';
+                addStyle(style);
+
+                self.togglePlayerUI = function(){
+                    var elBtn = document.querySelector('#player-toggle-button');
+                    var elPlayer = document.querySelector(".player");
+
+                    self.isHide = !self.isHide;
+
+                    if(self.isHide){
+                        elBtn.innerHTML = '>>';
+                        elPlayer.classList.add('player-hide');
+                    }else{
+                        elBtn.innerHTML = '<<';
+                        elPlayer.classList.remove('player-hide');
+                    }
+                };
+
+                window.togglePlayerUI = self.togglePlayerUI;
+
+                var elButton = document.createElement("button");
+                elButton.setAttribute('id', 'player-toggle-button');
+                elButton.onclick = self.togglePlayerUI;
+                elButton.classList.add('player-toggle-button');
+                elButton.innerHTML = '<<';
+                // elButton.innerHTML =
+                //     '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
+
+                // container.appendChild(elButton);
+                $(container).before(elButton);
+
+
+            }
+        }, timeout);  
+    }
+    
+
+    function addShortcutKeySwitch() {
+        var timeout = 1000;
+        setTimeout(function () {
+            var container = document.querySelector(".play-bar");
+            if (container) {
+                var style='text-align: center; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-align-items: center; -ms-flex-align: center; align-items: center; margin-left: 10px;';
+                style = '.player-bar-item {' + style +'}';
+                addStyle(style);
+
+                var elCheckbox = document.createElement("div");
+                elCheckbox.classList.add('player-bar-item');
+                elCheckbox.innerHTML =
+                    '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
+
+                container.appendChild(elCheckbox);
+            }
+        }, timeout);
+    }
     function isShortcutKey() {
-        // var elSwitch = document.getElementById("mjz_shortcutkeyswitch");
-        // if (elSwitch) {
-        //     return elSwitch.checked;
-        // }
+        var elSwitch = document.getElementById("mjz_shortcutkeyswitch");
+        if (elSwitch) {
+            return elSwitch.checked;
+        }
         return true;
     }
 
@@ -70,25 +137,27 @@ function NewUI_Player(){
         // var elPlayer = $('.page-container .player');
         var player_main = document.querySelector(".page-container .player");
         var player_audio = document.querySelector('.page-container .player audio');
+
+        if(!(player_main && player_audio)){
+            console.error('not found player');
+            return;
+        }
+
         var volume = null;
         switch (keyCode) {
             case G.UpVolume:
                 // fireKeyEvent(player_main, "keydown", KEYS.UP);
-                if(player_audio){
-                    volume = player_audio.volume + 0.1;
-                    if(volume > 1) { volume = 1; }
-                    player_audio.volume = volume;
-                }
+                volume = player_audio.volume + 0.1;
+                if(volume > 1) { volume = 1; }
+                player_audio.volume = volume;
                 console.log(keyCode + ": UpVolume = " + volume);
                 break;
 
             case G.DownVolume:
                 // fireKeyEvent(player_main, "keydown", KEYS.DOWN);
-                if(player_audio){
-                    volume = player_audio.volume - 0.1;
-                    if(volume < 0) { volume = 0; }
-                    player_audio.volume = volume;
-                }
+                volume = player_audio.volume - 0.1;
+                if(volume < 0) { volume = 0; }
+                player_audio.volume = volume;
                 console.log(keyCode + ": DownVolume = " + volume);
                 break;
 
@@ -305,12 +374,9 @@ function fireKeyEvent(el, evtType, keyCode) {
 
 
 function matchURL(url) {
-    const URL = window.location.href;
-    return URL.indexOf(url) > -1;
+    const URL = window.location.href; return URL.indexOf(url) > -1;
 }
 
 function addStyle(styleContent) {
-    var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
-    document.head.appendChild(elStyle);
+    var elStyle = document.createElement("style"); elStyle.innerHTML = styleContent; document.head.appendChild(elStyle);
 }
