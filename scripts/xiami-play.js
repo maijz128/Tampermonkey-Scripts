@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.2.2
+// @version      0.3.0
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
 // @author       MaiJZ
 // @match        *://www.xiami.com/play*
@@ -29,13 +29,82 @@ const G = {
 
 function main() {
     if (matchURL('/radio/play/')) {
-        //new Radio();
+        new Radio();
     } else if (matchURL('xiami.com/play')) {
         new OnlinePlayer();
+    } else if (matchURL('https://www.xiami.com/')){
+        NewUI_Player();
     } else {
         setTimeout(function () {
             tosign();
         }, 1000);
+    }
+}
+
+function NewUI_Player(){
+
+    onKeyDown();
+
+    function isShortcutKey() {
+        // var elSwitch = document.getElementById("mjz_shortcutkeyswitch");
+        // if (elSwitch) {
+        //     return elSwitch.checked;
+        // }
+        return true;
+    }
+
+    function notPressControlKey(e){
+       return !(e.altKey || e.ctrlKey || e.shiftKey);        
+    }
+
+    function onKeyDown() {
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && isShortcutKey() && notPressControlKey(e)) {
+                handleKeyDown(e.keyCode);
+            }
+        };
+    }
+
+    function handleKeyDown(keyCode) {
+        // var elPlayer = $('.page-container .player');
+        var player_main = document.querySelector(".page-container .player");
+        var player_audio = document.querySelector('.page-container .player audio');
+        var volume = null;
+        switch (keyCode) {
+            case G.UpVolume:
+                // fireKeyEvent(player_main, "keydown", KEYS.UP);
+                if(player_audio){
+                    volume = player_audio.volume + 0.1;
+                    if(volume > 1) { volume = 1; }
+                    player_audio.volume = volume;
+                }
+                console.log(keyCode + ": UpVolume = " + volume);
+                break;
+
+            case G.DownVolume:
+                // fireKeyEvent(player_main, "keydown", KEYS.DOWN);
+                if(player_audio){
+                    volume = player_audio.volume - 0.1;
+                    if(volume < 0) { volume = 0; }
+                    player_audio.volume = volume;
+                }
+                console.log(keyCode + ": DownVolume = " + volume);
+                break;
+
+            case G.PrevSong:
+                console.log(keyCode + ": PrevSong");
+                fireKeyEvent(player_main, "keydown", KEYS.LEFT);
+                break;
+
+            case G.NextSong:
+                console.log(keyCode + ": NextSong");
+                fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
+                break;
+
+            default:
+                break;
+        }
     }
 }
 
@@ -49,7 +118,9 @@ function tosign() {
 
 function Radio() {
 
-    onKeyDown();
+    hide_sidebutton();
+
+    // onKeyDown();
 
     function canShortcutKey() {
         // const elSwitch = document.getElementById("mjz_shortcutkeyswitch");
@@ -96,7 +167,17 @@ function Radio() {
         }
     }
 
+    function hide_sidebutton(){
+        var style = `
+        @media only screen and  (max-height: 500px) {
+            #sidebutton {
+              display: none;
+            }
+          }
+        `;
 
+        addStyle(style);
+    }
 }
 
 function OnlinePlayer() {
