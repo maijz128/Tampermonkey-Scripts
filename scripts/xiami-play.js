@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.4.0
-// @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）
+// @version      0.4.1
+// @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）、隐藏/显示播放器（Q）
 // @author       MaiJZ
 // @match        *://www.xiami.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
@@ -14,11 +14,11 @@
 const KEYS = {
     ENTER: 13, SPACE: 32, ESC: 27,
     LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40,
-    A: 65, D: 68, E: 69, F: 70, S: 83, W: 87, Z: 90
+    A: 65, D: 68, E: 69, F: 70, S: 83, W: 87, Z: 90, Q: 81
 };
 
 const G = {
-    UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F
+    UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F, ToggleUI: KEYS.Q,
 };
 
 (function () {
@@ -44,74 +44,70 @@ function NewUI_Player(){
     var self = this;
     this.isHide = false;
 
-    addShortcutKeySwitch();
-    onKeyDown();
-    addToggleButton();
+    this.togglePlayerUI = function(){
+        var elBtn = document.querySelector('#player-toggle-button');
+        var elPlayer = document.querySelector(".player");
+
+        self.isHide = !self.isHide;
+
+        if(self.isHide){
+            elBtn.innerHTML = '>>';
+            elPlayer.classList.add('player-hide');
+        }else{
+            elBtn.innerHTML = '<<';
+            elPlayer.classList.remove('player-hide');
+        }
+    };
+
+    // init
+    var timeout = 1000;
+    setTimeout(function () {
+        onKeyDown();
+        addShortcutKeySwitch();
+        addToggleButton();
+    }, timeout);
+
 
 
     function addToggleButton(){
-        var timeout = 1000;
-        setTimeout(function () {
-            var container = document.querySelector(".play-bar");
-            if (container) {
-                var style='';
-                style += '.player-toggle-button { float: right; height: 72px; cursor: pointer; background: #fff; border: 1px solid #ccc;}';
-                style += '.player-hide .audio-progress, .player-hide .play-bar { display: none !important; } ';
-                style += '.player-hide  .player-toggle-button { position: absolute; left: 0; bottom: 0;} ';
-                addStyle(style);
+        var container = document.querySelector(".play-bar");
+        if (container) {
+            var style='';
+            style += '.player-toggle-button { float: right; height: 72px; cursor: pointer; background: #fff; border: 1px solid #ccc;}';
+            style += '.player .audio-progress, .player .play-bar { visibility: visible;  opacity: 1; transition: visibility 0.5s, opacity 0.5s linear; } ';
+            style += '.player-hide .audio-progress, .player-hide .play-bar { visibility: hidden;  opacity: 0;  } ';
+            style += '.player-hide .player-toggle-button { position: absolute; left: 0; bottom: 0;} ';
+            style += '.player-hide .common-mode { width: 40px;} '; 
+            addStyle(style);
 
-                self.togglePlayerUI = function(){
-                    var elBtn = document.querySelector('#player-toggle-button');
-                    var elPlayer = document.querySelector(".player");
+            var elButton = document.createElement("button");
+            elButton.setAttribute('id', 'player-toggle-button');
+            elButton.classList.add('player-toggle-button');
+            elButton.onclick = self.togglePlayerUI;
+            elButton.innerHTML = '<<';
 
-                    self.isHide = !self.isHide;
+            // container.appendChild(elButton);
+            $(container).before(elButton);
 
-                    if(self.isHide){
-                        elBtn.innerHTML = '>>';
-                        elPlayer.classList.add('player-hide');
-                    }else{
-                        elBtn.innerHTML = '<<';
-                        elPlayer.classList.remove('player-hide');
-                    }
-                };
-
-                window.togglePlayerUI = self.togglePlayerUI;
-
-                var elButton = document.createElement("button");
-                elButton.setAttribute('id', 'player-toggle-button');
-                elButton.onclick = self.togglePlayerUI;
-                elButton.classList.add('player-toggle-button');
-                elButton.innerHTML = '<<';
-                // elButton.innerHTML =
-                //     '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
-
-                // container.appendChild(elButton);
-                $(container).before(elButton);
-
-
-            }
-        }, timeout);  
+        }
     }
     
-
     function addShortcutKeySwitch() {
-        var timeout = 1000;
-        setTimeout(function () {
-            var container = document.querySelector(".play-bar");
-            if (container) {
-                var style='text-align: center; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-align-items: center; -ms-flex-align: center; align-items: center; margin-left: 10px;';
-                style = '.player-bar-item {' + style +'}';
-                addStyle(style);
+        var container = document.querySelector(".play-bar");
+        if (container) {
+            var style='text-align: center; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-align-items: center; -ms-flex-align: center; align-items: center; margin-left: 10px;';
+            style = '.player-bar-item {' + style +'}';
+            addStyle(style);
 
-                var elCheckbox = document.createElement("div");
-                elCheckbox.classList.add('player-bar-item');
-                elCheckbox.innerHTML =
-                    '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
+            var elCheckbox = document.createElement("div");
+            elCheckbox.classList.add('player-bar-item');
+            elCheckbox.innerHTML =
+                '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
 
-                container.appendChild(elCheckbox);
-            }
-        }, timeout);
+            container.appendChild(elCheckbox);
+        }
     }
+
     function isShortcutKey() {
         var elSwitch = document.getElementById("mjz_shortcutkeyswitch");
         if (elSwitch) {
@@ -134,7 +130,6 @@ function NewUI_Player(){
     }
 
     function handleKeyDown(keyCode) {
-        // var elPlayer = $('.page-container .player');
         var player_main = document.querySelector(".page-container .player");
         var player_audio = document.querySelector('.page-container .player audio');
 
@@ -169,6 +164,11 @@ function NewUI_Player(){
             case G.NextSong:
                 console.log(keyCode + ": NextSong");
                 fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
+                break;
+
+            case G.ToggleUI:
+                console.log(keyCode + ": ToggleUI");
+                self.togglePlayerUI();
                 break;
 
             default:
