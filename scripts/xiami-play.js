@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         虾米网页播放器
 // @namespace    https://github.com/maijz128
-// @version      0.4.1
+// @version      1.0.0
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）、隐藏/显示播放器（Q）
 // @author       MaiJZ
 // @match        *://www.xiami.com/*
@@ -14,11 +14,12 @@
 const KEYS = {
     ENTER: 13, SPACE: 32, ESC: 27,
     LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40,
-    A: 65, D: 68, E: 69, F: 70, S: 83, W: 87, Z: 90, Q: 81
+    A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81
 };
 
 const G = {
-    UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F, ToggleUI: KEYS.Q,
+    UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F, ToggleUI: KEYS.Q, 
+    ToggleList: KEYS.R
 };
 
 (function () {
@@ -171,6 +172,13 @@ function NewUI_Player(){
                 self.togglePlayerUI();
                 break;
 
+            case G.ToggleList:
+                console.log(keyCode + ": ToggleList");
+                var play_list_control = document.querySelector('.play-list-control');
+                if(play_list_control){
+                    eventFire(play_list_control, 'click');
+                }
+                break;
             default:
                 break;
         }
@@ -372,6 +380,15 @@ function fireKeyEvent(el, evtType, keyCode) {
     }
 }
 
+function eventFire(el, eType){
+    if (el.fireEvent) {
+      el.fireEvent('on' + eType);
+    } else {
+      var evObj = document.createEvent('Events');
+      evObj.initEvent(eType, true, false);
+      el.dispatchEvent(evObj);
+    }
+}
 
 function matchURL(url) {
     const URL = window.location.href; return URL.indexOf(url) > -1;
