@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AcFun小助手
 // @namespace    https://github.com/maijz128
-// @version      0.2.0
+// @version      1.0.0
 // @description  文章区：评论区域居中、文章内容始终显示、高亮楼主名字；视频：在简介栏中可以显示封面；
 // @author       MaiJZ
 // @match        *://*.acfun.cn/*
@@ -64,18 +64,10 @@ function VideoPage() {
     function getVideoCoverURL() {
         var result = null;
         // var player = document.getElementById("ACFlashPlayer");
-        var flashvars = document.querySelector('#ACFlashPlayer param[name="flashvars"]');
-        if (flashvars) {
-            var value = flashvars.getAttribute('value');
-            var tokenList = value.split('&');
-            for (let index = 0; index < tokenList.length; index++) {
-                const element = tokenList[index];
-
-                if (element.startsWith("backgroundURL=")) {
-                    result = element.replace("backgroundURL=", "");
-                }
-
-            }
+        var pageInfo = document.querySelector('#main #pageInfo');
+        if (pageInfo) {
+            var value = pageInfo.getAttribute('data-pic');
+            result = value;
         }
         return result;
     }
@@ -111,6 +103,14 @@ function Article() {
         var style = 'a[data-uid="' + this.upId + '"]{';
         style += 'color: ' + COLOR + ' !important;';
         style += 'font-weight: bold !important;}';
+
+        // 楼主标志
+        style += 'a[data-uid="' + this.upId + '"]:before {';
+        // 样式1
+        // style += 'content: "UP: "; color: #c66;';
+        // 样式2
+        style += 'content: "UP主"; padding: 1px 2px; margin-right: 4px; font-size: 12px; background-color: #4a8eff; border-radius: 2px; color: #fff;';
+        style += '}';
 
         addStyle(style);
     };
