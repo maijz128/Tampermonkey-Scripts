@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AcFun小助手
 // @namespace    https://github.com/maijz128
-// @version      1.0.2
+// @version      1.1.0
 // @description  文章区：评论区域居中、文章内容始终显示、高亮楼主名字；视频：在简介栏中可以显示封面；
 // @author       MaiJZ
 // @match        *://*.acfun.cn/*
@@ -92,9 +92,10 @@ function Article() {
         this.time = elTime.innerHTML;
 
 
-        var style = '.display-block{display: block !important;}';
-        style += '.comment-content{width: 850px !important; margin: 0 auto !important;}';
-        addStyle(style);
+        //var style = '.display-block{display: block !important;}';
+        // style += '.comment-content{width: 850px !important; margin: 0 auto !important;}';
+        // addStyle(style);
+
     };
 
     // 高亮楼主名字
@@ -122,7 +123,8 @@ function Article() {
 
     // 让评论区域居中显示
     this.centerComments = function () {
-        var style = '.columen-left {width: 850px !important; float: none !important; margin: 0 auto !important;}';
+        var style = '.columen-left { width: 850px !important; padding-top: 20px;';
+        style += 'float: none !important; margin: 0 auto !important; }';
         addStyle(style);
     };
 
@@ -133,12 +135,18 @@ function Article() {
         contentArea.append(elCommentArea);
     };
 
+    // 文章内容
+    this.articleContent = function(){
+        var style = '#article-content>.article-content { min-height: 400px; }';
+        addStyle(style);
+    };
 
     this._init();
     this.highlightUp();
     //this.alwaysShowContent();
     this.centerComments();
     this.moveUpComments();
+    this.articleContent();
 }
 
 
