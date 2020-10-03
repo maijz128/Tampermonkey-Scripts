@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         nicotv.me
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.nicotv.me/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,9 +23,28 @@
 })();
 
 function main() {
-
+    setTimeout(function(){
+        Dplayer();
+        RemoveLimits();
+    },500);
 }
 
+function Dplayer() {
+    if (Mjztool.matchURL('/video/play/')) {
+        var d1 = document.querySelector("body > div.container > div.row > div.col-md-8");
+        var d2 = document.querySelector("body > div.container > div.row > div.col-md-4");
+    
+        removeClass(d1, "col-md-8");
+        addClass(d1, "col-md-11");
+    
+        removeClass(d2, "col-md-4");
+        addClass(d2, "col-md-1"); 
+    }
+}
+
+function RemoveLimits(){
+    (function(){style=document.createElement('style');style.innerHTML='html,*{-webkit-user-select:text!important; -moz-user-select:text!important;}';document.head.appendChild(style);document.onselectstart=document.oncontextmenu=document.oncopy=document.onpaste=document.onmousedown=document.onmouseup=document.onmousemove=document.onkeydown=document.ondragstart=document.body.onselectstart=document.body.oncontextmenu=document.body.oncopy=document.body.onpaste=document.body.onmousedown=document.body.onmouseup=document.body.onmousemove=document.body.onkeydown=document.body.ondragstart=function(){return true}})()&jQuery(document).unbind()&jQuery('html').unbind()&jQuery('body').unbind();
+}
 
 // toolkit
 function Mjztool(){}
@@ -104,3 +123,26 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
+
+
+function hasClass(elem, cls) {
+    cls = cls || '';
+    if (cls.replace(/\s/g, '').length == 0) return false; //当cls没有参数时，返回false
+    return new RegExp(' ' + cls + ' ').test(' ' + elem.className + ' ');
+  }
+   
+  function addClass(elem, cls) {
+    if (!hasClass(elem, cls)) {
+        elem.className = elem.className == '' ? cls : elem.className + ' ' + cls;
+    }
+  }
+   
+  function removeClass(elem, cls) {
+    if (hasClass(elem, cls)) {
+      var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, '') + ' ';
+      while (newClass.indexOf(' ' + cls + ' ') >= 0) {
+        newClass = newClass.replace(' ' + cls + ' ', ' ');
+      }
+      elem.className = newClass.replace(/^\s+|\s+$/g, '');
+    }
+  }

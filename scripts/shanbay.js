@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         扇贝记单词
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.shanbay.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/2.0.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -19,10 +19,46 @@
 (function () {
     setTimeout(function(){
         main();
-    },10);
+    }, 100);
 })();
 
 function main() {
+    if(Mjztool.matchURL('/wordlist/')){
+        wordlist();
+    }
+}
+
+function wordlist(){
+    var elTable = $('.main-body table.table:first'); 
+
+    var btnId = 'btnCopy';
+    var text = getText();
+    var elButton = document.createElement('button');
+    elButton.setAttribute('id', btnId);
+    elButton.setAttribute('data-clipboard-text', text);
+    elButton.innerHTML = 'Copy';
+    elTable.after(elButton);
+
+    var clipboard = new ClipboardJS(elButton);
+
+    function getText(){
+        var text = '';
+        elTable.find('tr').each(function(element, index){
+            var elTd1 = $(this).children('td')[0];
+            var elTd2 = $(this).children('td')[1];
+            var td1 = $(elTd1).text();
+            var td2 = $(elTd2).text();
+            td2 = td2.replace(/[\r\n]/g, "  "); //去掉回车换行
+            text += td1 + '\t' + td2 + '\n';
+        });
+        return text;
+    }
+
+    $('html, body').animate({
+        scrollTop: $(elButton).offset().top - 400
+    }, 500);
+
+    // Mjztool.GM_setClipboard(text);
 
 }
 

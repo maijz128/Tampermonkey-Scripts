@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         sukebei.nyaa.si
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://sukebei.nyaa.si/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,8 +23,25 @@
 })();
 
 function main() {
-
+    if(Mjztool.matchURL("/view/"))
+    {
+        gotoStoreTorrents();
+    }
 }
+
+function gotoStoreTorrents(){
+    
+    var panel_footer = $('.panel-footer:first');
+    if(panel_footer){
+        var favicon = 'https://storetorrents.com/uploads/images/favicon.ico';
+        var hash = $('kbd:first').text();
+        var href = 'https://storetorrents.com/hash/' + hash;
+        var elA = `<a href="${href}" target="_blank" class="card-footer-item">
+            <img src="${favicon}" width="14px" height="14px">StoreTorrents</a>`;
+        panel_footer.append(elA);
+    }
+}
+
 
 
 // toolkit

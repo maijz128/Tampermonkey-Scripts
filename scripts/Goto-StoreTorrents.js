@@ -1,12 +1,16 @@
 // ==UserScript==
 // @name         Goto StoreTorrents
 // @namespace    https://github.com/maijz128
-// @version      0.3.0
+// @version      0.3.4
 // @description  Goto StoreTorrents; 支持BtKitty、CiLiSoBa
 // @author       MaiJZ
 // @match        *://*.cnbtkitty.com/*
 // @match        *://*.cnbtkitty.net/*
 // @match        *://*.cnbtkitty.org/*
+// @match        *://*.cnbtkitty.xyz/*
+// @match        *://*.cnbtkitty.cc/*
+// @match        *://*.cnbtkitty.me/*
+// @match        *://*.cnbtkitty.pw/*
 // @match        *://*.cilisoba.net/h/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        GM_setValue
@@ -52,7 +56,7 @@ function searchMagnetHash(str) {
 function btKitty() {
     if (matchURL("/search/")) {
         btkitty_search();
-    } else if (matchURL("/item/")) {
+    } else if (matchURL("/item/") || matchURL('/t/')) {
         btkitty_item();
     }
 

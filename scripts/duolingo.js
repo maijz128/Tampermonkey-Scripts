@@ -1,12 +1,11 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         多邻国（duolingo）
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.duolingo.cn/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,6 +22,16 @@
 })();
 
 function main() {
+    removeAD();
+}
+
+function removeAD(){
+    setTimeout(function(){
+        var adsbygoogle = $('.adsbygoogle:first');
+        if(adsbygoogle){
+            adsbygoogle.parent().parent().parent().hide();
+        }
+    }, 1000);
 
 }
 

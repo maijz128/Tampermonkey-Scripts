@@ -4,7 +4,7 @@
 // @version      1.0.1
 // @description  给虾米网页播放器添加快捷键：音量（E-上调；D-下调）、下一首（F）、上一首（S）、隐藏/显示播放器（Q）
 // @author       MaiJZ
-// @match        *://www.xiami.com/*
+// @match        *://www.douyu.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
@@ -28,86 +28,30 @@ const G = {
 
 function main() {
     if (matchURL('/radio/play/')) {
-        new Radio();
+        //new Radio();
     } else if (matchURL('xiami.com/play')) {
-        new OnlinePlayer();
+        //new OnlinePlayer();
     } else {
         window._NewUI_Player = new NewUI_Player();
 
         // old index ui
         setTimeout(function () {
-            tosign();
+            //tosign();
         }, 1000);
     }
 }
 
 function NewUI_Player(){
     var self = this;
-    this.isHide = false;
-
-    this.togglePlayerUI = function(){
-        var elBtn = document.querySelector('#player-toggle-button');
-        var elPlayer = document.querySelector(".player");
-
-        self.isHide = !self.isHide;
-
-        if(self.isHide){
-            elBtn.innerHTML = '>>';
-            elPlayer.classList.add('player-hide');
-        }else{
-            elBtn.innerHTML = '<<';
-            elPlayer.classList.remove('player-hide');
-        }
-    };
 
     // init
     var timeout = 1000;
     setTimeout(function () {
         onKeyDown();
-        addShortcutKeySwitch();
-        addToggleButton();
     }, timeout);
 
 
 
-    function addToggleButton(){
-        var container = document.querySelector(".play-bar");
-        if (container) {
-            var style='';
-            style += '.player-toggle-button { float: right; height: 72px; cursor: pointer; background: #fff; border: 1px solid #ccc;}';
-            style += '.player .audio-progress, .player .play-bar { visibility: visible;  opacity: 1; transition: visibility 0.5s, opacity 0.5s linear; } ';
-            style += '.player-hide .audio-progress, .player-hide .play-bar { visibility: hidden;  opacity: 0;  } ';
-            style += '.player-hide .player-toggle-button { position: absolute; left: 0; bottom: 0;} ';
-            style += '.player-hide .common-mode { width: 40px;} '; 
-            addStyle(style);
-
-            var elButton = document.createElement("button");
-            elButton.setAttribute('id', 'player-toggle-button');
-            elButton.classList.add('player-toggle-button');
-            elButton.onclick = self.togglePlayerUI;
-            elButton.innerHTML = '<<';
-
-            // container.appendChild(elButton);
-            $(container).before(elButton);
-
-        }
-    }
-    
-    function addShortcutKeySwitch() {
-        var container = document.querySelector(".play-bar");
-        if (container) {
-            var style='text-align: center; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-align-items: center; -ms-flex-align: center; align-items: center; margin-left: 10px;';
-            style = '.player-bar-item {' + style +'}';
-            addStyle(style);
-
-            var elCheckbox = document.createElement("div");
-            elCheckbox.classList.add('player-bar-item');
-            elCheckbox.innerHTML =
-                '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
-
-            container.appendChild(elCheckbox);
-        }
-    }
 
     function isShortcutKey() {
         var elSwitch = document.getElementById("mjz_shortcutkeyswitch");
@@ -275,46 +219,11 @@ function Radio() {
 }
 
 function OnlinePlayer() {
-    playerHQ();
-    addShortcutKeySwitch();
+
     onKeyDown();
 
 
-    function playerHQ() {
-        var timeout = 2000;
-        setTimeout(function () {
-            const elHQ = document.getElementById("J_playerHQ");
-            if (elHQ) {
-                elHQ.click();
-                closeDialog_clt();
-            }
-        }, timeout);
-    }
 
-    // 当点击切换音质时，出现付费提示，自动关闭它
-    function closeDialog_clt() {
-        var timeout = 500;
-        setTimeout(function () {
-            const el_dialog_clt = document.getElementById("dialog_clt");
-            // 官方方法
-            closedialog();
-        }, timeout);
-    }
-
-
-    function addShortcutKeySwitch() {
-        var timeout = 1000;
-        setTimeout(function () {
-            const el = document.querySelector(".player-controls");
-            if (el) {
-                const elCheckbox = document.createElement("lable");
-                elCheckbox.innerHTML =
-                    '<input type="checkbox" name="shortchut_key" id="mjz_shortcutkeyswitch" checked="true">快捷键';
-
-                el.appendChild(elCheckbox);
-            }
-        }, timeout);
-    }
     function isShortcutKey() {
         const elSwitch = document.getElementById("mjz_shortcutkeyswitch");
         if (elSwitch) {

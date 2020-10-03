@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         2dfan
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.2dfan.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,7 +23,21 @@
 })();
 
 function main() {
+    ShowCover();
+    $(".intro-list").bind('DOMNodeInserted', function(e) {
+        setTimeout(function () {
+            ShowCover();
+        }, 200);
+    });  
+}
 
+function ShowCover() {
+    $('img.media-object').each(function name(params) {
+        var img_normal = $(this).attr('data-normal');
+        if (img_normal) {
+            $(this).attr('src', img_normal);
+        }
+    });
 }
 
 

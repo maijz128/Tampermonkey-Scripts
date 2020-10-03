@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         tvboxnow.com
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.tvboxnow.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,7 +23,21 @@
 })();
 
 function main() {
+    if(Mjztool.matchURL('/misc.php?action=attachcredit')){
+        downloadTorrent();
+    }
+}
 
+function downloadTorrent(){
+    var elA = document.querySelector('#wrap .msgfix a');
+    var href = elA.href;
+    var url = href;
+    console.log(url);
+    window.location.href = url;
+    // window.open(url);
+    setTimeout(function(){
+         window.close();
+    }, 1000);
 }
 
 

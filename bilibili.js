@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         bilibili小助手
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.bilibili.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -23,9 +23,80 @@
 })();
 
 function main() {
-
+    if(Mjztool.matchURL('live.bilibili.com')){
+        window._live = new Live();
+    }else if(Mjztool.matchURL('www.bilibili.com/video/')){
+        console.log('Video');
+        setTimeout(function(){
+            window._video = new Video();
+        }, 1000);
+    }
 }
 
+// 直播
+function Live(){
+    
+    // 隐藏通知弹幕
+    var style = '.bilibili-live-player-video-operable-container {  visibility: hidden !important; }';
+    Mjztool.addStyle(style);
+}
+
+// 视频
+function Video(){
+    var self = this;
+
+    
+    // 隐藏弹幕
+    var el_danmaku_switch = document.querySelector('.bilibili-player-video-danmaku-switch');
+    if(el_danmaku_switch){
+        // fireKeyEvent(el_danmaku_switch, "keydown", KEYS.RIGHT);
+        eventFire(el_danmaku_switch, 'click');
+    }
+}
+
+// Usage: fireKeyEvent(input元素, 'keydown', 13);  
+// http://blog.csdn.net/lovelyelfpop/article/details/52471878
+function fireKeyEvent(el, evtType, keyCode) {
+    var doc = el.ownerDocument;
+    var win = doc.defaultView || doc.parentWindow,
+        evtObj;
+    if (doc.createEvent) {
+        if (win.KeyEvent) {
+            evtObj = doc.createEvent('KeyEvents');
+            evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
+        }
+        else {
+            evtObj = doc.createEvent('UIEvents');
+            Object.defineProperty(evtObj, 'keyCode', {
+                get : function () { return this.keyCodeVal; }
+            });
+            Object.defineProperty(evtObj, 'which', {
+                get : function () { return this.keyCodeVal; }
+            });
+            evtObj.initUIEvent( evtType, true, true, win, 1 );
+            evtObj.keyCodeVal = keyCode;
+            if (evtObj.keyCode !== keyCode) {
+                console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
+            }
+        }
+        el.dispatchEvent(evtObj);
+    }
+    else if (doc.createEventObject) {
+        evtObj = doc.createEventObject();
+        evtObj.keyCode = keyCode;
+        el.fireEvent('on' + evtType, evtObj);
+    }
+}
+
+function eventFire(el, eType){
+    if (el.fireEvent) {
+      el.fireEvent('on' + eType);
+    } else {
+      var evObj = document.createEvent('Events');
+      evObj.initEvent(eType, true, false);
+      el.dispatchEvent(evObj);
+    }
+}
 
 // toolkit
 function Mjztool(){}
@@ -104,3 +175,4 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
+
