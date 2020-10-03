@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      0.4.0
+// @version      0.4.2
 // @description  自动登录
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
@@ -60,7 +60,7 @@ function HUABEI_TotalAmount() {
 
         var buy_num = parseInt($('#J_IptAmount').val()) || 1;
 
-        var summary_price = $('.tb-property-cont #J_StrPrice .tb-rmb-num').text() || 0;
+        var summary_price = $('#J_PromoPriceNum').text() || $('#J_StrPrice em.tb-rmb-num').text() || 0;
         summary_price = parseFloat(summary_price) * buy_num;
 
         if (text.indexOf("x") > -1 || text.indexOf("x") > -1) {
@@ -84,6 +84,13 @@ function HUABEI_TotalAmount() {
 function HUABEI_TotalAmount_bind() {
     $(".J_TSaleProp li").bind('click', function(e) {
         console.log("click price");
+        setTimeout(function () {
+            HUABEI_TotalAmount();
+        }, 200);
+    });
+
+    $("#J_Stock").bind('click', function(e) {
+        console.log("click number");
         setTimeout(function () {
             HUABEI_TotalAmount();
         }, 200);
