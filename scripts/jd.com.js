@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name  京东购物助手
 // @namespace    https://github.com/maijz128
-// @version      0.3.0
+// @version      0.4.0
 // @description  购物助手
 // @author       MaiJZ
 // @match        *://*.jd.com/*
@@ -32,6 +32,14 @@ function main() {
         setTimeout(function () {
             redirect();
         }, 400);
+    }
+    else if (matchURL("list.jd.com")) {
+        setTimeout(function () {
+            $(".jdm-tbar-tab-qrcode").remove();
+
+            RemoveAD();
+            RemoveAD_Bind();
+        }, 1000);
     }
 }
 
@@ -117,6 +125,25 @@ function redirect(){
         window.location.href = a.getAttribute('href');
     }
 }
+
+// 去除广告商品
+function RemoveAD(){
+    $(".gl-item").each(function(index, el){
+        var flag = $(this).find(".p-promo-flag");
+        if (flag && flag.text() == "广告") {
+            $(this).remove();
+        }
+    });
+}
+
+function RemoveAD_Bind(){
+    $("#J_goodsList").bind('DOMNodeInserted', function(e) {
+        setTimeout(function () {
+            RemoveAD();
+        }, 200);
+    });  
+}
+
 
 function matchURL(url) {
     const URL = window.location.href;
