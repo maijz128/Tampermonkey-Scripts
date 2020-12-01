@@ -5,10 +5,11 @@
 // @description  描述
 // @author       MaiJZ
 // @match        *://*/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
 // @grant        window.close
@@ -26,6 +27,28 @@ function main() {
 
 }
 
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function setCookie(c_name, value, expiredays) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate()+expiredays);
+    document.cookie = c_name + "=" + escape(value) + ((expiredays==null) ?
+        "" :
+        ";expires="+exdate.toUTCString() + ";path=/");
+}
+
+function deleteCookie( name ) {
+    document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
 
 // toolkit
 function Mjztool(){}
