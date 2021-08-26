@@ -1,15 +1,14 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         粤语屋
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.yueyuwu.com/*
+// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant        GM_cookie
-// @grant        GM.cookie
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
 // @grant        window.close
@@ -24,94 +23,13 @@
 })();
 
 function main() {
-
-}
-
-
-function forceDownload(url, fileName){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "blob";
-    xhr.onload = function(){
-        var urlCreator = window.URL || window.webkitURL;
-        var imageUrl = urlCreator.createObjectURL(this.response);
-        var tag = document.createElement('a');
-        tag.href = imageUrl;
-        tag.download = fileName;
-        document.body.appendChild(tag);
-        tag.click();
-        document.body.removeChild(tag);
-    };
-    xhr.send();
-}
-
-function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-      var c = ca[i];
-      while (c.charAt(0)==' ') c = c.substring(1,c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-function setCookie(c_name, value, expiredays) {
-    var exdate = new Date();
-    exdate.setDate(exdate.getDate()+expiredays);
-    document.cookie = c_name + "=" + escape(value) + ((expiredays==null) ?
-        "" :
-        ";expires="+exdate.toUTCString() + ";path=/");
-}
-
-function deleteCookie( name ) {
-    document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
-
-// Usage: fireKeyEvent(input元素, 'keydown', 13);  
-// http://blog.csdn.net/lovelyelfpop/article/details/52471878
-function fireKeyEvent(el, evtType, keyCode) {
-    var doc = el.ownerDocument;
-    var win = doc.defaultView || doc.parentWindow,
-        evtObj;
-    if (doc.createEvent) {
-        if (win.KeyEvent) {
-            evtObj = doc.createEvent('KeyEvents');
-            evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
+    if (Mjztool.matchURL("/show/")) {
+        var el = document.querySelector("div.container-fluid.mt-4 > div > div:nth-child(2)");
+        if (el) {
+            el.setAttribute("class", "col-md-12");
         }
-        else {
-            evtObj = doc.createEvent('UIEvents');
-            Object.defineProperty(evtObj, 'keyCode', {
-                get : function () { return this.keyCodeVal; }
-            });
-            Object.defineProperty(evtObj, 'which', {
-                get : function () { return this.keyCodeVal; }
-            });
-            evtObj.initUIEvent( evtType, true, true, win, 1 );
-            evtObj.keyCodeVal = keyCode;
-            if (evtObj.keyCode !== keyCode) {
-                console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
-            }
-        }
-        el.dispatchEvent(evtObj);
-    }
-    else if (doc.createEventObject) {
-        evtObj = doc.createEventObject();
-        evtObj.keyCode = keyCode;
-        el.fireEvent('on' + evtType, evtObj);
     }
 }
-function eventFire(el, eType){
-    if (el.fireEvent) {
-      el.fireEvent('on' + eType);
-    } else {
-      var evObj = document.createEvent('Events');
-      evObj.initEvent(eType, true, false);
-      el.dispatchEvent(evObj);
-    }
-}
-
 
 
 // toolkit
@@ -127,16 +45,6 @@ Mjztool.bytesToSize = function(bytes) {
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;
-};
-Mjztool.matchUrlList = function(list) {
-    var URL = window.location.href;
-    for (var index = 0; index < list.length; index++) {
-        var url = list[index];
-        if (URL.indexOf(url) > -1) {
-            return true;
-        }
-    }
-    return false;
 };
 Mjztool.matchURLAbsolute = function(url) {
     const href = window.location.href;

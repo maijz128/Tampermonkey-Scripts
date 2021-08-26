@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         hpjav.tv
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.hpjav.tv/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -24,25 +24,9 @@
 })();
 
 function main() {
-
-}
-
-
-function forceDownload(url, fileName){
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "blob";
-    xhr.onload = function(){
-        var urlCreator = window.URL || window.webkitURL;
-        var imageUrl = urlCreator.createObjectURL(this.response);
-        var tag = document.createElement('a');
-        tag.href = imageUrl;
-        tag.download = fileName;
-        document.body.appendChild(tag);
-        tag.click();
-        document.body.removeChild(tag);
-    };
-    xhr.send();
+    Mjztool.addStyle(".video-boxad{ width:0 !important;}");
+    Mjztool.addStyle(".single-vad, .bottom-ad{ float: left; position: absolute;}");
+    
 }
 
 function getCookie(name) {
@@ -68,52 +52,6 @@ function deleteCookie( name ) {
     document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-
-// Usage: fireKeyEvent(input元素, 'keydown', 13);  
-// http://blog.csdn.net/lovelyelfpop/article/details/52471878
-function fireKeyEvent(el, evtType, keyCode) {
-    var doc = el.ownerDocument;
-    var win = doc.defaultView || doc.parentWindow,
-        evtObj;
-    if (doc.createEvent) {
-        if (win.KeyEvent) {
-            evtObj = doc.createEvent('KeyEvents');
-            evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
-        }
-        else {
-            evtObj = doc.createEvent('UIEvents');
-            Object.defineProperty(evtObj, 'keyCode', {
-                get : function () { return this.keyCodeVal; }
-            });
-            Object.defineProperty(evtObj, 'which', {
-                get : function () { return this.keyCodeVal; }
-            });
-            evtObj.initUIEvent( evtType, true, true, win, 1 );
-            evtObj.keyCodeVal = keyCode;
-            if (evtObj.keyCode !== keyCode) {
-                console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
-            }
-        }
-        el.dispatchEvent(evtObj);
-    }
-    else if (doc.createEventObject) {
-        evtObj = doc.createEventObject();
-        evtObj.keyCode = keyCode;
-        el.fireEvent('on' + evtType, evtObj);
-    }
-}
-function eventFire(el, eType){
-    if (el.fireEvent) {
-      el.fireEvent('on' + eType);
-    } else {
-      var evObj = document.createEvent('Events');
-      evObj.initEvent(eType, true, false);
-      el.dispatchEvent(evObj);
-    }
-}
-
-
-
 // toolkit
 function Mjztool(){}
 Mjztool.bytesToSize = function(bytes) {
@@ -127,16 +65,6 @@ Mjztool.bytesToSize = function(bytes) {
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;
-};
-Mjztool.matchUrlList = function(list) {
-    var URL = window.location.href;
-    for (var index = 0; index < list.length; index++) {
-        var url = list[index];
-        if (URL.indexOf(url) > -1) {
-            return true;
-        }
-    }
-    return false;
 };
 Mjztool.matchURLAbsolute = function(url) {
     const href = window.location.href;

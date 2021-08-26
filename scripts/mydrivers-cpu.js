@@ -32,7 +32,30 @@ var CPU_BENCHMARK_ID = {
     2584 : [ "Intel Xeon E5-2678 v3", "E5-2678 v3", "E5-2678v3"],
 
     /**********************************************************************/
-    /** Intel 7、8、9代 INTEL1151 **/  
+    /** Intel 4代 LGA1150 **/  
+    1942 : [ "Intel Xeon E3-1230 v3",      "E3-1230 v3"    ,"E3-1230v3"      ],
+    2246 : [ "Intel Xeon E3-1231 v3",      "E3-1231 v3"    ,"E3-1231v3"      ],
+    2284 : [ "Intel Core i5-4690K",      "i5-4690K"    ,"酷睿i5-4690K"      ],
+    1907 : [ "Intel Core i7-4770",      "i7-4770"    ,"酷睿i7-4770"      ],
+    1919 : [ "Intel Core i7-4770K",      "i7-4770K"    ,"酷睿i7-4770K"      ],
+    2275 : [ "Intel Core i7-4790K",      "i7-4790K"    ,"酷睿i7-4790K"      ],
+
+    /**********************************************************************/
+    /** Intel 4、5、6代 LGA2011-3 **/  
+    2340 : [ "Intel Core i7-5820K",      "i7-5820K"    ,"酷睿i7-5820K"      ],
+    2336 : [ "Intel Core i7-5930K",      "i7-5930K"    ,"酷睿i7-5930K"      ],
+    2332 : [ "Intel Core i7-5960X",      "i7-5960X"    ,"酷睿i7-5960X"      ],
+    2785 : [ "Intel Core i7-6800K",      "i7-6800K"    ,"酷睿i7-6800K"      ],
+    2800 : [ "Intel Core i7-6850K",      "i7-6850K"    ,"酷睿i7-6850K"      ],
+    2794 : [ "Intel Core i7-6900K",      "i7-6900K"    ,"酷睿i7-6900K"      ],
+    2792 : [ "Intel Core i7-6950X",      "i7-6950X"    ,"酷睿i7-6950X"      ],
+    
+    /**********************************************************************/
+    /** Intel 7、8、9代 LGA1151 **/  
+    2693 : [ "Intel Xeon E3-1230 v5",      "E3-1230 v5"    ,"E3-1230v5"      ],
+    3032 : [ "Intel Xeon E3-1230 v6",      "E3-1230 v6"    ,"E3-1230v6"      ],
+    3282 : [ "Intel Xeon E3-1285 v4",      "E3-1285 v4"    ,"E3-1285v4"      ],
+    3158 : [ "Intel Xeon E3-1285 v6",      "E3-1285 v6"    ,"E3-1285v6"      ],
     3479 : [ "Intel Core i3-9100",      "i3-9100"    ,"酷睿i3-9100"      ],
     3461 : [ "Intel Core i3-9100F",     "i3-9100F"   ,"酷睿i3-9100F"    ],
     3414 : [ "Intel Core i5-9400",      "i5-9400"    ,"酷睿i5-9400"      ],
@@ -96,32 +119,8 @@ var CPU_BENCHMARK_ID = {
 
 };
 
-var CPU_BENCHMARK_SCORE = {
-    // 3481: "17854", 3485: "22797", 3493: "32858", 3494: "18312", 3499: "23333", 3575: "30949", 3598: "39250", 3617: "55543", 3623: "64255", 3674: "79930", 3778: "33197", 3781: "19019", 3797: "24204",
-    "2052":{"rating":"7455","rating_st":"1569"},"2584":{"rating":"14854","rating_st":"1743"},
-    "2970":{"rating":"14628","rating_st":"1995"},"2984":{"rating":"12441","rating_st":"2095"},
-    "3183":{"rating":"8788","rating_st":"2178"},"3235":{"rating":"14091","rating_st":"2412"},
-    "3238":{"rating":"17578","rating_st":"2437"},"3240":{"rating":"15724","rating_st":"2220"},
-    "3243":{"rating":"13221","rating_st":"2262"},"3337":{"rating":"10899","rating_st":"2790"},
-    "3397":{"rating":"9598","rating_st":"2492"},"3414":{"rating":"9595","rating_st":"2511"},
-    "3443":{"rating":"10898","rating_st":"2806"},"3461":{"rating":"6835","rating_st":"2537"},
-    "3479":{"rating":"6667","rating_st":"2533"},"3481":{"rating":"17854","rating_st":"2583"},
-    "3485":{"rating":"22797","rating_st":"2687"},"3493":{"rating":"32858","rating_st":"2731"},
-    "3494":{"rating":"18312","rating_st":"2675"},"3497":{"rating":"7247","rating_st":"2232"},
-    "3498":{"rating":"9423","rating_st":"2386"},"3499":{"rating":"23333","rating_st":"2744"},
-    "3554":{"rating":"10741","rating_st":"2784"},"3575":{"rating":"30949","rating_st":"2653"},"3592":{"rating":"13365","rating_st":"2517"},
-    "3598":{"rating":"39250","rating_st":"2745"},"3617":{"rating":"55543","rating_st":"2707"},"3623":{"rating":"64255","rating_st":"2707"},
-    "3674":{"rating":"79930","rating_st":"2534"},"3715":{"rating":"11758","rating_st":"2440"},"3716":{"rating":"12796","rating_st":"2691"},
-    "3717":{"rating":"8865","rating_st":"2647"},"3730":{"rating":"24163","rating_st":"3172"},"3733":{"rating":"19649","rating_st":"3081"},
-    "3737":{"rating":"12702","rating_st":"2609"},"3745":{"rating":"21289","rating_st":"3117"},
-    "3747":{"rating":"17474","rating_st":"2923"},"3754":{"rating":"23539","rating_st":"3121"},"3757":{"rating":"19747","rating_st":"3081"},
-    "3767":{"rating":"12694","rating_st":"2599"},"3778":{"rating":"33197","rating_st":"2801"},
-    "3797":{"rating":"24204","rating_st":"2896"},"3798":{"rating":"21228","rating_st":"3148"},
-    "3806":{"rating":"17251","rating_st":"2893"},"3810":{"rating":"14900","rating_st":"2781"},
-    "3735":{"rating": "14577","rating_st":"2921"},"3781":{"rating":"19019","rating_st":"2834"},
-    "3749":{"rating":"13419","rating_st":"2756"},
-};
-
+var CPU_BENCHMARK_SCORE = 
+{"1907":{"rating":"7023","rating_st":"2171"},"1919":{"rating":"7031","rating_st":"2142"},"1942":{"rating":"6805","rating_st":"2076"},"2052":{"rating":"7455","rating_st":"1569"},"2246":{"rating":"7026","rating_st":"2158"},"2275":{"rating":"8059","rating_st":"2469"},"2284":{"rating":"5549","rating_st":"2180"},"2332":{"rating":"12692","rating_st":"1987"},"2336":{"rating":"10230","rating_st":"2050"},"2340":{"rating":"9759","rating_st":"2010"},"2584":{"rating":"14854","rating_st":"1743"},"2693":{"rating":"7609","rating_st":"2220"},"2785":{"rating":"10499","rating_st":"2254"},"2792":{"rating":"17454","rating_st":"2412"},"2794":{"rating":"13402","rating_st":"2351"},"2800":{"rating":"11266","rating_st":"2438"},"2970":{"rating":"14628","rating_st":"1995"},"2984":{"rating":"12441","rating_st":"2095"},"3032":{"rating":"8167","rating_st":"2272"},"3158":{"rating":"9276","rating_st":"2692"},"3183":{"rating":"8788","rating_st":"2178"},"3235":{"rating":"14091","rating_st":"2412"},"3238":{"rating":"17578","rating_st":"2437"},"3240":{"rating":"15724","rating_st":"2220"},"3243":{"rating":"13221","rating_st":"2262"},"3282":{"rating":"7533","rating_st":"2255"},"3337":{"rating":"10899","rating_st":"2790"},"3397":{"rating":"9598","rating_st":"2492"},"3414":{"rating":"9595","rating_st":"2511"},"3443":{"rating":"10898","rating_st":"2806"},"3461":{"rating":"6835","rating_st":"2537"},"3479":{"rating":"6667","rating_st":"2533"},"3481":{"rating":"17854","rating_st":"2583"},"3485":{"rating":"22797","rating_st":"2687"},"3493":{"rating":"32858","rating_st":"2731"},"3494":{"rating":"18312","rating_st":"2675"},"3497":{"rating":"7247","rating_st":"2232"},"3498":{"rating":"9423","rating_st":"2386"},"3499":{"rating":"23333","rating_st":"2744"},"3554":{"rating":"10741","rating_st":"2784"},"3575":{"rating":"30949","rating_st":"2653"},"3592":{"rating":"13365","rating_st":"2517"},"3598":{"rating":"39250","rating_st":"2745"},"3617":{"rating":"55543","rating_st":"2707"},"3623":{"rating":"64255","rating_st":"2707"},"3674":{"rating":"79930","rating_st":"2534"},"3715":{"rating":"11758","rating_st":"2440"},"3716":{"rating":"12796","rating_st":"2691"},"3717":{"rating":"8865","rating_st":"2647"},"3730":{"rating":"24163","rating_st":"3172"},"3733":{"rating":"19649","rating_st":"3081"},"3735":{"rating":"14577","rating_st":"2921"},"3737":{"rating":"12702","rating_st":"2609"},"3745":{"rating":"21289","rating_st":"3117"},"3747":{"rating":"17474","rating_st":"2923"},"3749":{"rating":"13419","rating_st":"2756"},"3754":{"rating":"23539","rating_st":"3121"},"3757":{"rating":"19747","rating_st":"3081"},"3767":{"rating":"12694","rating_st":"2599"},"3778":{"rating":"33197","rating_st":"2801"},"3781":{"rating":"19019","rating_st":"2834"},"3797":{"rating":"24204","rating_st":"2896"},"3798":{"rating":"21228","rating_st":"3148"},"3806":{"rating":"17251","rating_st":"2893"},"3810":{"rating":"14900","rating_st":"2781"}};
 /**************************************************************************/
 
 
@@ -272,9 +271,24 @@ function SearchScoreFromHtml(r){
 
     console.log(id, data);
     CPU_BENCHMARK_SCORE[id] = data;
-    console.log(JSON.stringify(CPU_BENCHMARK_SCORE));
+    ShowAllScoreData();
 }
 
+function ShowAllScoreData(){
+
+    var textID = "cpu_score_data";
+    var el = document.getElementById(textID);
+    if (el == null) {
+        var elText = '<textarea id="cpu_score_data" rows="10" cols="30"></textarea>';
+        $("body").append(elText);
+
+        el = document.getElementById(textID);
+    }
+
+    var json = JSON.stringify(CPU_BENCHMARK_SCORE);
+    // console.log(json);
+    el.value = json;
+}
 
 
 

@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      0.4.2
+// @version      0.5.0
 // @description  自动登录
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
+// @match        *://*.tmall.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // ==/UserScript==
 
@@ -23,33 +24,58 @@ function main() {
     }else if (matchURL("/search?")){
         EnterToInput();
     }else if (matchURL("/item.htm?")){
-
-        setTimeout(function () {
-            
-            var div_main_pic = $('div.tb-main-pic:first');
-            var btn = document.createElement("button");
-            btn.textContent = "原图";
-            btn.style = "position: absolute; opacity: 0.5;";
-            btn.addEventListener("click", function(){
-                var imgBooth = document.getElementById("J_ImgBooth");
-                var imgLink = imgBooth.getAttribute("src");
-                imgLink = imgLink.replace("_400x400.jpg", "");
-                window.open(imgLink);
-                
-            }, false);
-            div_main_pic.prepend(btn);
-            
-        }, 1000);
-
-
-        setTimeout(function () {
-            HUABEI_TotalAmount();
-            HUABEI_TotalAmount_bind();
-        }, 3000);
+        if (matchURL("taobao.com")) {
+            TaoBao();
+        }else if (matchURL("tmall.com")) {
+            Tmall();
+        }
     }
     Mercury_Album_Box();
 }
 
+
+function TaoBao(){
+    setTimeout(function () {
+            
+        var div_main_pic = $('div.tb-main-pic:first');
+        var btn = document.createElement("button");
+        btn.textContent = "原图";
+        btn.style = "position: absolute; opacity: 0.5;";
+        btn.addEventListener("click", function(){
+            var imgBooth = document.getElementById("J_ImgBooth");
+            var imgLink = imgBooth.getAttribute("src");
+            imgLink = imgLink.replace("_400x400.jpg", "");
+            window.open(imgLink);
+            
+        }, false);
+        div_main_pic.prepend(btn);
+        
+    }, 1000);
+
+
+    setTimeout(function () {
+        HUABEI_TotalAmount();
+        HUABEI_TotalAmount_bind();
+    }, 3000);
+}
+
+function Tmall(){
+    setTimeout(function () {
+        var div_main_pic = $('div.tb-booth:first');
+        var btn = document.createElement("button");
+        btn.textContent = "原图";
+        btn.style = "position: absolute; opacity: 0.5;";
+        btn.addEventListener("click", function(){
+            var imgBooth = document.getElementById("J_ImgBooth");
+            var imgLink = imgBooth.getAttribute("src");
+            imgLink = imgLink.replace("_430x430q90.jpg", "");
+            window.open(imgLink);
+            
+        }, false);
+        div_main_pic.prepend(btn);
+        
+    }, 1000);
+}
 
 // 计算并显示分期总额
 function HUABEI_TotalAmount() {

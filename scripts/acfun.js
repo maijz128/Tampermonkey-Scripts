@@ -5,13 +5,13 @@
 // @description  文章区：评论区域居中、文章内容始终显示、高亮楼主名字；视频：在简介栏中可以显示封面；
 // @author       MaiJZ
 // @match        *://*.acfun.cn/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
+//// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
 
 
 (function () {
-    setTimeout(function() {
+    setTimeout(function () {
         main();
     }, 1000);
 })();
@@ -22,6 +22,8 @@ function main() {
         //Article();
     } else if (matchURL("/v/ac")) {
         VideoPage();
+    } else if (matchURL("live.acfun")) {
+        LivePage();
     } else if (isHomePage()) {
         //HomePage();
     }
@@ -39,6 +41,15 @@ function HomePage() {
 
 }
 
+//直播
+function LivePage() {
+    // 删除TV
+    var tv = document.querySelector('.tv-wrapper');
+    if (tv) {
+        tv.remove();
+    }
+}
+
 // 视频
 function VideoPage() {
 
@@ -48,13 +59,13 @@ function VideoPage() {
     console.log(coverURL);
 
     // 自动宽屏播放
-    setTimeout(function() {
+    setTimeout(function () {
         var btn = document.querySelector('.film-model .btn-film-model');
-        if(btn){
+        if (btn) {
             eventFire(btn, 'click');
         }
     }, 2000);
-    
+
 
     function addCoverLink(url) {
         var style = '.video-cover:hover img { display: block !important; }';
@@ -148,7 +159,7 @@ function Article() {
     };
 
     // 文章内容
-    this.articleContent = function(){
+    this.articleContent = function () {
         var style = '#article-content>.article-content { min-height: 400px; }';
         addStyle(style);
     };
@@ -183,37 +194,39 @@ function fireKeyEvent(el, evtType, keyCode) {
     if (doc.createEvent) {
         if (win.KeyEvent) {
             evtObj = doc.createEvent('KeyEvents');
-            evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
-        }
-        else {
+            evtObj.initKeyEvent(evtType, true, true, win, false, false, false, false, keyCode, 0);
+        } else {
             evtObj = doc.createEvent('UIEvents');
             Object.defineProperty(evtObj, 'keyCode', {
-                get : function () { return this.keyCodeVal; }
+                get: function () {
+                    return this.keyCodeVal;
+                }
             });
             Object.defineProperty(evtObj, 'which', {
-                get : function () { return this.keyCodeVal; }
+                get: function () {
+                    return this.keyCodeVal;
+                }
             });
-            evtObj.initUIEvent( evtType, true, true, win, 1 );
+            evtObj.initUIEvent(evtType, true, true, win, 1);
             evtObj.keyCodeVal = keyCode;
             if (evtObj.keyCode !== keyCode) {
                 console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
             }
         }
         el.dispatchEvent(evtObj);
-    }
-    else if (doc.createEventObject) {
+    } else if (doc.createEventObject) {
         evtObj = doc.createEventObject();
         evtObj.keyCode = keyCode;
         el.fireEvent('on' + evtType, evtObj);
     }
 }
 
-function eventFire(el, eType){
+function eventFire(el, eType) {
     if (el.fireEvent) {
-      el.fireEvent('on' + eType);
+        el.fireEvent('on' + eType);
     } else {
-      var evObj = document.createEvent('Events');
-      evObj.initEvent(eType, true, false);
-      el.dispatchEvent(evObj);
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(eType, true, false);
+        el.dispatchEvent(evObj);
     }
 }
