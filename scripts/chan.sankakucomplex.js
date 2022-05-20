@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         chan.sankakucomplex助手
+// @name         MJZ-SankakuComplex助手
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
@@ -29,23 +29,47 @@ function main() {
     if (Mjztool.matchURL("/post/")) {
         PostVideo();
 
-        $("#search-form").after($("#stats"));
+        jQuery("#search-form").after($("#stats"));
     }
     content();
     content_bind();
+
+    open_in_new_tab();
+}
+
+function open_in_new_tab(){
+    $('#post-list .thumb a').attr('target', '_blank');
+    $('#post-list .thumb a').attr('onclick', 'javascript;');
+    // $('#post-list .thumb a').click(function(){ });
+}
+
+function imgPreview(img){
+    var title = img.attr("title");
+    if (title) {
+        if (title.indexOf("mp4") > -1) {
+            img.css("border-top", "4px solid green");
+        }else if (title.indexOf("webm") > -1) {
+            img.css("border-top", "4px solid yellow");
+        }
+        if (title.indexOf("3840x2160") > -1) {
+            img.css("border-left", "3px solid firebrick");
+        }else if (title.indexOf("2560x1440") > -1) {
+            img.css("border-left", "3px solid turquoise");
+        }else if (title.indexOf("1920x1080") > -1) {
+            img.css("border-left", "3px solid hotpink");
+        }
+
+    }
 }
 
 function content() {
-    $("img").hover(function () {
-        var title = $(this).attr("title");
-        if (title) {
-            if (title.indexOf("mp4") > -1) {
-                $(this).css("border-top", "4px solid green");
-            }else if (title.indexOf("webm") > -1) {
-                $(this).css("border-top", "4px solid yellow");
-            }
-        }
+    jQuery("img").each(function () {
+        imgPreview(jQuery(this));
     });
+    jQuery("img").hover(function () {
+        imgPreview(jQuery(this));
+    });
+
 }
 
 function content_bind() {
@@ -57,6 +81,9 @@ function content_bind() {
 }
 
 function PostVideo(){
+    /*** 隐藏Header, 移除广告并支持网站 */
+    Mjztool.addStyle('#headerlogo, #has-mail-notice{display: none;}');
+
     var btn = document.createElement("button");
     btn.textContent = "复制视频地址";
     btn.style = "";
@@ -67,8 +94,8 @@ function PostVideo(){
         imgLink = "https:" + imgLink;
         Mjztool.GM_setClipboard(imgLink);
     }, false);
-    $("#post-content").prepend("<div></div>");
-    $("#post-content").prepend(btn);
+    jQuery("#post-content").prepend("<div></div>");
+    jQuery("#post-content").prepend(btn);
 
 
     
@@ -78,7 +105,7 @@ function PostVideo(){
         onBtnClick();
     }, false);
 
-    $("#post-content").prepend(btnDownload);
+    jQuery("#post-content").prepend(btnDownload);
     
     var btnDownload2 = document.createElement("button");
     btnDownload2.textContent = "下载源图然后关闭窗口";
@@ -86,7 +113,7 @@ function PostVideo(){
         onBtnClick(true);
     }, false);
 
-    $("#post-content").prepend(btnDownload2);
+    jQuery("#post-content").prepend(btnDownload2);
 
     /*
     var btnDownload = document.createElement("a");

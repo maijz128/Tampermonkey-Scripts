@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         小说网
+// @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
@@ -30,6 +30,8 @@
 // @match        *://*.ggdownxs.cc/*
 // @match        *://*.fun8.i-gamer.net/*
 // @match        *://*.69shu.com/*
+// @match        *://*.sinodan.cc/view/*
+// @match        *://*.aabook.cc/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -99,6 +101,8 @@ function main() {
     if (Mjztool.matchURL("ggdownxs.cc")) { ggdownxs(); }
     if (Mjztool.matchURL("fun8.i-gamer.net")) { i_gamer(); }
     if (Mjztool.matchURL("69shu.com")) { shu69(); }
+    if (Mjztool.matchURL("sinodan.cc")) { sinodan(); }
+    if (Mjztool.matchURL("aabook.cc")) { aabook(); }
 
 }
 
@@ -173,6 +177,37 @@ function handleKeyDown(keyCode) {
     }
 }
 
+/***************************************************************************/
+
+
+
+function aabook() {
+    var css = ".page_main{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}";
+    css += "#wrap{ background-color: rgb(230, 230, 221) !important; width: 70%;}";
+    css += ".chapter_con p{font-family: 微软雅黑, 宋体 !important;  FONT-SIZE: 26px !important; }";
+    css += "#totop, .side_btn{opacity: .1;}";
+    css += ".page_main img{ display: none; }";
+  
+    Mjztool.addStyle(css);
+}
+
+function sinodan() {
+    // ShortcutKeys = {Next: "div.page1 > a:nth-child(4)"};
+
+    var css = "#nr1{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}";
+    css += "#nr1 {padding: 20px; margin: 0 auto; width: 800px; color: #333;}";
+    css += ".chapter .mod-page .page-content p{color:#666 !important; font-size: 10px !important;}";
+    css += "#nr1 > font {color: #666 !important; font-size: 10px !important;}";
+    Mjztool.addStyle(css);
+
+    var words = {
+        "本章未完": "", 
+    };
+    var content = $("#nr1")[0];
+    replaceNodeText(content, words);
+    // var words2 = ["本章未完", ];
+    // text = removeText(text, words2);
+}
 
 // 笔趣阁
 function biquge() {
@@ -255,6 +290,8 @@ function ptwxz() {
     ShortcutKeys = {Next:  "#main > div.bottomlink > a:nth-child(6)"};
 
     var css = "#content{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}"
+    css+= "#content > table{display: none;}";
+    css += ".toplink a{color: #666 !important;}";
     Mjztool.addStyle(css);
     
     // var content = $(".txtnav")[0];
@@ -513,6 +550,8 @@ function i_gamer() {
     text = replaceText(text, words);
     $("#ChSize").html(text);
 }
+
+
 
 
 /*****************************************************************************************/

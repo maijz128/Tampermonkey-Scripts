@@ -1,12 +1,14 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         Background Color - MaiJZ
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
+// @match        *://*.baidu.com/*
+// @match        *://*.google.com/*
+// @match        *://*.google.com.hk/*
+// @match        *://*.twitter.com/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -26,17 +28,30 @@
 })();
 
 function main() {
+    var style = ".bc_gainsboro {background-color: gainsboro !important;}";
+    style += '.bc_eeeeee {background-color: #eeeeee !important;}';
+    Mjztool.addStyle(style);
 
+    if (matchURL("baidu.com")) { baidu();}
+    if (matchURL("google.com")) { google();}
+    if (matchURL("twitter.com")) { twitter();}
+}
+
+function baidu(){
+    $("body").addClass("bc_eeeeee");
+    $("#head").addClass("bc_eeeeee");
+}
+
+function google(){
+    $("body").addClass("bc_eeeeee");
+}
+
+function twitter(){
+    $("body").addClass("bc_eeeeee");
 }
 
 
 /*******************************************************************************/
-
-function addStyle(styleContent) {
-    var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
-    document.head.appendChild(elStyle);
-}
 
 
 function getQueryParams(){  // 当前网页查询参数。?id=xxxxx

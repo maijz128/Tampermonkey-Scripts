@@ -1,11 +1,10 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         MJZ-render-state.to
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://*.render-state.to/*
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -26,7 +25,18 @@
 })();
 
 function main() {
-
+    var spanEl = 
+    $('div.single_post div.clear span').each(function(){
+        var spanEl = $(this);
+        var link = spanEl.text();
+        if (link.indexOf("http") > -1) {
+            console.log(link);
+            spanEl.html(`<a href="${link}" target="_blank">${link}</a>`); 
+        }
+        
+    });
+    
+    
 }
 
 

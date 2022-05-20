@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name         淘宝助手
+// @name         MJZ-淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      0.5.0
+// @version      0.6.0
 // @description  自动登录
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
 // @match        *://*.tmall.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @grant        GM_setClipboard
 // ==/UserScript==
 
 
@@ -57,6 +58,18 @@ function TaoBao(){
         HUABEI_TotalAmount();
         HUABEI_TotalAmount_bind();
     }, 3000);
+
+    // 商品 URL
+    setTimeout(function () {
+        var li = document.createElement("li");
+        var itemUrl = "https://item.taobao.com/item.htm?id="; 
+        itemUrl += getQueryParams()["id"];
+        console.log(itemUrl);
+        li.innerHTML = `<text>${itemUrl}</text>`;
+        $("#J_Social ul").append(li);
+    }, 1000);
+
+    
 }
 
 function Tmall(){
@@ -217,6 +230,12 @@ function addStyle(styleContent) {
     document.head.appendChild(elStyle);
 }
 
+function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
+    var urlSearchParams = new URLSearchParams(window.location.search);
+    var params = Object.fromEntries(urlSearchParams.entries());
+    return params;
+}
+
 // Usage: fireKeyEvent(input元素, 'keydown', 13);  
 // http://blog.csdn.net/lovelyelfpop/article/details/52471878
 function fireKeyEvent(el, evtType, keyCode) {
@@ -260,3 +279,5 @@ function eventFire(el, eType){
       el.dispatchEvent(evObj);
     }
 }
+
+

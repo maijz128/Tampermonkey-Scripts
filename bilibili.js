@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         bilibili小助手
+// @name         mjz-bilibili小助手
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
@@ -37,7 +37,10 @@ function main() {
 function Live(){
     
     // 隐藏通知弹幕
-    var style = '.bilibili-live-player-video-operable-container {  visibility: hidden !important; }';
+    // var style = '.bilibili-live-player-video-operable-container {  visibility: hidden !important; }';
+    var style = "";
+    style += ".user-panel-ctnr .msg-hinter{display: none;}";
+    style += ".hot-rank-text{background-color: white !important; color: #999 !important;}";
     Mjztool.addStyle(style);
 }
 
@@ -47,11 +50,11 @@ function Video(){
 
     
     // 隐藏弹幕
-    var el_danmaku_switch = document.querySelector('.bilibili-player-video-danmaku-switch');
-    if(el_danmaku_switch){
-        // fireKeyEvent(el_danmaku_switch, "keydown", KEYS.RIGHT);
-        eventFire(el_danmaku_switch, 'click');
-    }
+    // var el_danmaku_switch = document.querySelector('.bilibili-player-video-danmaku-switch');
+    // if(el_danmaku_switch){
+    //     // fireKeyEvent(el_danmaku_switch, "keydown", KEYS.RIGHT);
+    //     eventFire(el_danmaku_switch, 'click');
+    // }
 }
 
 // Usage: fireKeyEvent(input元素, 'keydown', 13);  

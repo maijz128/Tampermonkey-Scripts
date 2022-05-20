@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name  pornhub.com helper
+// @name         mjz-pornhub.com helper
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  remove AD.
 // @author       MaiJZ
 // @match        *://*.pornhub.com/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
+//// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
 
@@ -19,7 +19,7 @@ function main() {
         ViewVideo();
     }
 
-    removeAD();
+    // removeAD();
 }
 
 function removeAD() {
@@ -37,6 +37,10 @@ function removeAD() {
 
 
 function ViewVideo() {
+
+    var css = "";
+    css += ".mgp_progress{opacity: 0.4;}";
+    addStyle(css);
 
     function removeRightAD() {
         const hd_rightColVideoPage = document.getElementById("hd-rightColVideoPage");
@@ -68,8 +72,9 @@ function ViewVideo() {
         }
     }
 
-    removeRightAD();
-    autoLargePlayer();
+    // removeRightAD();
+    // autoLargePlayer();
+
 
 }
 
@@ -84,4 +89,10 @@ function elementHasClass(element, className) {
         return element.classList.contains(className);
     }
     return false;
+}
+
+function addStyle(styleContent) {
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    document.head.appendChild(elStyle);
 }

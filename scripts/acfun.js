@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AcFun小助手
+// @name         AcFun小助手-MaiJZ
 // @namespace    https://github.com/maijz128
 // @version      1.2.0
 // @description  文章区：评论区域居中、文章内容始终显示、高亮楼主名字；视频：在简介栏中可以显示封面；
@@ -13,7 +13,7 @@
 (function () {
     setTimeout(function () {
         main();
-    }, 1000);
+    }, 10);
 })();
 
 
@@ -23,7 +23,7 @@ function main() {
     } else if (matchURL("/v/ac")) {
         VideoPage();
     } else if (matchURL("live.acfun")) {
-        LivePage();
+        //LivePage();
     } else if (isHomePage()) {
         //HomePage();
     }
@@ -52,6 +52,11 @@ function LivePage() {
 
 // 视频
 function VideoPage() {
+
+    // 观影模式时：输入弹幕栏改变CSS
+    var style = ".container-player[data-bind-attr='web'] .container-video .container-plugins-inner .container-controls .control-bar-bottom, .container-player[data-bind-attr='screen'] .container-video .container-plugins-inner .container-controls .control-bar-bottom, .container-player.film-mode .container-video .container-plugins-inner .container-controls .control-bar-bottom";
+    style += "{left: 180px !important; }";
+    addStyle(style);
 
     var coverURL = getVideoCoverURL();
     //addCoverLink(coverURL);
@@ -185,7 +190,7 @@ function addStyle(styleContent) {
     document.head.appendChild(elStyle);
 }
 
-// Usage: fireKeyEvent(input元素, 'keydown', 13);  
+// Usage: fireKeyEvent(input元素, 'keydown', 13);
 // http://blog.csdn.net/lovelyelfpop/article/details/52471878
 function fireKeyEvent(el, evtType, keyCode) {
     var doc = el.ownerDocument;

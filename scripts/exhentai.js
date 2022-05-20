@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         MaiJZ-ExHentai
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
+// @match        *://*.exhentai.org/*
+// @match        *://*.e-hentai.org/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -22,13 +22,51 @@
 (function () {
     setTimeout(function(){
         main();
-    },10);
+    },1000);
 })();
 
 function main() {
+    var css = "";
+    
 
+    if (matchURL("/s/")) {
+        css = "#eh-syringe-popup-button{opacity: 0;}"
+        addStyle(css);
+    }
+    
+    open_in_new_tab();
 }
 
+function open_in_new_tab(){
+    $('.ido .gl1t a').attr('target', '_blank');
+}
+
+function saveTag() {
+    if ($("#f_search")) {
+        var elTagInput = document.createElement("input");
+        elTagInput.setAttribute("id", "elTagInput");
+        elTagInput.setAttribute("style", "width:350px;");
+        elTagInput.setAttribute("list", "elTags");
+        elTagInput.setAttribute("placeholder", "Saved Tag");
+        $(".nopm")[0].append(elTagInput);
+
+        var elTags = document.createElement("datalist");
+        elTags.setAttribute("id", "elTags");
+        elTags.setAttribute("style", "width:350px;");
+        $(".nopm")[0].append(elTags);
+
+        var btnSaveTag = document.createElement("button");
+        btnSaveTag.setAttribute("id", "btnSaveTag");
+        btnSaveTag.appendChild(document.createTextNode("Save"));
+        $(".nopm")[0].append(btnSaveTag);
+
+        var btnRemoveTag = document.createElement("button");
+        btnRemoveTag.setAttribute("id", "btnRemoveTag");
+        btnRemoveTag.appendChild(document.createTextNode("Remove"));
+        $(".nopm")[0].append(btnRemoveTag);
+
+    }
+}
 
 /*******************************************************************************/
 

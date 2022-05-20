@@ -1,12 +1,11 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         MJZ-原价屋
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
+// @match        *://*.coolpc.com.tw/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -18,6 +17,8 @@
 // @grant        window.focus
 // ==/UserScript==
 
+// 新台币 * 汇率 = 人民币
+var RATE = 0.23;
 
 (function () {
     setTimeout(function(){
@@ -26,17 +27,28 @@
 })();
 
 function main() {
+    if (Mjztool.matchURL("eachview.php")) {
+        jQuery(".x").each(function(){
+            var textNode = this.childNodes[0];
+            console.log(textNode);
 
+            // 文本节点
+            if (textNode.nodeType == 3) {
+                var nodeValue = textNode.nodeValue;
+                nodeValue = nodeValue.replace("◆", "").trim();
+                var nt = nodeValue.split("NT")[1];
+                var rmb = Math.round(parseInt(nt, 10) * RATE);
+                textNode.nodeValue = nodeValue + " / ¥" + rmb + " ◆";
+            }
+            
+        });
+
+
+    }
 }
 
 
 /*******************************************************************************/
-
-function addStyle(styleContent) {
-    var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
-    document.head.appendChild(elStyle);
-}
 
 
 function getQueryParams(){  // 当前网页查询参数。?id=xxxxx

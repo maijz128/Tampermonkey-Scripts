@@ -1,50 +1,60 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
-// @namespace    https://github.com/maijz128
-// @version      0.1.0
-// @description  描述
-// @author       MaiJZ
-// @match        *://*/*
+// @name         MJZ-steamcommunity-workshop
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://steamcommunity.com/workshop/browse/*
+// @match        https://steamcommunity.com/sharedfiles/filedetails/*
 //// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_cookie
-// @grant        GM.cookie
-// @grant        GM_setClipboard
-// @grant        GM_xmlhttpRequest
-// @grant        unsafeWindow
-// @grant        window.close
-// @grant        window.focus
+// @icon         https://www.google.com/s2/favicons?domain=steamcommunity.com
+// @grant        none
 // ==/UserScript==
 
-
-(function () {
-    setTimeout(function(){
+(function() {
+    'use strict';
+     setTimeout(function(){
         main();
     },10);
 })();
 
-function main() {
+function main(){
+    var css = ".workshopBrowsePagingControls{font-size: 26px !important;}";
+    css += "#ig_bottom .pagebtn{line-height: 24px !important;}";
+    Mjztool.addStyle(css);
 
+    if (Mjztool.matchURL("steamcommunity.com/workshop/browse")) { steamcommunity_workshop(); }
+    if (Mjztool.matchURL("steamcommunity.com/sharedfiles/filedetails")) { steamcommunity_filedetails(); }
+    
 }
 
 
-/*******************************************************************************/
+function steamcommunity_workshop(){
+    jQuery(".workshopBrowseItems > div > a:nth-child(5)").each(function(){
+        var thisElem = jQuery(this);
+        // console.log(thisElem);
+        // 在新窗口中打开链接 
+        thisElem.attr("target", "_blank");
+    });
+}
 
-function addStyle(styleContent) {
-    var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
-    document.head.appendChild(elStyle);
+function steamcommunity_filedetails(){
+    var style = "";
+    style += "div#global_header .content{ height: 84px !important;}";
+    style += ".apphub_HeaderTop{padding-top: 12px !important;}";
+    style += ".workshopItemTitle{font-size: 20px !important;}";
+    style += "#detailsHeaderRight{position: absolute;     right: 0px;}";
+    style += "";
+    Mjztool.addStyle(style);
+
+    // window.parent.postMessage(['steamdownloaderButtonPressed', true], '*')
+    var button = `<a class="sectionTab" onclick="window.parent.postMessage(['steamdownloaderButtonPressed', true], '*')" ><span>Download</span></a>`;
+    var sectionTabs = document.querySelector(".sectionTabs");
+    jQuery(sectionTabs).append(button);
 }
 
 
-function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
-    var urlSearchParams = new URLSearchParams(window.location.search);
-    var params = Object.fromEntries(urlSearchParams.entries());
-    return params;
-}
-
+/*************************************************************************/
 
 function forceDownload(url, fileName){
     var xhr = new XMLHttpRequest();
@@ -87,7 +97,7 @@ function deleteCookie( name ) {
 }
 
 
-// Usage: fireKeyEvent(input元素, 'keydown', 13);  
+// Usage: fireKeyEvent(input元素, 'keydown', 13);
 // http://blog.csdn.net/lovelyelfpop/article/details/52471878
 function fireKeyEvent(el, evtType, keyCode) {
     var doc = el.ownerDocument;
@@ -130,20 +140,17 @@ function eventFire(el, eType){
     }
 }
 
-function matchURL(url) {
-    var URL = window.location.href;
-    return URL.indexOf(url) > -1;
-}
+
 
 // toolkit
 function Mjztool(){}
 Mjztool.bytesToSize = function(bytes) {
     if (bytes === 0) return '0 B';
     var k = 1024;
-    var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    i = Math.floor(Math.log(bytes) / Math.log(k));
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-    //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
+    //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 };
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
