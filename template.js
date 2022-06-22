@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name  ScriptTemplate - MaiJZ
+// @name         MaiJZ - 
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述

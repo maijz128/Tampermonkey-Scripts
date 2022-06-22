@@ -1,12 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ-ExHentai
+// @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.exhentai.org/*
-// @match        *://*.e-hentai.org/*
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://*.cool18.com/*
+// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -16,58 +15,115 @@
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAIAAAB+eU8wAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAAJESURBVEhL7ZexSgNBEIbzNla+hY8g+AA2tlZ2WllZCtZinc4iViLaiJBGQQQtRLQQ1MIiFkLOb+9f5y43e2dyMdpkGI7Z2dn/n52ZjdjJGmU4HEarUX4M62RbCzPXOU0L/T+aXxGHORXN6ePF4uFy7/4krk0c5lQ03dve0tEqTDevd9ElcZhj0Ty8P5Hy7uUB6UfXt2yc70ADX1xLRjF5vGmal8Fb//mKw9v9vZXjdYBMFWAimpa3IX1VwxSy/esufgWYTEWDgGgcEERvLhSQiw4+P7ChISH5C3GYTb2Bae1sU0zlrlBPPBBgc0toVFiapwCPWUsDFsdImS8Q5aLhFLcqJiWAJU0Nhx1m0whw2DokAyx2KZqcplbDKA4zTUNLUUEwbHwpmnJnFw82t5SnZW9UKAxQ6I34cAoUA49y17UIJgkuhEEGYcthJmiUuGhQzusSotHs0iT86nxFw1mHmaCp4ErplpY2eyjlIn3iaSQBcHO/MJMOs5amkilAZVbIgFPpEAjijEkcZi2N5lgaEsw7bwSwBrh8WORHMeT0mAkajbL1HBWNliSBUi7ysHE3VaTHTNCQIBUrPw6NrGgAKm8p0ho2wfNUHbiNNUklUu7sohhAW29Eo2cQxGEmaOgniECUp0CUKBwEYLCbQxY/CmzJ4zETNIh1hTS5inClCpBdaU8xbKOYtX/WVLEiuyzjd1O4WtocQkOF+aJko12PmabxQqaAGhB5cFFS0RKZ8N3MQuc0LfQPaWpkzP/TylJ7JMu+AMWUf3c+C6RtAAAAAElFTkSuQmCC
 // ==/UserScript==
 
 
 (function () {
     setTimeout(function(){
         main();
-    },1000);
+    },10);
 })();
 
 function main() {
-    var css = "";
+    var style = "";
+    style += "line-height: 36px !important; font-size: 24px !important;";
+    style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
+
+    // addStyle("pre{ line-height: 28px !important; font-size: 20px !important; }");
+    // $("pre").css("line-height", "28px !important;");
+    // $("pre").css("font-size", "20px !important;");
+
+    $("pre").attr("style", "max-width: 900px;" + style);
+    $("pre span").attr("style", style);
+    $("pre p").attr("style", style);
+    $("pre b").attr("style", style);
+    $("pre font").attr("style", style);
+
+
+    $(".show_content pre font").each(function(){
+        var f = $(this);
+        var text = f.text().trim();
+        if (text == "cool18.com" || text == "www.6park.com") {
+            f.remove(); // f.text("");
+        }
+    });
+
+    // var td_btn = `<td><button onclick="remove_br()">删除换行</button></td>`;
+    // $(".show_content table tbody tr").append(td_btn);
+    // window.remove_br = function(){$("tbody br").remove();};
     
+    var btn = document.createElement("button");
+    btn.textContent = "删除换行";
+    btn.onclick = function ()
+    {
+        $("tbody br").remove();
 
-    if (matchURL("/s/")) {
-        css = "#eh-syringe-popup-button{opacity: 0;}";
-        css += "#switch {opacity: 0 !important;} #switch:hover {opacity: 1 !important;}";
-        addStyle(css);
-    }
-    
-    open_in_new_tab();
+        // $("tbody p").text(function(i,origText){
+        //     var text = origText;
+        //     text = text.replace(/\r\n/g,"<br>");  
+        //     text = text.replace(/\n/g,"<br>");  
+        //     // console.log(text);
+        //     return text;
+        // });
+
+        // $("tbody pre").text(function(i,origText){
+        //     var text = origText;
+        //     text = text.replace(/\r\n/g,"<br>");  
+        //     text = text.replace(/\n/g,"<br>");  
+        //     // console.log(text);
+        //     return text;
+        // });
+    };
+
+    var btn2 = document.createElement("button");
+    btn2.textContent = "删除换行2";
+    btn2.onclick = function ()
+    {
+
+        $("tbody p").text(function(i,origText){
+            var text = origText;
+            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
+            return text;
+        });
+
+        $("tbody pre").html(function(i,origText){
+            var text = origText;
+            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
+            return text;
+        });
+    };
+
+    var btn3 = document.createElement("button");
+    btn3.textContent = "格式化换行";
+    btn3.onclick = function ()
+    {
+
+        $("tbody p").text(function(i,origText){
+            var text = origText;
+            text = text.replace(/\r\n/g,"<br>");  
+            text = text.replace(/\n/g,"<br>");  
+            return text;
+        });
+
+        $("tbody pre").html(function(i,origText){
+            var text = origText;
+            text = text.replace(/\r\n/g,"<br>");  
+            text = text.replace(/\n/g,"<br>");  
+            return text;
+        });
+    };
+
+
+
+    var td = document.createElement("td");
+    td.appendChild(btn);
+    td.appendChild(btn2);
+    td.appendChild(btn3);
+
+    $(".show_content table tbody tr").append(td);
 }
 
-function open_in_new_tab(){
-    $('.ido .gl1t a').attr('target', '_blank');
-}
-
-function saveTag() {
-    if ($("#f_search")) {
-        var elTagInput = document.createElement("input");
-        elTagInput.setAttribute("id", "elTagInput");
-        elTagInput.setAttribute("style", "width:350px;");
-        elTagInput.setAttribute("list", "elTags");
-        elTagInput.setAttribute("placeholder", "Saved Tag");
-        $(".nopm")[0].append(elTagInput);
-
-        var elTags = document.createElement("datalist");
-        elTags.setAttribute("id", "elTags");
-        elTags.setAttribute("style", "width:350px;");
-        $(".nopm")[0].append(elTags);
-
-        var btnSaveTag = document.createElement("button");
-        btnSaveTag.setAttribute("id", "btnSaveTag");
-        btnSaveTag.appendChild(document.createTextNode("Save"));
-        $(".nopm")[0].append(btnSaveTag);
-
-        var btnRemoveTag = document.createElement("button");
-        btnRemoveTag.setAttribute("id", "btnRemoveTag");
-        btnRemoveTag.appendChild(document.createTextNode("Remove"));
-        $(".nopm")[0].append(btnRemoveTag);
-
-    }
-}
 
 /*******************************************************************************/
 

@@ -13,6 +13,7 @@
 // @match        *://illusioncards.booru.org/*
 // @match        *://chan.sankakucomplex.com/*
 // @match        *://render-state.to/*
+// @match        *://jable.tv/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -45,6 +46,7 @@ function main() {
     if (matchURL("illusioncards.booru.org")) { illusioncards_booru_org(); }
     if (matchURL("chan.sankakucomplex.com")) { sankakucomplex(); }
     if (matchURL("render-state.to")) { render_state(); }
+    if (matchURL("jable.tv")) { jable_tv(); }
 }
 
 function EverythingHttpRequest(searchText){
@@ -243,6 +245,48 @@ function render_state(){
     // if (highres) {
     //     func(highres);
     // }
+}
+
+function jable_tv(){
+    var cssName = "exist_in_local";
+    Mjztool.addStyle(`.${cssName} { color: green !important; }`);
+
+    var func = function(thisElem){
+        var searchText = thisElem.attr("href"); //thisElem.text(); // thisElem.attr("src") || 
+        // var ss = searchText.split("/");
+        // searchText = ss[ss.length - 1];
+        // searchText = searchText.split(".")[0];
+        searchText = searchText.replace("https://jable.tv/videos/", "");
+        searchText = searchText.replace("/", "");
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    jQuery(".title a").each(function(){
+        var thisElem = jQuery(this);
+        func(thisElem);
+    });
+
+    var header_title = jQuery(".header-left h4");
+    if (header_title) {
+        var searchText = header_title.text();
+        var ss = searchText.split(" ");
+        searchText = ss[0];
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    header_title.addClass(cssName);
+                }
+            }
+        });
+    }
 }
 
 
