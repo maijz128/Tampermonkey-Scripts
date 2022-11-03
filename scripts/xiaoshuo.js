@@ -16,6 +16,9 @@
 // @match        *://*.biquduu.com/*
 // @match        *://*.biquwx.la/*
 // @match        *://*.biquge.com.cn/*
+// @match        *://*.biquge40.com/*
+// @match        *://*.beqege.cc/*
+// @match        *://*.biqiudu.com/*
 // @match        *://*.shuhuangge.org/*
 // @match        *://m.tsnwb.org/*
 // @match        *://*.xxbook.cc/*
@@ -32,6 +35,24 @@
 // @match        *://*.69shu.com/*
 // @match        *://*.sinodan.cc/view/*
 // @match        *://*.aabook.cc/*
+// @match        *://*.uukanshu.com/*
+// @match        *://*.aixdzs.com/*
+// @match        *://*.uuxs.tw/*
+// @match        *://m.feiszw.com/*
+// @match        *://qbtr.cc/*
+// @match        *://*.fansg.cc/*
+// @match        *://*.xqb5.org/*
+// @match        *://*.sis001.com/*
+// @match        *://*.siluke.com/*
+// @match        *://*.shuquzw.com/*
+// @match        *://*.ddxs.com/*
+// @match        *://*.dwxdwx.com/*
+// @match        *://*.vodtw.com/*
+// @match        *://*.shuyyw.cc/*
+// @match        *://*.sto520.com/*
+// @match        *://*.mayiwxw.com/*
+// @match        *://*.sp90.org/*
+// @match        *://*.neat-reader.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -44,16 +65,17 @@
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
-var G = { UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F, Pause: KEYS.SPACE, ToggleUI: KEYS.Q, ToggleList: KEYS.R };
+var G = { UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS.F, Pause: KEYS.SPACE, ToggleUI: KEYS.Q, ToggleList: KEYS.R, NextPage: KEYS.F };
 
 var KeyDownHandle = function (keyCode) {return;};
 var ShortcutKeys = {Next : null};  // {Next: "body > div.container > div > div.page1 > a:nth-child(4)"}
+var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.05em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
+// Font_Color_Style += "text-indent: 2em !important;";
+var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 
 (function () {
-    setTimeout(function () {
-        main();
-    }, 10);
+    setTimeout(function(){ main(); }, 10);
 })();
 
 function main() {
@@ -68,30 +90,20 @@ function main() {
     if (Mjztool.matchUrlList(["shouda88.com", "shouda8.com", "shouda88.net"])) {
         shouda8();
     }
-    if (Mjztool.matchUrlList(["biquge.com.cn", "xbiquge.so", "xdingdian.com", "sizhicn.com", "230book.com"])) {
+    if (Mjztool.matchUrlList(["sp90.org", "mayiwxw.com", "biqiudu.com", "biquge.com.cn", "xbiquge.so", "xdingdian.com", "sizhicn.com", "230book.com", "uuxs.tw", "beqege.cc"])) {
         biquge();
     }
 
     if (Mjztool.matchURL("soshuba.com")) { soshuba(); }
-    if (Mjztool.matchURL("soshuwu.com")) {
-        soshuwu();
-    }
-    if (Mjztool.matchURL("guishuji.cc")) {
-        guishuji();
-    }
+    if (Mjztool.matchURL("soshuwu.com")) { soshuwu(); }
+    if (Mjztool.matchURL("guishuji.cc")) { guishuji(); }
     if (Mjztool.matchURL("ptwxz.com")) { ptwxz(); }
     if (Mjztool.matchURL("biquduu.com")) { biquduu(); }
     if (Mjztool.matchURL("m.tsnwb.org")) { tsnwb(); }
-    if (Mjztool.matchURL("kandashuw")) {
-        kandashuw();
-    }
-    if (Mjztool.matchURL("22pq")) {
-        // pq22();
-    }
+    if (Mjztool.matchURL("kandashuw")) { kandashuw(); }
+    // if (Mjztool.matchURL("22pq")) { // pq22(); }
     if (Mjztool.matchURL("biquwx.la")) { biquwx(); }
     if (Mjztool.matchURL("shuhuangge.org")) { shuhuangge(); }
-
-
 
     if (Mjztool.matchURL("xxbook.cc")) { xxbook(); }
     if (Mjztool.matchURL("shumil.co")) { shumil(); }
@@ -103,7 +115,22 @@ function main() {
     if (Mjztool.matchURL("69shu.com")) { shu69(); }
     if (Mjztool.matchURL("sinodan.cc")) { sinodan(); }
     if (Mjztool.matchURL("aabook.cc")) { aabook(); }
-
+    if (Mjztool.matchURL("uukanshu.com")) { uukanshu(); }    // UU看书网
+    if (Mjztool.matchURL("aixdzs.com")) { aixdzs(); }       // 爱下电子书
+    if (Mjztool.matchURL("feiszw.com")) { feiszw(); }       // 飞速中文网
+    if (Mjztool.matchURL("qbtr.cc")) { qbtr(); }       // 全本同人小说
+    if (Mjztool.matchURL("fansg.cc")) { fansg(); }       // 翻书阁
+    if (Mjztool.matchURL("xqb5.org")) { xqb5(); }       // 全本小说网
+    if (Mjztool.matchURL("sis001.com")) { sis001(); }    
+    if (Mjztool.matchUrlList(["siluke.com", "shuquzw.com"])) { siluke(); }    
+    if (Mjztool.matchUrlList(["ddxs.com"])) { ddxs(); }       //顶点小说网
+    if (Mjztool.matchUrlList(["dwxdwx.com"])) { dwxdwx(); }       
+    if (Mjztool.matchUrlList(["vodtw.com"])) { vodtw(); }       // 品书小说网
+    if (Mjztool.matchUrlList(["shuyyw.cc"])) { shuyyw(); }       // 丫丫电子书
+    if (Mjztool.matchUrlList(["sto520.com"])) { sto520(); }       // 思兔阅读
+    // if (Mjztool.matchUrlList(["neat-reader.cn"])) { NeatReader(); }      
+   
+    
 }
 
 function onKeyDown() {
@@ -115,19 +142,19 @@ function onKeyDown() {
        return !(e.altKey || e.ctrlKey || e.shiftKey);        
     }
 
-    document.onkeydown = function (event) {
-        var e = event || window.event || arguments.callee.caller.arguments[0];
+    window.addEventListener('keydown', function(event){
+         var e = event || window.event || arguments.callee.caller.arguments[0];
         if (e && isShortcutKey() && notPressControlKey(e)) {
             handleKeyDown(e.keyCode);
         }
-    };
+    }, false);
 }
 
 function handleKeyDown(keyCode) {
     KeyDownHandle(keyCode);
 
     if (ShortcutKeys) {
-        if (keyCode == KEYS.D || keyCode == KEYS.RIGHT) {
+        if (keyCode == KEYS.D || keyCode == KEYS.RIGHT || keyCode == G.NextPage) {
             console.log(keyCode + ": Next");
             // var seletor = "div.page1 > a:nth-child(4)";
             var selector = ShortcutKeys.Next;
@@ -185,7 +212,9 @@ function aabook() {
     var css = ".page_main{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}";
     css += "#wrap{ background-color: rgb(230, 230, 221) !important; width: 70%;}";
     css += ".chapter_con p{font-family: 微软雅黑, 宋体 !important;  FONT-SIZE: 26px !important; }";
-    css += "#totop, .side_btn{opacity: .1;}";
+    css += ".side_btn{left: 90%;}";
+    css += "#totop, .side_btn{opacity: 0.1; }";
+    css += "#totop:hover, .side_btn:hover{opacity: 1;}";
     css += ".page_main img{ display: none; }";
   
     Mjztool.addStyle(css);
@@ -211,23 +240,47 @@ function sinodan() {
 
 // 笔趣阁
 function biquge() {
-    Mjztool.addStyle(".bottem2 a, .bottem a {  font-size: 28px !important; }");
-    Mjztool.addStyle("#content { font-size: 30px !important;  letter-spacing: 2px !important; line-height: 2em; }");
+    Mjztool.addStyle(".bottem2, .bottem{  margin-top: 40px !important; }");
+    Mjztool.addStyle(".bottem2 a, .bottem a {  font-size: 16px !important; }");
+    // Mjztool.addStyle("#content { font-size: 30px !important;  letter-spacing: 2px !important; line-height: 2em; }");
     Mjztool.addStyle(".reader_mark0, .reader_mark1 {  display: none !important; }");
     Mjztool.addStyle(".box_con, #box_con {  border: initial !important; }");
     Mjztool.addStyle("#book, .listmain {  border: initial !important; }");
     Mjztool.addStyle(".book, .listmain {  border: initial !important; }");
+    Mjztool.addStyle("#tbox { opacity: 0 !important; }");
+    Mjztool.addStyle("#tbox:hover { opacity: 1 !important; }");
 
+    var css1 = "";
+    css1 += "#content a, .content a {  display: none !important;  } ";
+    css1 += "#content, .content { " + Font_Color_Style +  Background_Color_Style +" } ";
+    css1 += "#content p, .content p { " + Font_Color_Style +  Background_Color_Style +" } ";
+    css1 += "html, body { " +  Background_Color_Style +" } ";
 
+   
+    var selector = "#content";
     var text = $("#content").html();
-    var words = {
+    var wordsReplace = {
         "收藏(www.shumil.com)": "",
     };
-    var words2 = ["书趣阁_笔趣阁手机版阅读网址：m.sizhicn.com", "请记住本书首发域名：www.sizhicn.com。", "笔趣阁 www.xbiquge.so，最快更新夺舍之停不下来 ！", "天才一秒记住本站地址：www.xdingdian.com。新顶点小说手机版阅读网址：m.xdingdian.com", "【收集免费好书】关注v", "x【书友大本营】推荐你喜欢的小说", "领现金红包！"];
-    words2.push(window.location.href);
-    text = removeText(text, words2);
-    text = replaceText(text, words);
-    $("#content").html(text);
+    var wordsRemove = ["一秒记住ｍ．biqiudu．com", "书趣阁_笔趣阁手机版阅读网址：m.sizhicn.com", "请记住本书首发域名：www.sizhicn.com。", "笔趣阁 www.xbiquge.so，最快更新夺舍之停不下来 ！", "天才一秒记住本站地址：www.xdingdian.com。新顶点小说手机版阅读网址：m.xdingdian.com", "【收集免费好书】关注v", "x【书友大本营】推荐你喜欢的小说", "领现金红包！"];
+    wordsRemove.push(window.location.href);
+
+
+    if (Mjztool.matchURL("biqiudu.com")) {
+        ShortcutKeys= {Next : "#box_con > div:nth-child(6) > a.next"};
+    }else if(Mjztool.matchURL("mayiwxw.com")){
+        ShortcutKeys= {Next : "div.content_read div.bottem2 > a:nth-child(4)"};
+    }else if(Mjztool.matchURL("sp90.org")){
+        ShortcutKeys= {Next : "#pb_next"};
+        css1 += ".Readpage a {  display: inline !important;  } ";
+        css1 += "#chaptercontent { " + Font_Color_Style +  Background_Color_Style +" } ";
+        selector = "#chaptercontent";
+        wordsRemove.push("请收藏本站：https://www.sp90.org。笔趣阁手机版：https://m.sp90.org");
+    }
+
+
+    Mjztool.addStyle(css1);
+    ContentChnage(selector, wordsRemove, wordsReplace);
 }
 
 
@@ -317,8 +370,9 @@ function ptwxz() {
 function shu69() {
     ShortcutKeys = {Next: "div.page1 > a:nth-child(4)"};
 
-    var css = "#content{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}"
-    //Mjztool.addStyle(css);
+    var css = "#content{ " + Font_Color_Style +"}";
+    css += "body, .mybox {" + Background_Color_Style + "}";
+    Mjztool.addStyle(css);
 
     var words = {
         "露.胸": "露胸", "性.感": "性感", "偷.看": "偷看", "胸.脯": "胸脯","色-鬼": "色鬼", "屁.gu": "屁股",
@@ -551,10 +605,352 @@ function i_gamer() {
     $("#ChSize").html(text);
 }
 
+function uukanshu() {
+    var css1 = ".contentbox p { " + Font_Color_Style + " } ";
+    Mjztool.addStyle(css1);
 
+    var text = $("#ChSize").html();
+    var words = {
+        "收藏()": "",
+    };
+    var words2 = ["＋杂∽志∽虫＋", ];
+    text = removeText(text, words2);
+    text = replaceText(text, words);
+    $("#ChSize").html(text);
+}
+
+// 爱下电子书
+function aixdzs() {
+    var css1 = ".content p { " + Font_Color_Style + " } ";
+    css1 += ".content p {margin-block-start: 0.5em !important; margin-block-end: 0.5em !important;} ";
+
+    css1 += ".b_name, .b_info, .b_intro { font-size: 14px !important;}";
+    css1 += ".link { border: initial !important; background: initial !important; }";
+    css1 += ".link a { font-size: 16px; }";
+    css1 += "#back-to-top { opacity: 0 !important; } #back-to-top:hover { opacity: 1 !important; }";
+
+    Mjztool.addStyle(css1);
+
+    var text = $(".content").html();
+    var words = {
+        "long": "龙",  "chuang": "床", "zui": "嘴", "xiong": "胸", "蓝**法阵": "蓝色魔法阵", "蓝**力": "蓝色魔力",
+    };
+    var words2 = ["言情小说网", "小书亭", "热门推荐：", "番茄免费阅读小说", "新笔趣阁", "笔趣阁"
+                    ,"UU看书欢迎广大书友光临阅读，最新、最快、最火的连载作品尽在UU看书！手机用户请到阅读。"
+                    ,"https://", "天才一秒记住本站地址：。手机版阅读网址：", "，更多好看小说免费阅读。"
+                    ,"书阅屋"
+                ];
+    text = removeText(text, words2);
+    text = replaceText(text, words);
+    $(".content").html(text);
+
+    ShortcutKeys= {Next : "#syno-nsc-ext-gen3 > div:nth-child(3) > a:nth-child(3)"};
+}
+
+// 飞速中文网
+function feiszw() {
+    var css1 = "#nr p { " + Font_Color_Style + " } ";
+    css1 += "body, #nr, #crumb {" + Background_Color_Style + "}";
+    css1 += "body { background: initial; }";
+    css1 += "#nr {width: 80%; margin: auto; }";
+    css1 += "#crumb {position: initial !important;     width: 96% !important;}";
+    css1 += "#nr_body > div:nth-child(4) {display: none;}";
+    Mjztool.addStyle(css1);
+
+    document.body.style = "";
+    document.getElementById("crumb").style = "";
+
+    var text = $("#nr").html();
+    var wordsReplace = {
+        "收藏()": "",
+    };
+    if (document.title.indexOf("漫威DC之混蛋英雄") > -1) {
+        wordsReplace = { "‘": "“", "’": "”"};
+    }
+
+    var wordsRemove = ["内容不全？请换个浏览器试试(推荐使用谷歌浏览器)~"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#nr").html(text);
+
+    ShortcutKeys= {Next : "#nr_botton > div > a:nth-child(4)"};
+}
+
+// 全本同人小说
+function qbtr() {
+    var css1 = ".read_chapterDetail p { " + Font_Color_Style + " } ";
+    css1 += ".read_chapterDetail {width: 80%; margin: auto;}";
+    css1 += "#readContent_set {" + Background_Color_Style + "}";
+    Mjztool.addStyle(css1);
+
+    var text = $(".read_chapterDetail").html();
+    var wordsReplace = {
+        "收藏()": "",
+    };
+    var wordsRemove = [ "╱╲速╲╱文╲"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $(".read_chapterDetail").html(text);
+
+    ShortcutKeys= {Next : "#readContent_set > div.readDetail > div.pageNav > a:nth-child(3)"};
+}
+
+// 翻书阁
+function fansg() {
+    var css1 = "#BookText p { " + Font_Color_Style + " } ";
+    css1 += ".articlebtn a {    color: #ccc !important;}";
+    css1 += ".clg {display: none !important;}";
+    css1 += ".gobacktop {opacity: 0 !important;} .gobacktop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    var text = $("#BookText").html();
+    var wordsReplace = {
+        "收藏()": "",
+    };
+    var wordsRemove = [ "╱╲速╲╱文╲"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#BookText").html(text);
+
+    ShortcutKeys= {Next : "#syno-nsc-ext-gen3 > div.auto.wrapper > div:nth-child(1) > div:nth-child(5) > a:nth-child(4)"};
+}
+
+// 全本小说网
+function xqb5() {
+    var css1 = "#booktxt p { " + Font_Color_Style + " } ";
+    css1 += "html {" + Background_Color_Style + "}";
+    css1 += ".box_con, .bottem1, .bottem2  { border: none !important; background-color: initial !important;}";
+    css1 += "#headset {display: none !important;}";
+    css1 += ".bottem1 a, .bottem2 a {border: none; color: inherit !important;}";
+    css1 += "#syno-nsc-ext-gen3 > article > div:nth-child(6) > a:nth-child(1), #syno-nsc-ext-gen3 > article > div:nth-child(6) > a:nth-child(2), #syno-nsc-ext-gen3 > article > div:nth-child(4) > a {color: darkgray !important; font-size: 10px  !important;}";
+    css1 += ".gotop {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    var text = $("#booktxt").html();
+    var wordsReplace = {
+        "收藏()": "",
+    };
+    var wordsRemove = ["╱╲速╲╱文╲"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#booktxt").html(text);
+
+    ShortcutKeys= {Next : "#next_url"};
+}
+
+
+// sis001
+function sis001() {
+    var css1 = ".t_msgfont, .t_msgfont td { font-size: 24px !important; } ";
+    // css1 += "html {" + Background_Color_Style + "}";
+    // css1 += ".bottem1 a, .bottem2 a {border: none; color: inherit !important;}";
+    // css1 += ".gotop {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    // var text = $("#booktxt").html();
+    // var wordsReplace = {
+    //     "收藏()": "",
+    // };
+    // var wordsRemove = ["╱╲速╲╱文╲"];
+    // text = removeText(text, wordsRemove);
+    // text = replaceText(text, wordsReplace);
+    // $("#booktxt").html(text);
+
+    // ShortcutKeys= {Next : "#next_url"};
+}
+
+// 思路客
+function siluke() {
+    var css1 = "#content, #content p { " + Font_Color_Style + " } ";
+    css1 += "html {" + Background_Color_Style + "}";
+    // css1 += ".box_con, .bottem1, .bottem2  { border: none !important; background-color: initial !important;}";
+    css1 += "#wzsy {display: none !important;}";
+    css1 += "#link > a:nth-child(3) {margin-left: 120px !important; margin-right: 60px !important;}";
+    // css1 += ".bottem1 a, .bottem2 a {border: none; color: inherit !important;}";
+    // css1 += "#syno-nsc-ext-gen3 > article > div:nth-child(6) > a:nth-child(1), #syno-nsc-ext-gen3 > article > div:nth-child(6) > a:nth-child(2), #syno-nsc-ext-gen3 > article > div:nth-child(4) > a {color: darkgray !important; font-size: 10px  !important;}";
+    // css1 += ".gotop {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL("/quanben/")) {
+        $('#content .grid a').attr('target', '_blank');
+        Mjztool.addStyle("#content .grid a {font-size: 14px !important;}");
+        Mjztool.addStyle("table.grid td {padding: 4px !important;}");
+    }
+
+    var text = $("#content").html();
+    var wordsReplace = {
+        "siluke.com": "",
+    };
+    var wordsRemove = ["siluke.com"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#content").html(text);
+
+    if (Mjztool.matchURL("shuquzw.com")) {
+        ShortcutKeys= {Next : "#link > a:nth-child(4)"};
+    }else{
+        ShortcutKeys= {Next : "#link > a:nth-child(3)"};
+    }
+    
+}
+
+// 顶点小说网
+function ddxs() {
+    var css1 = "#contents p { " + Font_Color_Style + " } ";
+    // css1 += "html {" + Background_Color_Style + "}";
+    css1 += ".bdsub  { border: none !important; background-color: initial !important;}";
+    css1 += "#contents p a {display: none !important;}";
+    css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    css1 += "#content dd {width: 260px !important;} .bdsub dl dd a  { font-size: 14px !important;}";
+
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL("html") == false) {
+        open_in_new_tab(".bdsub dl dd a");
+    }
+
+    var text = $("#contents").html();
+    var wordsReplace = {
+        "点击下载本站APP,海量小说，免费畅读！": "",
+    };
+    var wordsRemove = ["点击下载本站APP,海量小说，免费畅读！"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#contents").html(text);
+
+    ShortcutKeys= {Next : "#footlink > a:nth-child(3)"};
+}
+
+function dwxdwx() {
+    var css1 = "#content, #content p { " + Font_Color_Style + "  padding: 10px 0;} ";
+    css1 += "html, body  {" + Background_Color_Style + "}";
+    css1 += ".box_con {border: none; color: inherit !important;}";
+    css1 += "#content p a {display: none !important;}";
+    css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    css1 += "#content_read div.bottem2 > a:nth-child(3) { font-size: 18px !important;   margin: 0 330px !important;}";
+
+    Mjztool.addStyle(css1);
+
+    var text = $("#content").html();
+    var wordsReplace = {
+        "点击下载本站APP,海量小说，免费畅读！": "",
+    };
+    var wordsRemove = ["点击下载本站APP,海量小说，免费畅读！"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#content").html(text);
+
+    ShortcutKeys= {Next : "#content_read div.bottem2 > a:nth-child(3)"};
+}
+
+
+ // 品书小说网
+function vodtw() {
+    var css1 = "#content, #content p { " + Font_Color_Style + " } ";
+    css1 += "#content  {text-indent: 0em !important; padding-top: 32px !important;}";
+    css1 += "html, body  {" + Background_Color_Style + "}";
+    css1 += "#book {border: none; color: inherit !important;}";
+    css1 += "#content p a {display: none !important;}";
+    // css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    css1 += ".page_chapter li {background: inherit !important;} .page_chapter li a{color: initial !important;}";
+    css1 += ".page_chapter li {background: inherit !important;} .page_chapter li a{color: initial !important;}";
+
+    Mjztool.addStyle(css1);
+
+    var text = $("#content").html();
+    var wordsReplace = {
+        "    ": " 　　",
+    };
+    var wordsRemove = ["点击下载本站APP,海量小说，免费畅读！"];
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $("#content").html(text);
+
+    ShortcutKeys= {Next : "#book > div.content > div.page_chapter > ul > li:nth-child(3) > a"};
+}
+
+    // 丫丫电子书
+function shuyyw() {
+    var css1 = "#content, #content p { " + Font_Color_Style + " } ";
+    css1 += "#content  {text-indent: 0em !important; padding-top: 32px !important;}";
+    // css1 += "html, body  {" + Background_Color_Style + "}";
+    // css1 += "#book {border: none; color: inherit !important;}";
+    // css1 += "#content p a {display: none !important;}";
+    // css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    // css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    var wordsReplace = {
+        "    ": " 　　",
+    };
+    var wordsRemove = ["点击下载本站APP,海量小说，免费畅读！"];
+    ContentChnage("#content", wordsRemove, wordsReplace);
+
+    ShortcutKeys= {Next : "#content > div.readbutton > div.readdown > a"};
+}
+
+
+ // 思兔阅读
+function sto520() {
+    var css1 = ".readcotent, .readcotent p { " + Font_Color_Style + " } ";
+    // css1 += "#readcotent  {text-indent: 0em !important; padding-top: 32px !important;}";
+    css1 += "html, body, .book {" + Background_Color_Style + "}";
+    // css1 += "#book {border: none; color: inherit !important;}";
+    css1 += ".readcotent a {display: none !important;}";
+    // css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    // css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    css1 += ".container, .footer p, .container01 {width: 68% !important;}";
+    Mjztool.addStyle(css1);
+
+    var wordsReplace = {
+        // "    ": " 　　",
+    };
+    var wordsRemove = ["思兔阅读", "思兔閱讀", "520官網", "520官网", "ＳＴＯ５２０．ＣＯＭ", "思兔sto520.com", "�"];
+
+    ContentChnage(".readcotent", wordsRemove, wordsReplace);
+
+    ShortcutKeys= {Next : "#linkNext"};
+}
+
+
+function NeatReader() {
+    var css1 = ".Body, .Body p { " + Font_Color_Style + " } ";
+    // css1 += "#readcotent  {text-indent: 0em !important; padding-top: 32px !important;}";
+    css1 += "html, body, .view-content {" + Background_Color_Style + "}";
+    // css1 += "#book {border: none; color: inherit !important;}";
+    // css1 += ".hot a{color: rgb(102, 102, 102) !important; font-size: 10px  !important;}";
+    // css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    var wordsReplace = {
+        "    ": " 　　",
+    };
+    var wordsRemove = ["思兔阅读", ];
+
+    ContentChnage(".Body", wordsRemove, wordsReplace);
+
+    ShortcutKeys= {Next : "#next-btn"};
+}
 
 
 /*****************************************************************************************/
+
+
+function ContentChnage(selector, wordsRemove, wordsReplace) {
+    var text = $(selector).html();
+    text = removeText(text, wordsRemove);
+    text = replaceText(text, wordsReplace);
+    $(selector).html(text);
+}
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
 
 function replaceNodeText(content, words){
     for (var i = 0; i < content.childNodes.length; i++) {

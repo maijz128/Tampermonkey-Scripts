@@ -40,6 +40,8 @@ function ViewVideo() {
 
     var css = "";
     css += ".mgp_progress{opacity: 0.4;}";
+    css += ".mgp_fullscreen .mgp_controlBar {opacity: 0.2;}";
+    css += ".mgp_fullscreen .mgp_controlBar:hover {opacity: 1.0;}";
     addStyle(css);
 
     function removeRightAD() {

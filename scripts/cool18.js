@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      0.2.0
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.cool18.com/*
@@ -18,6 +18,8 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAIAAAB+eU8wAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAAJESURBVEhL7ZexSgNBEIbzNla+hY8g+AA2tlZ2WllZCtZinc4iViLaiJBGQQQtRLQQ1MIiFkLOb+9f5y43e2dyMdpkGI7Z2dn/n52ZjdjJGmU4HEarUX4M62RbCzPXOU0L/T+aXxGHORXN6ePF4uFy7/4krk0c5lQ03dve0tEqTDevd9ElcZhj0Ty8P5Hy7uUB6UfXt2yc70ADX1xLRjF5vGmal8Fb//mKw9v9vZXjdYBMFWAimpa3IX1VwxSy/esufgWYTEWDgGgcEERvLhSQiw4+P7ChISH5C3GYTb2Bae1sU0zlrlBPPBBgc0toVFiapwCPWUsDFsdImS8Q5aLhFLcqJiWAJU0Nhx1m0whw2DokAyx2KZqcplbDKA4zTUNLUUEwbHwpmnJnFw82t5SnZW9UKAxQ6I34cAoUA49y17UIJgkuhEEGYcthJmiUuGhQzusSotHs0iT86nxFw1mHmaCp4ErplpY2eyjlIn3iaSQBcHO/MJMOs5amkilAZVbIgFPpEAjijEkcZi2N5lgaEsw7bwSwBrh8WORHMeT0mAkajbL1HBWNliSBUi7ysHE3VaTHTNCQIBUrPw6NrGgAKm8p0ho2wfNUHbiNNUklUu7sohhAW29Eo2cQxGEmaOgniECUp0CUKBwEYLCbQxY/CmzJ4zETNIh1hTS5inClCpBdaU8xbKOYtX/WVLEiuyzjd1O4WtocQkOF+aJko12PmabxQqaAGhB5cFFS0RKZ8N3MQuc0LfQPaWpkzP/TylJ7JMu+AMWUf3c+C6RtAAAAAElFTkSuQmCC
 // ==/UserScript==
 
+var Font_Color_Style = "color: #3C3C3C !important; font-size: 28px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
+var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 (function () {
     setTimeout(function(){
@@ -27,12 +29,16 @@
 
 function main() {
     var style = "";
-    style += "line-height: 36px !important; font-size: 24px !important;";
-    style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
+    // style += "line-height: 36px !important; font-size: 24px !important;";
+    // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
+    style += Font_Color_Style;
 
-    // addStyle("pre{ line-height: 28px !important; font-size: 20px !important; }");
-    // $("pre").css("line-height", "28px !important;");
-    // $("pre").css("font-size", "20px !important;");
+    addStyle(".img_ad_list{ display: none !important; }");
+
+    var bbs4IndexCss = "#d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
+    bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
+    bbs4IndexCss += "#d_list_page {font-size: 14px;}";
+    addStyle(bbs4IndexCss);
 
     $("pre").attr("style", "max-width: 900px;" + style);
     $("pre span").attr("style", style);
@@ -40,6 +46,11 @@ function main() {
     $("pre b").attr("style", style);
     $("pre font").attr("style", style);
 
+    if (Mjztool.matchURL("act=threadview")) {
+        $("body").attr("style", Background_Color_Style);
+        $("tbody").attr("style", Background_Color_Style);
+        $("tbody tr").attr("style", Background_Color_Style);   
+    }
 
     $(".show_content pre font").each(function(){
         var f = $(this);
@@ -114,12 +125,33 @@ function main() {
         });
     };
 
+    var btn4 = document.createElement("button");
+    btn4.textContent = "添加空行";
+    btn4.onclick = function ()
+    {
 
+        $("tbody p").text(function(i,origText){
+            var text = origText;
+            text = text.replace(/\r\n/g,"<br>");
+            text = text.replace(/\n/g,"<br>");
+            text = text.replace(/<br>/g,"<br><br>");
+            return text;
+        });
+
+        $("tbody pre").html(function(i,origText){
+            var text = origText;
+            text = text.replace(/\r\n/g,"<br>");  
+            text = text.replace(/\n/g,"<br>");  
+            text = text.replace(/<br>/g,"<br><br>");
+            return text;
+        });
+    };
 
     var td = document.createElement("td");
     td.appendChild(btn);
     td.appendChild(btn2);
     td.appendChild(btn3);
+    td.appendChild(btn4);
 
     $(".show_content table tbody tr").append(td);
 }

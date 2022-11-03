@@ -27,6 +27,14 @@
 function main() {
     // 隐藏频道水印
     addStyle(".iv-branding{display: none;}");
+
+    // 全屏时隐藏UI
+    var css = "";
+    css += ".ytp-gradient-top, .ytp-gradient-bottom {opacity: 0;}";
+    css += ".ytp-fullscreen .ytp-chrome-top {opacity: 0;}";
+    css += ".ytp-fullscreen .ytp-chrome-bottom {opacity: 0;}";
+    css += ".ytp-fullscreen .ytp-chrome-bottom:Hover {opacity: 1;}";
+    addStyle(css);
 }
 
 // Youtube 新标签页打开

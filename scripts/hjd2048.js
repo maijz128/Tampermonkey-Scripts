@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - 2048核基地
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://*/2048/thread.php*
+// @match        *://*/2048/state/p/*.html
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -18,6 +18,8 @@
 // @grant        window.focus
 // ==/UserScript==
 
+var Everything = "http://127.0.0.1:8022/";
+var Everything_Query = "?search=%search%&json=1&count=10&path_column=1&size_column=1&date_modified_column=1&date_created_column=1&attributes_column=1&sort=name&ascending=1";
 
 (function () {
     setTimeout(function(){
@@ -26,7 +28,116 @@
 })();
 
 function main() {
+    addStyle(".tac{  height: 0.1px !important; visibility: hidden !important;}");
+    addStyle(".found_local {color: green;}");
 
+    if (matchURL("/2048/thread.php")) {     // post list
+        CheckNovelsFoundLocal();
+    }
+    if (matchURL("/2048/state/p/")) {       // post
+        CheckNovelFoundLocal();
+    }
+}
+
+function CheckNovelsFoundLocal(){
+    jQuery("#ajaxtable .tal a.subject").each(function(){
+        var aElem = jQuery(this);
+        var thisElem = aElem;
+        var title = aElem.text();
+        var name = FindNovelName(title);
+        var searchText = name;
+        // console.log('a :>> ', aElem);
+        EverythingGetJSON2(searchText, thisElem, function(elem, json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    console.log("has " + searchText);
+                    elem.addClass("found_local");
+                    // elem.css("border-bottom", "4px solid #FF761C");
+                }
+            }
+        });
+    });
+}
+
+
+function CheckNovelFoundLocal() {
+    var title = document.title;
+    var name = FindNovelName(title);
+    console.log('name :>> ', name);
+
+    var thisElem = jQuery(".t .tal");
+    var searchText = name;
+    EverythingGetJSON2(searchText, thisElem, function(elem, json){
+        if (json) {
+            if (json["totalResults"] > 0) {
+                console.log("has " + searchText);
+                elem.addClass("found_local");
+                // elem.css("border-bottom", "4px solid #FF761C");
+            }
+        }
+    });
+}
+
+function FindNovelName(str){
+    var name = str;
+    var arr = null;
+    if (str.indexOf("》") > 0) {
+        arr = str.match(/《(.*)》/i);
+        if(arr != null){
+            return arr[1];
+        }
+    }
+    else if (str.indexOf("】") > 0) {
+        arr = str.match(/【(.*)】/i);
+        if(arr != null){
+            return arr[1];
+        }
+    }
+    return name;
+}
+
+
+
+
+function EverythingGetJSON(searchText, callback){
+    var url = EverythingHttpRequest(searchText);
+
+    GM_xmlhttpRequest({
+        url: url,
+        method :"GET",
+        responseType: "json",
+        onload:function(xhr){
+            // console.log(xhr.responseText);
+            if(callback) { callback(xhr.response);}
+        }
+    });
+}
+
+function EverythingGetJSON2(searchText, thisElem, callback){
+    var url = EverythingHttpRequest(searchText);
+
+    GM_xmlhttpRequest({
+        url: url,
+        method :"GET",
+        responseType: "json",
+        onload:function(xhr){
+            // console.log(xhr.responseText);
+            if(callback) { callback(thisElem, xhr.response);}
+        }
+    });
+}
+
+function EverythingHttpRequest(searchText){
+    var req = Everything + Everything_Query;
+    searchText = searchText.replace(" ", "+");
+    req = req.replace("%search%", searchText);
+    console.log("EverythingHttpRequest: " + req);
+    return req;
+}
+function EverythingHttpWeb(searchText){
+    var req = EverythingHttpRequest(searchText);
+    req = req.replace("json=1", "json=0");
+    return req;
 }
 
 

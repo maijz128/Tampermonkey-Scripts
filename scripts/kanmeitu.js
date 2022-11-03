@@ -1,5 +1,5 @@
     // ==UserScript==
-    // @name         MaiJZ - 看图妹
+    // @name         MaiJZ - 看妹图
     // @namespace    https://github.com/maijz128
     // @version      0.1.0
     // @description  描述
@@ -27,12 +27,21 @@
     function main() {
         // $(".th_header").removeClass("th_fixed");
         addStyle(".th_fixed {position: initial !important;}");
+        addStyle(".sou-con-list ul li a:visited {color: currentColor !important;}");
 
         $("iframe").remove();
+
+        open_in_new_tab(".sou-con-list li a");
     }
 
 
     /*******************************************************************************/
+
+    function open_in_new_tab(selector){
+        // $('a').attr('target', '_blank');
+        $(selector).attr('target', '_blank');
+    }
+    
 
     function addStyle(styleContent) {
         var elStyle = document.createElement("style");

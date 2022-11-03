@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - alicdn_image
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://*.alicdn.com/*
 //// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
@@ -26,17 +26,18 @@
 })();
 
 function main() {
-
+    if (matchURL("_640x640.jpg")) {
+        var url = window.location.href;
+        window.location.href = url.replace("_640x640.jpg", "");
+    }
+    if (matchURL("_640x640.png")) {
+        var url = window.location.href;
+        window.location.href = url.replace("_640x640.png", "");
+    }
 }
 
 
 /*******************************************************************************/
-
-function open_in_new_tab(selector){
-    // $('a').attr('target', '_blank');
-    $(selector).attr('target', '_blank');
-}
-
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");

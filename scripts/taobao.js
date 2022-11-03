@@ -208,7 +208,11 @@ function EnterToInput() {
 
 // 收藏标签分类
 function Mercury_Album_Box(){
-    var style = '.mercuryalbum-container{height: 240px !important;} #popupPanel, #popupPanel iframe { height: 380px !important; }'; 
+    var style = ''; 
+    style += ".mercuryalbum-container{height: 360px !important;} ";
+    style += "#popupPanel, #popupPanel iframe { height: 500px !important; }";
+    style += ".favorate-overlay, .favorate-overlay iframe { height: 500px !important;}";
+    style += "";
     addStyle(style);
 }
 

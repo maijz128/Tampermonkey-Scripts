@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - Rule34
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://rule34.paheal.net/*
+// @match        *://rule34.xxx/*
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -26,7 +26,40 @@
 })();
 
 function main() {
+    if (Mjztool.matchURL("/index.php?page=post&s=view")) {
+        PostView();
+    }
+}
 
+function PostView(){
+    var selector = "#post-view > div.sidebar > div.link-list";
+    jQuery(".tag-search").prepend(jQuery(selector).first());
+}
+
+
+
+function DownloadAll() {
+    for (var x=0; x<60; x++){
+        var src=document.getElementsByClassName("thumb")[x];
+        var thumblink=src.getElementsByTagName("img")[0].getAttribute("src");
+        
+        
+        var dirNum = thumblink.substring(33).substring(0,thumblink.substring(33).indexOf("/"));
+        var img = thumblink.substring(((thumblink.lastIndexOf("thumbnail_"))+10));
+        
+        var dlink = "http://img.rule34.xxx//images/" + dirNum + "/" + img;
+    
+        if (dlink.indexOf("jpg") > -1) 
+        {
+            dlink = "http://img.rule34.xxx//images/" + dirNum + "/" + thumblink.substring(((thumblink.lastIndexOf("thumbnail_"))+10),thumblink.lastIndexOf(".")) + ".jpeg";
+    
+        }
+        
+        var a = document.createElement('a');
+        a.innerHTML = dlink;
+        a.href = dlink;
+        document.body.appendChild(a);
+    }
 }
 
 

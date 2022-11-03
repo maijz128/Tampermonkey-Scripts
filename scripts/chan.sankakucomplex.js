@@ -20,21 +20,70 @@
 (function () {
     setTimeout(function () {
         main();
-    }, 1000);
+    }, 100);
 })();
 
 function main() {
     Mjztool.addStyle(".thumb a[href=\"https://get.sankaku.plus/\"] {visibility: hidden; height: 0};");
+    Mjztool.addStyle(".sound-icon, .video-icon {width: 16px; height: 16px};");
+    Mjztool.addStyle("#news-ticker {display: none;}");
+    Mjztool.addStyle("div.content { padding-left: 250px; }");
+    Mjztool.addStyle("div.has-mail { padding: 6px; margin: 6px; }");
+    Mjztool.addStyle("#subnavbar { height: 2em !important;}");
+    // Mjztool.addStyle(".content .thumb { width: 216px; height: 120px; }");
+    // Mjztool.addStyle(".content .thumb img.preview { width: 180px; height: 100px; }");
+    // Mjztool.addStyle(".content .popular-preview-post { width: 204px; height: 150px; }");
+    
 
     if (Mjztool.matchURL("/post/")) {
-        PostVideo();
 
-        jQuery("#search-form").after($("#stats"));
+        // 改用插件实现
+        funcVideo();
+        
+        setTimeout(function () {
+            PostVideo();
+
+            jQuery("#search-form").after($("#stats"));
+        }, 1000);
+        
     }
-    content();
-    content_bind();
 
-    open_in_new_tab();
+    setTimeout(function () {
+        content();
+        content_bind();
+
+        open_in_new_tab();
+    }, 1000);
+    
+}
+
+function funcVideo() {
+    if (Mjztool.matchURL("/post/")) {
+        // $("Video").removeAttr("autoplay");
+        // $("Video").attr("preload", "none");
+
+		var video = document.getElementById("image"); 
+
+        if (video.nodeName.toLowerCase() != "video") {
+            return false;
+        }
+
+        var src = video.getAttribute("src");
+        video.removeAttribute("src");
+
+        /*  none: 表示不应该预加载视频。
+            metadata: 表示仅预先获取视频的元数据（例如长度）。
+            auto: 表示可以下载整个视频文件，计时用户不希望使用它。
+        */
+        video.setAttribute("preload", "metadata");
+
+        video.removeAttribute("autoplay");
+
+        var source = document.createElement("source");
+        source.setAttribute("src", src);
+        source.setAttribute("type", "video/mp4");
+        video.appendChild(source);
+	}
 }
 
 function open_in_new_tab(){
@@ -46,36 +95,58 @@ function open_in_new_tab(){
 function imgPreview(img){
     var title = img.attr("title");
     if (title) {
-        if (title.indexOf("mp4") > -1) {
-            img.css("border-top", "4px solid green");
-        }else if (title.indexOf("webm") > -1) {
-            img.css("border-top", "4px solid yellow");
+        var strHas = function(str, target){
+            return str.indexOf(target) > -1;
+        };
+
+        if (strHas(title, "mp4")) {
+            // img.css("border-top", "4px solid green");
+            img.addClass("video_mp4");
+        }else if (strHas(title, "webm")) {
+            img.addClass("video_webm");
         }
-        if (title.indexOf("3840x2160") > -1) {
-            img.css("border-left", "3px solid firebrick");
-        }else if (title.indexOf("2560x1440") > -1) {
-            img.css("border-left", "3px solid turquoise");
-        }else if (title.indexOf("1920x1080") > -1) {
-            img.css("border-left", "3px solid hotpink");
+        if (strHas(title, "3840") || strHas(title, "2160") ) {
+            img.addClass("video_4k");
+        }else if (strHas(title, "2560") || strHas(title, "1440")) {
+            img.addClass("video_2k");
+        }else if (strHas(title, "1920") || strHas(title, "1080")) {
+            img.addClass("video_1080p");
         }
 
     }
 }
 
 function content() {
+    var style = "";
+    style += ".video_mp4  {border-top: 4px solid green !important;}";
+    style += ".video_webm  {border-top: 4px solid yellow !important;}";
+    style += ".video_4k { border-left: 3px solid firebrick !important;}";
+    style += ".video_2k  { border-left: 3px solid turquoise !important;}";
+    style += ".video_1080p  {border-left: 3px solid hotpink !important;}";
+    style += "";
+    Mjztool.addStyle(style);
+
+    
+    content_check();
+}
+
+function content_check(){
     jQuery("img").each(function () {
         imgPreview(jQuery(this));
     });
-    jQuery("img").hover(function () {
-        imgPreview(jQuery(this));
-    });
-
+    if (Mjztool.matchURL("/post/show/") == false) {
+        jQuery("img").hover(function () {
+            imgPreview(jQuery(this));
+        });
+    }
+    
 }
 
 function content_bind() {
+    // DOMNodeInserted
     $("#content").bind('DOMNodeInserted', function (e) {
         setTimeout(function () {
-            content();
+            content_check();
         }, 200);
     });
 }
@@ -98,7 +169,13 @@ function PostVideo(){
     jQuery("#post-content").prepend(btn);
 
 
+    btnDownload();
+
     
+   
+}
+
+function btnDownload() {
     var btnDownload = document.createElement("button");
     btnDownload.textContent = "下载源图";
     btnDownload.addEventListener("click", function () {

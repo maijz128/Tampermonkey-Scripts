@@ -1,39 +1,53 @@
 // ==UserScript==
-// @name         BT之家小助手
+// @name         MJZ-BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      0.4.4
+// @version      0.5
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
-// @match        *://*.btbtt.co/*.htm
-// @match        *://*.btbtt.me/*.htm
-// @match        *://*.btbtt.net/*.htm
-// @match        *://*.btbtt.pw/*.htm
-// @match        *://*.btbtt.la/*.htm
-// @match        *://*.btbtt.org/*.htm
+// @match        *://*.btbtt.co/*
+// @match        *://*.btbtt.me/*
+// @match        *://*.btbtt.net/*
+// @match        *://*.btbtt.pw/*
+// @match        *://*.btbtt.la/*
+// @match        *://*.btbtt.org/*
+// @match        *://*.btbtt15.com/*
+// @match        *://*.btbtt11.com/*
+// @match        *://*.btbtt12.com/*
+// @match        *://*.btbtt13.com/*
 // @require      https://greasyfork.org/scripts/39499-go-to-top/code/Go%20to%20Top.js
 // @grant        none
 // ==/UserScript==
 
 const strContainerID = "btbtt-helper";
+var css = "";
+
 
 (function () {
     'use strict';
 
     // BT下载页面
-    if (matchURL("attach-dialog")) {
+    if (matchURL("/attach-dialog")) {
         autoClickDownload();
     }
     // 帖子页面
-    else if (matchURL("thread-index-fid")) {
-
+    else if (matchURL("/thread-index-fid")) {
         ThreadPage();
-
     }
     // 帖子浏览页面
-    else if (matchURL("forum-index-fid")) {
+    else if (matchURL("/forum-index-fid")) {
         ToggleTopThread();
     }
+    // 搜索页面
+    else if (matchURL("/search-index-keyword")) {
+        css += "width: 1024px !important;";
+    }
 
+    HighlightUserName();
+
+    css += "#threadtype a {font-family: 微软雅黑; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57;}";
+    css += "#wrapper2 > div.width.border{display: none !important;}";
+
+    addStyle(css);
 })();
 
 
@@ -232,6 +246,17 @@ function ToggleTopThread() {
 
         $("#cb-HideTopThread").attr("checked", true);
     }
+}
+
+function HighlightUserName(){
+    var SuperModerators = ["david19710102", "Eddie wang"];
+    $("td.username a").each(function(){
+        var name = $(this).text();
+        if (SuperModerators.includes(name)) {
+            $(this).parent().removeClass("grey");
+            $(this).parent().addClass("purple");
+        }
+    });
 }
 
 

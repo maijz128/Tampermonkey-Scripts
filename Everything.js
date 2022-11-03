@@ -12,6 +12,7 @@
 // @match        *://bangumi.tv/anime/browser/*
 // @match        *://illusioncards.booru.org/*
 // @match        *://chan.sankakucomplex.com/*
+// @match        *://rule34.xxx/*
 // @match        *://render-state.to/*
 // @match        *://jable.tv/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
@@ -45,6 +46,7 @@ function main() {
     if (matchURL("bangumi.tv/anime/browser")) { bangumi_anime_browser(); }
     if (matchURL("illusioncards.booru.org")) { illusioncards_booru_org(); }
     if (matchURL("chan.sankakucomplex.com")) { sankakucomplex(); }
+    if (matchURL("rule34.xxx")) { rule34_xxx(); }
     if (matchURL("render-state.to")) { render_state(); }
     if (matchURL("jable.tv")) { jable_tv(); }
 }
@@ -83,6 +85,20 @@ function EverythingGetJSON(searchText, callback){
         onload:function(xhr){
             // console.log(xhr.responseText);
             if(callback) { callback(xhr.response);}
+        }
+    });
+}
+
+function EverythingGetJSON2(searchText, thisElem, callback){
+    var url = EverythingHttpRequest(searchText);
+
+    GM_xmlhttpRequest({
+        url: url,
+        method :"GET",
+        responseType: "json",
+        onload:function(xhr){
+            // console.log(xhr.responseText);
+            if(callback) { callback(thisElem, xhr.response);}
         }
     });
 }
@@ -184,33 +200,115 @@ function illusioncards_booru_org(){
 
 function sankakucomplex(){
     Mjztool.addStyle(".thumb_img_local { border-bottom: 4px solid #FF761C !important; }");
-
-    var func = function(thisElem){
-        var searchText = thisElem.attr("src") || thisElem.attr("href");
-        var ss = searchText.split("/");
-        searchText = ss[ss.length - 1];
-        searchText = searchText.split(".")[0];
-        console.log(searchText);
-
-        EverythingGetJSON(searchText, function(json){
-            if (json) {
-                if (json["totalResults"] > 0) {
-                    thisElem.addClass("thumb_img_local");
-                }
-            }
-        });
-    };
-
-    jQuery(".thumb img").each(function(){
-        var thisElem = jQuery(this);
-        func(thisElem);
+    setTimeout(() => {
+        sankakucomplex_check();
+    }, 1000);
+    // sankakucomplex_check();
+    sankakucomplex_bind();
+}
+function sankakucomplex_bind() {
+    // DOMNodeInserted
+    $("#content").bind('DOMNodeInserted', function (e) {
+        setTimeout(function () {
+            sankakucomplex_check();
+        }, 200);
     });
 
-    var highres = jQuery("#highres");
-    if (highres) {
-        func(highres);
-    }
+    jQuery(".thumb img").hover(function(){
+        var img = jQuery(this);
+        sankakucomplex_func(img);
+    });
 }
+function sankakucomplex_check(){
+
+    jQuery(".thumb img").each(function(){
+        var img = jQuery(this);
+        sankakucomplex_func(img);
+    });
+
+    if (matchURL("/post/show/")) {
+        var highres = jQuery("#highres");
+        if (highres) {
+            sankakucomplex_func(highres);
+        }
+    }
+    
+}
+
+function sankakucomplex_func(thisElem){
+    var searchText = thisElem.attr("src") || thisElem.attr("href");
+    var ss = searchText.split("/");
+    searchText = ss[ss.length - 1];
+    searchText = searchText.split(".")[0];
+    console.log(searchText);
+
+    EverythingGetJSON2(searchText, thisElem, function(elem, json){
+        if (json) {
+            if (json["totalResults"] > 0) {
+                console.log("has " + searchText);
+                // console.log(elem)
+                elem.addClass("thumb_img_local");
+                // elem.css("border-bottom", "4px solid #FF761C");
+            }
+        }
+    });
+}
+
+
+function rule34_xxx(){
+    Mjztool.addStyle(".thumb_img_local { border-bottom: 4px solid #FF761C !important; }");
+    setTimeout(() => {
+        rule34_xxx_check();
+    }, 1000);
+    rule34_xxx_bind();
+}
+function rule34_xxx_bind() {
+    // DOMNodeInserted
+    $("#content").bind('DOMNodeInserted', function (e) {
+        setTimeout(function () {
+            rule34_xxx_check();
+        }, 200);
+    });
+
+    jQuery(".thumb img").hover(function(){
+        var img = jQuery(this);
+        rule34_xxx_func(img);
+    });
+}
+function rule34_xxx_check(){
+    jQuery(".thumb img").each(function(){
+        var img = jQuery(this);
+        rule34_xxx_func(img);
+    });
+
+    if (matchURL("page=post&s=view")) {
+        var image = jQuery("#image");
+        if (image) {
+            rule34_xxx_func(image);
+        }
+    }
+    
+}
+function rule34_xxx_func(thisElem){
+    var searchText = thisElem.attr("src") || thisElem.attr("href");
+    var ss = searchText.split("/");
+    searchText = ss[ss.length - 1];
+    searchText = searchText.split(".")[0];
+    searchText = searchText.replace("thumbnail_", "");
+    searchText = searchText.replace("sample_", "");
+    console.log(searchText);
+
+    EverythingGetJSON2(searchText, thisElem, function(elem, json){
+        if (json) {
+            if (json["totalResults"] > 0) {
+                console.log("has " + searchText);
+                // console.log(elem)
+                elem.addClass("thumb_img_local");
+            }
+        }
+    });
+}
+
 
 function render_state(){
     Mjztool.addStyle(".front-view-title-a { color: green !important; }");
