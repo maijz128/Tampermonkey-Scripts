@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name         sukebei.nyaa.si
+// @name         MJZ - Torrents
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      0.2.0
 // @description  描述
 // @author       MaiJZ
 // @match        *://sukebei.nyaa.si/*
+// @match        *://*.btdig.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
@@ -15,6 +16,8 @@
 // @grant        window.focus
 // ==/UserScript==
 
+const iTorrents_Favicon = 'https://itorrents.org/favicon.ico';
+
 
 (function () {
     setTimeout(function(){
@@ -23,11 +26,65 @@
 })();
 
 function main() {
-    if(Mjztool.matchURL("/view/"))
+    if(Mjztool.matchURL("sukebei.nyaa.si"))
     {
-        gotoStoreTorrents();
+        iTorrents_Nyaa();
+    }
+    if(Mjztool.matchURL("btdig.com"))
+    {
+        iTorrents_BTDig();
     }
 }
+
+function iTorrents_Nyaa(){
+    if(Mjztool.matchURL("/view/"))
+    {
+        var panel_footer = $('.panel-footer:first');
+        if(panel_footer){
+            var favicon = iTorrents_Favicon;
+            var hash = $('kbd:first').text();
+            var href = 'https://itorrents.org/torrent/' + hash + '.torrent';
+            var elA = `<a href="${href}" target="_blank" class="card-footer-item">
+                <img src="${favicon}" width="14px" height="14px"> iTorrents </a>`;
+            panel_footer.append(elA);
+        }
+    }
+}
+
+function iTorrents_BTDig(){
+    var favicon = iTorrents_Favicon;
+    if(Mjztool.matchURL("/search?"))
+    {
+        $(".one_result .torrent_magnet a").each(function(){
+            var magnet = $(this).attr("href");
+            var hash = magnet.replace("magnet:?xt=urn:btih:", "");
+            hash = hash.split("&")[0];
+            var href = 'https://itorrents.org/torrent/' + hash + '.torrent';
+
+            var elA = `<a href="${href}" target="_blank" class="card-footer-item">
+            <img src="${favicon}" width="14px" height="14px"> iTorrents </a>`;
+
+            $(this).parent().parent().parent().parent().append(elA);
+        });
+        return;
+    }
+
+    var magnet_a = $(".fa-magnet a");
+    if(magnet_a)
+    {
+        var magnet = magnet_a.attr("href");
+        var hash = magnet.replace("magnet:?xt=urn:btih:", "");
+        hash = hash.split("&")[0];
+        var href = 'https://itorrents.org/torrent/' + hash + '.torrent';
+
+        var elA = `<a href="${href}" target="_blank" class="card-footer-item">
+        <img src="${favicon}" width="14px" height="14px"> iTorrents </a>`;
+
+        magnet_a.parent().parent().append(elA);
+    }
+}
+
+
 
 function gotoStoreTorrents(){
     
@@ -41,6 +98,7 @@ function gotoStoreTorrents(){
         panel_footer.append(elA);
     }
 }
+
 
 
 

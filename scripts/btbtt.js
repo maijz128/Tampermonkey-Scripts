@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      0.5
+// @version      0.6
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
 // @match        *://*.btbtt.co/*
@@ -191,7 +191,41 @@ function ThreadPage() {
         });
     }
 
+    
+
+    $(".post .attachlist").each(function(){
+        // var btnDownloadAllBT = '<a href="#" onclick="downloadAllBT(this)">下载所有BT</a>';
+        var btnDownloadAllBT = document.createElement("button");
+        btnDownloadAllBT.textContent = "下载所有BT";
+        btnDownloadAllBT.onclick = function(){
+            // console.log(this);
+            downloadAllBT(this);
+        };
+        
+        $(this).append(btnDownloadAllBT);
+    });
+
+    
+
 }
+var downloadAllBT = function(e){
+    var attachlist = $(e).parent();
+    var alist = attachlist.find("a");
+    alist.each(function(){
+        var epHref = $(this).attr("href");
+        var epName = $(this).text();
+        console.log(epName);
+        console.log(epHref);
+        // $(this).click();
+        // var url = window.location.host + "/" + epHref;
+        var url =  epHref;
+        setTimeout(function () {
+            window.open(url);
+        }, 500);
+    });
+};
+window.downloadAllBT= downloadAllBT;
+document.downloadAllBT = downloadAllBT;
 
 
 
