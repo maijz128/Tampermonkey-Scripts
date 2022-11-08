@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      0.6
+// @version      0.7
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
 // @match        *://*.btbtt.co/*
@@ -76,8 +76,10 @@ function autoClickDownload() {
 function ThreadPage() {
     addContainer();
     hideIntroduction();
-    scrollToBT();
     replaceLink();
+    Post_DownloadAllBT();
+    Post_FixInvalidImage();
+    scrollToBT();
 
     // 添加容器
     function addContainer() {
@@ -191,8 +193,9 @@ function ThreadPage() {
         });
     }
 
-    
+}
 
+function Post_DownloadAllBT(){
     $(".post .attachlist").each(function(){
         // var btnDownloadAllBT = '<a href="#" onclick="downloadAllBT(this)">下载所有BT</a>';
         var btnDownloadAllBT = document.createElement("button");
@@ -205,27 +208,38 @@ function ThreadPage() {
         $(this).append(btnDownloadAllBT);
     });
 
-    
-
+    var downloadAllBT = function(e){
+        var attachlist = $(e).parent();
+        var alist = attachlist.find("a");
+        alist.each(function(){
+            var epHref = $(this).attr("href");
+            var epName = $(this).text();
+            console.log(epName);
+            console.log(epHref);
+            // $(this).click();
+            // var url = window.location.host + "/" + epHref;
+            var url =  epHref;
+            setTimeout(function () {
+                window.open(url);
+            }, 500);
+        });
+    };
+    window.downloadAllBT= downloadAllBT;
+    document.downloadAllBT = downloadAllBT;
 }
-var downloadAllBT = function(e){
-    var attachlist = $(e).parent();
-    var alist = attachlist.find("a");
-    alist.each(function(){
-        var epHref = $(this).attr("href");
-        var epName = $(this).text();
-        console.log(epName);
-        console.log(epHref);
-        // $(this).click();
-        // var url = window.location.host + "/" + epHref;
-        var url =  epHref;
-        setTimeout(function () {
-            window.open(url);
-        }, 500);
+
+function Post_FixInvalidImage(){
+    $(".post img").each(function(){
+        var imgsrc = $(this).attr("src");
+        if (imgsrc.indexOf("btbtt") > -1) {
+            var newsrc = imgsrc.replace("http://", "").replace("https://", "");
+            var oldhost = newsrc.split("/")[0];
+            newsrc = newsrc.replace(oldhost, window.location.origin);
+            $(this).attr("src", newsrc);
+        }
     });
-};
-window.downloadAllBT= downloadAllBT;
-document.downloadAllBT = downloadAllBT;
+}
+
 
 
 
