@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      0.7
+// @version      22.11.12
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
 // @match        *://*.btbtt.co/*
@@ -211,17 +211,15 @@ function Post_DownloadAllBT(){
     var downloadAllBT = function(e){
         var attachlist = $(e).parent();
         var alist = attachlist.find("a");
-        alist.each(function(){
+        alist.each(function(index){
             var epHref = $(this).attr("href");
             var epName = $(this).text();
             console.log(epName);
             console.log(epHref);
-            // $(this).click();
-            // var url = window.location.host + "/" + epHref;
             var url =  epHref;
             setTimeout(function () {
                 window.open(url);
-            }, 500);
+            }, 500 * index + 500);
         });
     };
     window.downloadAllBT= downloadAllBT;
@@ -297,7 +295,9 @@ function ToggleTopThread() {
 }
 
 function HighlightUserName(){
-    var SuperModerators = ["david19710102", "Eddie wang"];
+    var SuperModerators = ["david19710102", "Eddie wang", 
+        "lvchao9947", "Asuka601" //电影
+    ];
     $("td.username a").each(function(){
         var name = $(this).text();
         if (SuperModerators.includes(name)) {

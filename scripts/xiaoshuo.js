@@ -18,6 +18,7 @@
 // @match        *://*.biquge.com.cn/*
 // @match        *://*.biquge40.com/*
 // @match        *://*.beqege.cc/*
+// @match        *://*.yanqingshu.com/*
 // @match        *://*.biqiudu.com/*
 // @match        *://*.shuhuangge.org/*
 // @match        *://m.tsnwb.org/*
@@ -53,6 +54,7 @@
 // @match        *://*.mayiwxw.com/*
 // @match        *://*.sp90.org/*
 // @match        *://*.neat-reader.cn/*
+// @match        *://*.zhaikangpei.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -90,7 +92,7 @@ function main() {
     if (Mjztool.matchUrlList(["shouda88.com", "shouda8.com", "shouda88.net"])) {
         shouda8();
     }
-    if (Mjztool.matchUrlList(["sp90.org", "mayiwxw.com", "biqiudu.com", "biquge.com.cn", "xbiquge.so", "xdingdian.com", "sizhicn.com", "230book.com", "uuxs.tw", "beqege.cc"])) {
+    if (Mjztool.matchUrlList(["yanqingshu.com", "sp90.org", "mayiwxw.com", "biqiudu.com", "biquge.com.cn", "xbiquge.so", "xdingdian.com", "sizhicn.com", "230book.com", "uuxs.tw", "beqege.cc"])) {
         biquge();
     }
 
@@ -128,6 +130,7 @@ function main() {
     if (Mjztool.matchUrlList(["vodtw.com"])) { vodtw(); }       // 品书小说网
     if (Mjztool.matchUrlList(["shuyyw.cc"])) { shuyyw(); }       // 丫丫电子书
     if (Mjztool.matchUrlList(["sto520.com"])) { sto520(); }       // 思兔阅读
+    if (Mjztool.matchUrlList(["zhaikangpei.com"])) { zhaikangpei(); }       
     // if (Mjztool.matchUrlList(["neat-reader.cn"])) { NeatReader(); }      
    
     
@@ -251,7 +254,7 @@ function biquge() {
     Mjztool.addStyle("#tbox:hover { opacity: 1 !important; }");
 
     var css1 = "";
-    css1 += "#content a, .content a {  display: none !important;  } ";
+    // css1 += "#content a, .content a {  display: none !important;  } ";
     css1 += "#content, .content { " + Font_Color_Style +  Background_Color_Style +" } ";
     css1 += "#content p, .content p { " + Font_Color_Style +  Background_Color_Style +" } ";
     css1 += "html, body { " +  Background_Color_Style +" } ";
@@ -276,6 +279,13 @@ function biquge() {
         css1 += "#chaptercontent { " + Font_Color_Style +  Background_Color_Style +" } ";
         selector = "#chaptercontent";
         wordsRemove.push("请收藏本站：https://www.sp90.org。笔趣阁手机版：https://m.sp90.org");
+    }else if(Mjztool.matchURL("yanqingshu.com")){
+        ShortcutKeys= {Next : "#book > div.content > div.page_chapter > ul > li:nth-child(3) > a"};
+        selector = "#content";
+        css1 +=  ".content h1 {font-size: 22px !important; color: initial !important;}";
+        wordsReplace["        "] = " 　　";
+        wordsReplace["    "] = " 　　";
+        
     }
 
 
@@ -626,7 +636,7 @@ function aixdzs() {
 
     css1 += ".b_name, .b_info, .b_intro { font-size: 14px !important;}";
     css1 += ".link { border: initial !important; background: initial !important; }";
-    css1 += ".link a { font-size: 16px; }";
+    css1 += ".chapter a { color: #337ab7 !important; } .chapter a:visited { color: #999 !important; }";
     css1 += "#back-to-top { opacity: 0 !important; } #back-to-top:hover { opacity: 1 !important; }";
 
     Mjztool.addStyle(css1);
@@ -934,6 +944,24 @@ function NeatReader() {
 
     ShortcutKeys= {Next : "#next-btn"};
 }
+
+ function zhaikangpei() {
+    var css1 = "#booktxt, #booktxt p { " + Font_Color_Style + " } ";
+    // css1 += "#readcotent  {text-indent: 0em !important; padding-top: 32px !important;}";
+    css1 += "html, body, #booktxt {" + Background_Color_Style + "}";
+    css1 += "#chaptercontent > p {display: none !important;}";
+    css1 += ".panel-default {border: none !important;}";
+    // css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
+    Mjztool.addStyle(css1);
+
+    var wordsReplace = { };
+    var wordsRemove = ["落日余晖提示您：看后求收藏(归云文学网)，接着再看更方便。", ];
+
+    ContentChnage("#booktxt", wordsRemove, wordsReplace);
+
+    ShortcutKeys= {Next : "#next_url"};
+}
+
 
 
 /*****************************************************************************************/
