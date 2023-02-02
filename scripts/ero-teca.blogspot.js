@@ -1,13 +1,12 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - ero-teca.blogspot
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://ero-teca.blogspot.com/*
 //// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-//// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -27,7 +26,23 @@
 })();
 
 function main() {
+    var css = "";
+    css += "#arlinablock { display: none !important; }";
+    css += "body {overflow: auto !important;}";
 
+    Mjztool.addStyle(css);
+
+    setInterval(() => {
+        $("#arlinablock").remove();
+        $("iframe").remove();
+
+        $("div").each(function(){
+            var zIndex = $(this).css("z-index");
+            if (parseInt(zIndex) > 10000) {
+                $(this).remove();
+            }
+        });
+    }, 1000);
 }
 
 

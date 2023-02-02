@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         MJZ - Torrents
+// @name         MJZ - BitTorrents
 // @namespace    https://github.com/maijz128
 // @version      0.2.0
 // @description  描述
 // @author       MaiJZ
 // @match        *://sukebei.nyaa.si/*
 // @match        *://*.btdig.com/*
+// @match        *://*.pkmp4.com/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
@@ -34,14 +35,20 @@ function main() {
     {
         iTorrents_BTDig();
     }
+    if(Mjztool.matchURL("pkmp4.com"))
+    {
+        setTimeout(function(){
+            iTorrents_pkmp4();
+        },500);
+    }
 }
 
 function iTorrents_Nyaa(){
+    var favicon = iTorrents_Favicon;
     if(Mjztool.matchURL("/view/"))
     {
         var panel_footer = $('.panel-footer:first');
         if(panel_footer){
-            var favicon = iTorrents_Favicon;
             var hash = $('kbd:first').text();
             var href = 'https://itorrents.org/torrent/' + hash + '.torrent';
             var elA = `<a href="${href}" target="_blank" class="card-footer-item">
@@ -84,6 +91,34 @@ function iTorrents_BTDig(){
     }
 }
 
+
+function iTorrents_pkmp4(){
+    var favicon = iTorrents_Favicon;
+    if(Mjztool.matchURL("/mv/"))
+    {
+        $(".down-list2 span a").each(function(){
+            var magnet = $(this).attr("href");
+            var hash = magnet.replace("magnet:?xt=urn:btih:", "");
+            hash = hash.split("&")[0];
+            var href = 'https://itorrents.org/torrent/' + hash + '.torrent';
+
+            console.log(hash);
+
+            var elA = `<a href="${href}" target="_blank" class="card-footer-item">
+            <img src="${favicon}" width="14px" height="14px">iTorrents</a>`;
+
+            $(this).parent().append(elA);
+        });
+
+        var css = "";
+        css += ".down-list2 span { display: table; margin-left: 82%;}";
+        css += ".down-list3>a { font-size: 14px; max-width: 780px !important; }";
+        css += ".down-list2 {padding: 6px !important;} ";
+        css += ".down-list .gdt { max-height: 300px !important; }";
+        css += "";
+        Mjztool.addStyle(css);
+    }
+}
 
 
 function gotoStoreTorrents(){

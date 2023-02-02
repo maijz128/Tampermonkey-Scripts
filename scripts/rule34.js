@@ -34,6 +34,7 @@ function main() {
 function PostView(){
     var selector = "#post-view > div.sidebar > div.link-list";
     jQuery(".tag-search").prepend(jQuery(selector).first());
+    jQuery(".tag-search").prepend(jQuery("#stats").first());
 }
 
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-BT之家小助手
 // @namespace    https://github.com/maijz128
-// @version      22.11.12
+// @version      22.11.13
 // @description  替换下载地址为真实地址，可以自动滚动至最新BT处，可以自动隐藏介绍，可以隐藏置顶帖子 。
 // @author       MaiJZ
 // @match        *://*.btbtt.co/*
@@ -38,8 +38,9 @@ var css = "";
         ToggleTopThread();
     }
     // 搜索页面
-    else if (matchURL("/search-index-keyword")) {
-        css += "width: 1024px !important;";
+    else if (matchURL("/search-index-")) {
+        css += ".width {width: 1024px !important; }";
+        css += ".wrapper_bg_c { display: none !important;}";
     }
 
     HighlightUserName();

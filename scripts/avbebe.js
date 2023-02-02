@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - Avbebe
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
+// @match        *://avbebe.com/archives/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=avbebe.com
 //// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-//// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -27,7 +27,9 @@
 })();
 
 function main() {
-
+    var css = "";
+    css += ".flowplayer div:last-child {      display: none !important;}";
+    Mjztool.addStyle(css);
 }
 
 

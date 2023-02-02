@@ -1,9 +1,18 @@
 // ==UserScript==
 // @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      23.1.8
 // @description  描述
 // @author       MaiJZ
+// @require      https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
+// @grant        GM_setClipboard
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // @match        *://*.shouda8.com/*
 // @match        *://*.shouda88.com/*
 // @match        *://*.shouda88.net/*
@@ -55,15 +64,11 @@
 // @match        *://*.sp90.org/*
 // @match        *://*.neat-reader.cn/*
 // @match        *://*.zhaikangpei.com/*
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_cookie
-// @grant        GM.cookie
-// @grant        GM_setClipboard
-// @grant        unsafeWindow
-// @grant        window.close
-// @grant        window.focus
+// @match        *://*.23qb.net/*
+// @match        *://*.ranwen.la/*
+// @match        *://*.45xs.com/*
+// @match        *://*.penghe.net/*
+// @match        *://*.sjks88.com/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -71,12 +76,16 @@ var G = { UpVolume: KEYS.E, DownVolume: KEYS.D, PrevSong: KEYS.S, NextSong: KEYS
 
 var KeyDownHandle = function (keyCode) {return;};
 var ShortcutKeys = {Next : null};  // {Next: "body > div.container > div > div.page1 > a:nth-child(4)"}
-var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.05em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
+var Font_Color_Style = "color: #3C3C3C !important; font-size: 28px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.05em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
 // Font_Color_Style += "text-indent: 2em !important;";
 var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 
 (function () {
+    window.clearTimeout = window.clearTimeout.bind(window);
+    window.clearInterval = window.clearInterval.bind(window);
+    window.setTimeout = window.setTimeout.bind(window);
+    window.setInterval = window.setInterval.bind(window);
     setTimeout(function(){ main(); }, 10);
 })();
 
@@ -132,6 +141,11 @@ function main() {
     if (Mjztool.matchUrlList(["sto520.com"])) { sto520(); }       // 思兔阅读
     if (Mjztool.matchUrlList(["zhaikangpei.com"])) { zhaikangpei(); }       
     // if (Mjztool.matchUrlList(["neat-reader.cn"])) { NeatReader(); }      
+    if (Mjztool.matchUrlList(["23qb.net"])) { net_23qb(); }       
+    if (Mjztool.matchUrlList(["ranwen.la"])) { ranwen(); }       
+    if (Mjztool.matchUrlList(["45xs.com"])) { com_45xs(); }       
+    if (Mjztool.matchUrlList(["penghe.net"])) { penghe(); }       
+    if (Mjztool.matchUrlList(["sjks88.com"])) { sjks88(); }       
    
     
 }
@@ -291,6 +305,10 @@ function biquge() {
 
     Mjztool.addStyle(css1);
     ContentChnage(selector, wordsRemove, wordsReplace);
+
+
+    AD_Checker();
+
 }
 
 
@@ -355,25 +373,10 @@ function ptwxz() {
     var css = "#content{ font-family: 微软雅黑, 宋体;  FONT-SIZE: 26px;  line-height: 2em; text-indent: 2em;}"
     css+= "#content > table{display: none;}";
     css += ".toplink a{color: #666 !important;}";
-    Mjztool.addStyle(css);
-    
-    // var content = $(".txtnav")[0];
-    // replaceNodeText(content, words);
-    
-    /*
-    KeyDownHandle = function (keyCode) {
-        if (keyCode == KEYS.D || keyCode == KEYS.RIGHT) {
-            console.log(keyCode + ": Next");
-            var seletor = "#main > div.bottomlink > a:nth-child(6)";
-            var btn = document.querySelector(seletor);
-            if (btn) {
-                // eventFire(btn, 'click');
-                btn.click();
-            }
-            // fireKeyEvent(player_main, "keydown", KEYS.RIGHT);
-        }
-    };
-    */
+
+    if (Mjztool.matchURL("/html/")) {
+        Mjztool.addStyle(css);
+    }
 }
 
 //  69shu.com
@@ -616,22 +619,34 @@ function i_gamer() {
 }
 
 function uukanshu() {
+    if (Mjztool.matchURL("tw.uukanshu.com")) {
+        var url = window.location.href;
+        url = url.replace("tw.", "");
+        window.location.href = url;
+        return;
+    }
+
     var css1 = ".contentbox p { " + Font_Color_Style + " } ";
     Mjztool.addStyle(css1);
 
-    var text = $("#ChSize").html();
-    var words = {
-        "收藏()": "",
+    var wordsReplace = {
+        "尽在UU看书！": "",
     };
-    var words2 = ["＋杂∽志∽虫＋", ];
-    text = removeText(text, words2);
-    text = replaceText(text, words);
-    $("#ChSize").html(text);
+    var wordsRemove = ["点击下载本站APP,海量小说，免费畅读！"];
+    ContentChnage("#content", wordsRemove, wordsReplace);
+
+    var jieshao_title = $(".jieshao_content h1 a");
+    if (jieshao_title) {
+        jieshao_title.text(jieshao_title.text().replace("最新章节", ""));
+    }
+
+    AD_Checker();
 }
 
 // 爱下电子书
 function aixdzs() {
     var css1 = ".content p { " + Font_Color_Style + " } ";
+    css1 += ".content { width: 800px !important; } ";
     css1 += ".content p {margin-block-start: 0.5em !important; margin-block-end: 0.5em !important;} ";
 
     css1 += ".b_name, .b_info, .b_intro { font-size: 14px !important;}";
@@ -641,20 +656,20 @@ function aixdzs() {
 
     Mjztool.addStyle(css1);
 
-    var text = $(".content").html();
-    var words = {
+    var wordsReplace = {
         "long": "龙",  "chuang": "床", "zui": "嘴", "xiong": "胸", "蓝**法阵": "蓝色魔法阵", "蓝**力": "蓝色魔力",
     };
-    var words2 = ["言情小说网", "小书亭", "热门推荐：", "番茄免费阅读小说", "新笔趣阁", "笔趣阁"
+    var wordsRemove = ["言情小说网", "小书亭", "热门推荐：", "番茄免费阅读小说", "新笔趣阁", "笔趣阁"
                     ,"UU看书欢迎广大书友光临阅读，最新、最快、最火的连载作品尽在UU看书！手机用户请到阅读。"
                     ,"https://", "天才一秒记住本站地址：。手机版阅读网址：", "，更多好看小说免费阅读。"
                     ,"书阅屋"
                 ];
-    text = removeText(text, words2);
-    text = replaceText(text, words);
-    $(".content").html(text);
+
+    ContentChnage(".content", wordsRemove, wordsReplace);
 
     ShortcutKeys= {Next : "#syno-nsc-ext-gen3 > div:nth-child(3) > a:nth-child(3)"};
+
+    AD_Checker();
 }
 
 // 飞速中文网
@@ -962,16 +977,137 @@ function NeatReader() {
     ShortcutKeys= {Next : "#next_url"};
 }
 
+function net_23qb() {
+    var css1 = "#TextContent, #TextContent p { " + Font_Color_Style + " } ";
+    // css1 += "html, body, #booktxt {" + Background_Color_Style + "}";
+    Mjztool.addStyle(css1);
+
+    var wordsReplace = { "铅笔小说" : ""};
+    var wordsRemove = ["铅笔小说 23qb.net"];
+
+    ShortcutKeys= {Next : "#readbg > p > a:nth-child(5)"};
+
+    ContentChnage("#TextContent", wordsRemove, wordsReplace);
+}
+
+
+function ranwen() {
+    if(Mjztool.matchURL("m.ranwen")) {
+        window.location.href = window.location.href.replace("m.", "");
+        return;
+    }
+    if (Mjztool.matchURL("/article/")) {
+        AD_Checker();
+    }
+}
+
+function com_45xs(){
+    if(Mjztool.matchURL("/book/") == false) return;
+
+    var css1 = "#chaptercontent, #chaptercontent p { " + Font_Color_Style + " } ";
+    // css1 += "html, body, #booktxt {" + Background_Color_Style + "}";
+    Mjztool.addStyle(css1);
+
+    var adList = [ /【.*换源.*】/ig, /【.*看书追更.*】/ig, /【.*听书.*】/ig, /【.*追书.*】/ig, /.*45小说网.*/ig, ];
+    AD_Hider(adList);
+}
+
+function penghe(){
+    if(Mjztool.matchURL("/book/") == false) return;
+
+    var css1 = "#article, #article p { " + Font_Color_Style + " } ";
+    css1 += "html, body, #article, .read_bg, .container, .section_style {" + Background_Color_Style + "}";
+    Mjztool.addStyle(css1);
+
+    var adList = [ /【.*换源.*】/ig, /【.*看书追更.*】/ig, /【.*听书.*】/ig, /【.*追书.*】/ig, /.*45小说网.*/ig, ];
+    AD_Hider(adList);
+}
+
+function sjks88(){
+    var css1 = ".content, .content p { " + Font_Color_Style + " } ";
+    // css1 += "html, body, .content {" + Background_Color_Style + "}";
+    css1 += ".box-artic {width: 80% !important;}";
+    Mjztool.addStyle(css1);
+
+    var adList = [ /【.*换源.*】/ig, /【.*看书追更.*】/ig, /【.*听书.*】/ig, /【.*追书.*】/ig, /.*45小说网.*/ig, ];
+    AD_Hider(adList);
+}
 
 
 /*****************************************************************************************/
 
+var AD_CheckerInterval = 5000;
+
+function AD_Checker(){
+    AD_replaceText();
+}
+
+function AD_Checker2(func){
+    setInterval(function(){
+        $("p[class!='ad_checked']").each(function(){
+            var text = $(this).text();
+            text = text.replaceAll(/【.*换源.*】/ig, "");
+            text = text.replaceAll(/【.*看书追更.*】/ig, "");
+            text = text.replaceAll(/【.*听书.*】/ig, "");
+            text = text.replaceAll(/【.*追书.*】/ig, "");
+
+            if (func) {
+                text = func(text);
+            }
+
+            $(this).text(text);
+            $(this).addClass("ad_checked");
+        });
+    }, 5000);
+}
+
+function AD_replaceText(){
+    console.log("AD_Checker...");
+    var removeWords = ["仟韆仦哾", "仟仟尛哾"];
+    $("p[class!='ad_checked']").each(function(){
+        var text = $(this).text();
+        text = text.replaceAll(/【.*换源.*】/ig, "");
+        text = text.replaceAll(/【.*看书追更.*】/ig, "");
+        text = text.replaceAll(/【.*听书.*】/ig, "");
+        text = text.replaceAll(/【.*追书.*】/ig, "");
+        
+        for (let i = 0; i < removeWords.length; i++) {
+            const word = removeWords[i];
+            text = text.replaceAll(word, "");
+        }
+
+        $(this).text(text);
+        $(this).addClass("ad_checked");
+    });
+    var timerVar = setTimeout(AD_replaceText, AD_CheckerInterval);
+}
+
+function AD_Hider(adList){
+    Mjztool.addStyle(".ad_hide {display: none !important;}");
+    setInterval(function(){
+        $("p[class!='ad_checked']").each(function(){
+            $(this).addClass("ad_checked");
+
+            var text = $(this).text();
+        
+            adList.forEach(element => {
+                if (text.match(element)){
+                    $(this).addClass("ad_hide");
+                    return;
+                }
+            }); 
+        });
+    }, 5000);
+}
 
 function ContentChnage(selector, wordsRemove, wordsReplace) {
-    var text = $(selector).html();
-    text = removeText(text, wordsRemove);
-    text = replaceText(text, wordsReplace);
-    $(selector).html(text);
+    if ($(selector)) {
+        var text = $(selector).html();
+        text = removeText(text, wordsRemove);
+        text = replaceText(text, wordsReplace);
+        $(selector).html(text); 
+    }
+    
 }
 
 function open_in_new_tab(selector){
@@ -990,6 +1126,7 @@ function replaceNodeText(content, words){
 }
 
 function replaceText(text, words) {
+    if (text == null) return null;
     for (var key in words) {
         text = text.replaceAll(key, words[key]);
     }
@@ -997,6 +1134,7 @@ function replaceText(text, words) {
 }
 
 function removeText(text, words) {
+    if (text == null) return null;
     for (var key in words) {
         text = text.replaceAll(words[key], "");
     }

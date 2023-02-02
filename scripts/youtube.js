@@ -44,18 +44,20 @@ function OpenInNewTab() {
         const aEle = [...document.querySelectorAll(selector)];
 
         aEle.forEach((ele) => {
-            ele.setAttribute("target", "_blank");
-            const href = ele.getAttribute("href");
-            ele.onclick = (e) => {
-                if (ele.getAttribute("id") != "thumbnail") {// 跳过略缩图
-                    e.stopPropagation();
-                    window.open(href, "_blank");
-                    return false;
-                }
+            if (ele.getAttribute("id") == "thumbnail") {// 跳过略缩图
                 return true;
+            }
+            
+            ele.setAttribute("target", "_blank");
+            // ele.setAttribute("hrefold", ele.getAttribute("href"));
+            ele.onclick = (e) => {
+                e.stopPropagation();
+                var href = ele.getAttribute("href");
+                window.open(href, "_blank");
+                return false;
             };
 
-            ele.setAttribute("href", "#");
+            // ele.setAttribute("href", "#");
         });
     };
 
@@ -83,7 +85,7 @@ function OpenInNewTab() {
         return (
             selectorPathMap[path] || {
                 observeEle: "#page-manager",
-                aEle: ['#dismissible a[href^="/"]'],
+                aEle: ['#dismissible a:not([target])'],
             }
         );
     };
@@ -112,12 +114,12 @@ function OpenInNewTab() {
                 intervalTimes--;
                 cb();
             }
-        }, 250);
+        }, 200);
     };
 
 
     // init
-    const selectorPathMap = {
+    const selectorPathMap_old = {
         "/": {
             observeEle: "#page-manager",
             aEle: ['#dismissible a[href^="/"]'],
@@ -152,9 +154,44 @@ function OpenInNewTab() {
         },
     };
 
+    const selectorPathMap = {
+        "/": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])'],
+        },
+        "/results": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])'],
+        },
+        "/channel": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])', 'ytd-grid-playlist-renderer a:not([target])', '#channel a:not([target])'],
+        },
+        "/watch": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])', 'ytd-video-owner-renderer a:not([target])'],
+        },
+        "/playlist": {
+            observeEle: "#page-manager",
+            aEle: ['#content a:not([target])'],
+        },
+        "/user": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])'],
+        },
+        "/c": {
+            observeEle: "#page-manager",
+            aEle: ['ytd-grid-playlist-renderer a:not([target])', '#dismissible a:not([target])'],
+        },
+        "/feed": {
+            observeEle: "#page-manager",
+            aEle: ['#dismissible a:not([target])'],
+        },
+    };
+
     const selector = getSelectorAtCurPath();
     let initPath = window.location.pathname;
-    let intervalDefaultTimes = 50;
+    let intervalDefaultTimes = 100;
     let intervalTimes = intervalDefaultTimes;
 
     window.onload = () => {

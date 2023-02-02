@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         MJZ-SankakuComplex助手
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      0.2.0
 // @description  描述
 // @author       MaiJZ
 // @match        *://chan.sankakucomplex.com/*
+// @match        *://*.sankakucomplex.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -45,7 +46,16 @@ function main() {
 
             jQuery("#search-form").after($("#stats"));
         }, 1000);
-        
+    }
+
+    if (Mjztool.matchURL("/mature-content-disclaimer/")) {
+        setTimeout(function () {
+            var a = jQuery("#primary div.main-box-inside > p > a:nth-child(2)");
+            var link = a.attr("href");
+            console.log(link);
+            window.location.href = link;
+        }, 500);
+        return;
     }
 
     setTimeout(function () {

@@ -1,12 +1,19 @@
 // ==UserScript==
-// @name         AcFun小助手-MaiJZ
+// @name         MaiJZ-AcFun小助手
 // @namespace    https://github.com/maijz128
-// @version      1.2.0
+// @version      22.11.13
 // @description  文章区：评论区域居中、文章内容始终显示、高亮楼主名字；视频：在简介栏中可以显示封面；
 // @author       MaiJZ
 // @match        *://*.acfun.cn/*
-//// @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @grant        none
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
+// @grant        GM_setClipboard
+// @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
 
@@ -22,10 +29,13 @@ function main() {
         //Article();
     } else if (matchURL("/v/ac")) {
         VideoPage();
+        VideoTitle();
     } else if (matchURL("live.acfun")) {
         //LivePage();
     } else if (isHomePage()) {
         //HomePage();
+    } else if (IsImage()) {
+        AcFunImage();
     }
 }
 
@@ -36,6 +46,8 @@ function isHomePage() {
     var href = window.location.href;
     return href === 'http://www.acfun.cn/' || href === 'https://www.acfun.cn/';
 }
+
+
 
 function HomePage() {
 
@@ -99,8 +111,23 @@ function VideoPage() {
         }
         return result;
     }
-
 }
+
+function VideoTitle(){
+    // var titleDiv = $("#main-content  div.video-description  h1.title");
+     var titleDiv = document.querySelector("#main-content  div.video-description  h1.title");
+    if (titleDiv) {
+        var btn = document.createElement("button");
+        btn.textContent = "复制";
+        btn.onclick = function(){
+            var title = document.querySelector("h1.title span").innerHTML;
+            console.log(title);
+            GM_setClipboard(title);
+        };
+        titleDiv.appendChild(btn);
+    }
+}
+
 
 // 文章
 function Article() {
@@ -177,6 +204,23 @@ function Article() {
     this.articleContent();
 }
 
+
+function IsImage(){
+    if (matchURL("/kimg/") || matchURL("image/resize")) {
+        return true;
+    }
+    return false;
+}
+function AcFunImage(){
+    if ( matchURL("image/resize")) {
+        var href = window.location.href;
+        var newhref = href.split("?")[0];
+        window.location.href = newhref;
+    }
+}
+
+
+//########################################################################
 
 
 function matchURL(url) {
