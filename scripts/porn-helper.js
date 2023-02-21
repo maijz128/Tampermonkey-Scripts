@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name         mjz-pornhub.com helper
+// @name         mjz-Porn helper
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  remove AD.
 // @author       MaiJZ
 // @match        *://*.pornhub.com/*
+// @match        *://*.jable.tv/*
 //// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
@@ -15,9 +16,14 @@
 
 
 function main() {
-    if (matchURL("view_video.php")) {
-        ViewVideo();
+    if (matchURL("pornhub.com") && matchURL("view_video.php")) {
+        pornhub_ViewVideo();
     }
+
+    if (matchURL("jable.tv") && matchURL("/videos/")) {
+        jable_ViewVideo();
+    }
+
 
     // removeAD();
 }
@@ -36,7 +42,7 @@ function removeAD() {
 }
 
 
-function ViewVideo() {
+function pornhub_ViewVideo() {
 
     var css = "";
     css += ".mgp_progress{opacity: 0.4;}";
@@ -79,6 +85,30 @@ function ViewVideo() {
 
 
 }
+
+
+
+
+function jable_ViewVideo() {
+
+    var css = "";
+    css += ".plyr__controls .div {opacity: 0.4;} .plyr__controls .div:hover {opacity: 1.0;}";
+    // css += ".fullscreen .plyr__controls {opacity: 0.2;}";
+    // css += ".fullscreen .plyr__controls:hover {opacity: 1.0;}";
+    addStyle(css);
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 function matchURL(url) {
     const URL = window.location.href;

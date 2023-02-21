@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
-// @version      23.1.8
+// @version      23.2.2
 // @description  描述
 // @author       MaiJZ
-// @require      https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js
+// @require      https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -69,6 +69,7 @@
 // @match        *://*.45xs.com/*
 // @match        *://*.penghe.net/*
 // @match        *://*.sjks88.com/*
+// @match        *://*.xbyuan.com/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -146,6 +147,7 @@ function main() {
     if (Mjztool.matchUrlList(["45xs.com"])) { com_45xs(); }       
     if (Mjztool.matchUrlList(["penghe.net"])) { penghe(); }       
     if (Mjztool.matchUrlList(["sjks88.com"])) { sjks88(); }       
+    if (Mjztool.matchUrlList(["xbyuan.com"])) { xbyuan(); }       
    
     
 }
@@ -882,6 +884,7 @@ function vodtw() {
     css1 += "#tbox {opacity: 0 !important;} .gotop:hover {opacity: 0.6 !important;}";
     css1 += ".page_chapter li {background: inherit !important;} .page_chapter li a{color: initial !important;}";
     css1 += ".page_chapter li {background: inherit !important;} .page_chapter li a{color: initial !important;}";
+    css1 += "#footer p {display: none !important;}";
 
     Mjztool.addStyle(css1);
 
@@ -1032,6 +1035,30 @@ function sjks88(){
     var adList = [ /【.*换源.*】/ig, /【.*看书追更.*】/ig, /【.*听书.*】/ig, /【.*追书.*】/ig, /.*45小说网.*/ig, ];
     AD_Hider(adList);
 }
+
+function xbyuan(){
+    var MIN_WORD_COUNT = 50 * 10000;
+    var css1 = ".content, .content p { " + Font_Color_Style + " } ";
+    // css1 += "html, body, .content {" + Background_Color_Style + "}";
+    // css1 += ".box-artic {width: 80% !important;}";
+    css1 += ".little_book, .little_book a, .little_book p {color: gray !important;}";
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL("/search.html")) {
+        console.log("/search.html");
+        $("li p.p4").each(function(){
+            var wordCount = parseInt($(this).text());
+            if (wordCount < MIN_WORD_COUNT) {
+                console.log("little_book");
+                $(this).parent().addClass("little_book");
+            }
+
+        });
+    }
+    
+}
+
+
 
 
 /*****************************************************************************************/
