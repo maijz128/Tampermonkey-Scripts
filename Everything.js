@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      23.03.18
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -14,7 +14,10 @@
 // @match        *://chan.sankakucomplex.com/*
 // @match        *://rule34.xxx/*
 // @match        *://render-state.to/*
-// @match        *://jable.tv/*
+// @match        *://*.jable.tv/*
+// @match        *://*.javdb.com/*
+// @match        *://*.pornhub.com/*
+// @match        *://*.civitai.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -39,6 +42,7 @@ var Everything_Query = "?search=%search%&json=1&count=10&path_column=1&size_colu
 })();
 
 function main() {
+    Styles();
     if (matchURL("steamcommunity.com/sharedfiles")) { steamcommunity_sharedfiles(); }
     if (matchURL("steamcommunity.com/workshop/browse")) { steamcommunity_workshop(); }
     if (matchURL("steamcommunity.com") && matchURL("myworkshopfiles")) { steamcommunity_workshop(); }
@@ -49,6 +53,17 @@ function main() {
     if (matchURL("rule34.xxx")) { rule34_xxx(); }
     if (matchURL("render-state.to")) { render_state(); }
     if (matchURL("jable.tv")) { jable_tv(); }
+    if (matchURL("javdb.com")) { setTimeout(javdb_com, 2000); }
+    if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
+    if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
+}
+
+function Styles(){
+    var css ="";
+    css +=".ExistsLocal_GreenBackground { background: green !important; }";
+    css +=".ExistsLocal_GreenColor { color: green !important; }";
+    css +="";
+    Mjztool.addStyle(css);
 }
 
 function EverythingHttpRequest(searchText){
@@ -76,6 +91,7 @@ async function EverythingGetJSON(searchText){
 }
 */
 function EverythingGetJSON(searchText, callback){
+    if(searchText == null) return;
     var url = EverythingHttpRequest(searchText);
 
     GM_xmlhttpRequest({
@@ -124,8 +140,6 @@ function steamcommunity_sharedfiles(){
 
 }
 function steamcommunity_workshop(){
-    Mjztool.addStyle(".workshopBrowseItems_green { background: green !important; }");
-
     jQuery(".workshopBrowseItems > div > a:nth-child(5)").each(function(){
         var thisElem = jQuery(this);
         // console.log(thisElem);
@@ -135,7 +149,7 @@ function steamcommunity_workshop(){
         EverythingGetJSON(searchText, function(json){
             if (json) {
                 if (json["totalResults"] > 0) {
-                    thisElem.addClass("workshopBrowseItems_green");
+                    thisElem.addClass("ExistsLocal_GreenBackground");
                 }
             }
         });
@@ -388,7 +402,134 @@ function jable_tv(){
 }
 
 
+function javdb_com(){
+    var cssName = "ExistsLocal_GreenColor";
 
+    var func = function(thisElem){
+        var searchText = thisElem.text(); //thisElem.attr("href"); // thisElem.attr("src")
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.parent().addClass(cssName);
+                }
+            }
+        });
+    };
+
+    jQuery(".item .video-title strong").each(function(){
+        var thisElem = jQuery(this);
+        func(thisElem);
+    });
+
+    var title_id = jQuery(".video-detail > .title > strong:nth-child(1)");
+    if (title_id) {
+        var searchText = title_id.text();
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    title_id.parent().addClass(cssName);
+                }
+            }
+        });
+    }
+
+}
+
+function pornhub(){
+    var cssName = "ExistsLocal_GreenColor";
+
+    var func = function(thisElem){
+        var searchText = thisElem.attr("href"); // thisElem.text();  thisElem.attr("src")
+        searchText = searchText.replace("/view_video.php?viewkey=", "");
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var selector_list = [
+        ".pcVideoListItem .title a", 
+    ];
+    selector_list.forEach(selector => {
+        jQuery(selector).each(function(){
+            var thisElem = jQuery(this);
+            func(thisElem);
+        });
+    });
+
+    
+    if (Mjztool.matchURL("view_video.php")) {
+        var viewkey = getQueryParams()["viewkey"];
+        var searchText = viewkey;
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    var title = jQuery(".title-container > h1.title");
+                    title.addClass(cssName);
+                }
+            }
+        });
+        
+    }
+
+
+}
+
+
+function civitai(){
+    var cssName = "ExistsLocal_GreenColor";
+
+    var func = function(thisElem){
+        var searchText = null;
+        var href = thisElem.attr("href"); // thisElem.text();  thisElem.attr("src")
+        var modelId = href.match(/\d+/);
+        if (modelId) {
+            searchText = modelId + '.models.civitai';
+        }
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var selector_list = [
+        "a.mantine-Card-root", 
+    ];
+    selector_list.forEach(selector => {
+        jQuery(selector).each(function(){
+            var thisElem = jQuery(this);
+            func(thisElem);
+        });
+    });
+
+    
+    if (Mjztool.matchURL("/models/")) {
+        var modelId = window.location.href.match(/\d+/);
+        var searchText = modelId + '.models.civitai';
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    var title = jQuery("h1.mantine-Title-root");
+                    title.addClass(cssName);
+                }
+            }
+        });
+    }
+
+
+}
 
 
 /*******************************************************************************/

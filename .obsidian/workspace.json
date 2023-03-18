@@ -1,0 +1,115 @@
+{
+  "main": {
+    "id": "af357c759c737072",
+    "type": "split",
+    "children": [
+      {
+        "id": "0f9e5988d2f87999",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "266453c6d6dc4def",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "未命名.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f6ec6248cb602e8d",
+    "type": "split",
+    "children": [
+      {
+        "id": "4aa1ce52a8a30802",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c35747d34206b36b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f20f500ff616ed53",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "534b8a4653a37355",
+    "type": "split",
+    "children": [
+      {
+        "id": "225a0eaba2d3a527",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6888133b4711cb70",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "未命名.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "command-palette:打开命令面板": false,
+      "markdown-importer:打开 Markdown 格式转换器": false
+    }
+  },
+  "active": "c35747d34206b36b",
+  "lastOpenFiles": [
+    "未命名.canvas",
+    "README.md"
+  ]
+}

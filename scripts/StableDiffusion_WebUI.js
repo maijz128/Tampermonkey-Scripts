@@ -1,13 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ - 
+// @name         MaiJZ - Stable Diffusion Web UI
 // @namespace    https://github.com/maijz128
 // @version      0.1.0
 // @description  描述
 // @author       MaiJZ
-// @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-//// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @match        http://127.0.0.1:7860/
+// @icon         http://127.0.0.1:7860/favicon.ico
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -28,6 +26,119 @@
 
 function main() {
 
+    var app = document.querySelector('gradio-app');
+    var appRoot = app.shadowRoot;
+    var footer = appRoot.querySelector('#footer');
+    var inter = setInterval(function(){
+        if (footer) {
+            clearInterval(inter);
+            app_styles();
+            // app_txt2img();
+        }else{
+            footer = appRoot.querySelector('#footer');
+        }
+    }, 1000);
+}
+
+
+function app_styles(){
+    var baseStyles = `
+        :is(:not(i,head *):not([class*='glyph']):not([class*='icon']):not([class*='fa-']):not([class*='vjs-'])) {
+            font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,sans-serif,'iconfont','icomoon','FontAwesome','Font Awesome 5 Pro','Font Awesome 6 Pro','IcoFont','fontello','themify','Material Icons','Material Icons Extended','bootstrap-icons','Segoe Fluent Icons','Material-Design-Iconic-Font','office365icons','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji','Android Emoji','EmojiSymbols','emojione mozilla','twemoji mozilla';
+            text-shadow: 0 0 0.86px #b1ada6d9, 0 0 0.75px #7C7C7CDD, 0 0 0.56px #302f2d4b;
+            -webkit-text-stroke: 0.015px currentcolor;
+            font-feature-settings: "liga" 0,"zero";
+            font-variant: normal;
+            font-optical-sizing: auto;
+            font-kerning: auto;
+            text-rendering: optimizeLegibility!important;
+        }
+
+        /* 去除datalist的下拉图标 */
+        input::-webkit-calendar-picker-indicator{
+            display: none;
+            -webkit-appearance: none;
+            opacity: 0;
+        }
+        #setting_eta_noise_seed_delta span{
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis; width: 100%;
+        }
+    `;
+    var styles01 = `
+        #txt2img_column_size.flex-wrap:first-child, #img2img_column_size.flex-wrap:first-child{
+            margin: 0.6em 0em 0em 0 !important;
+        }
+        #txt2img_column_batch .flex-wrap:first-child,  #txt2img_column_size .flex-wrap:first-child,
+        #img2img_column_batch .flex-wrap:first-child,  #img2img_column_size .flex-wrap:first-child
+        {
+            flex-direction: row !important;
+        }
+        #txt2img_batch_count, #txt2img_batch_size, #img2img_batch_count, #img2img_batch_size {
+            display: inline !important;
+            width: 48% !important;
+        }
+        #txt2img_width, #img2img_width {
+            display: inline !important;
+            width: 54% !important;
+        }
+        #txt2img_height, #img2img_height{
+            display: inline !important;
+            width: 44% !important;
+        }
+    `;
+    var styles02 = `
+        #txt2img_column_size, #img2img_column_size{
+            display: inline!important;
+            min-width: 45%!important;
+            width: 45% !important;
+            margin-left: 45% !important;
+        }
+        #txt2img_column_batch,#img2img_column_batch
+        {
+            float: left !important;
+            position: absolute !important;
+            width: 45% !important;
+        }
+        #setting_CLIP_stop_at_last_layers{
+            min-width: 14em !important; max-width: 14em !important;
+        }
+        #setting_eta_noise_seed_delta{
+            min-width: 12em !important; max-width: 12em !important;
+        }
+    `;
+    app_addStyle(baseStyles);
+    app_addStyle(styles02);
+}
+
+function app_txt2img(){
+    // 添加候选词
+    var app = document.querySelector('gradio-app');
+    var appRoot = app.shadowRoot;
+    var txt2img_column_size = appRoot.querySelector('#txt2img_column_size');
+    var txt2img_width_input = appRoot.querySelector('#txt2img_width > div.w-full.flex.flex-col > div > input');
+    var txt2img_height_input = appRoot.querySelector('#txt2img_height > div.w-full.flex.flex-col > div > input');
+    if (txt2img_width_input) {
+        txt2img_width_input.setAttribute("list", "txt2img-size");
+    }
+    if (txt2img_height_input) {
+        txt2img_height_input.setAttribute("list", "txt2img-size");
+    }
+    var datalist_imgSize = `
+        <datalist id="txt2img-size">
+            <option value="512">
+            <option value="768">
+            <option value="1024">
+        </datalist>
+    `;
+    txt2img_column_size.insertAdjacentHTML( 'beforeend', datalist_imgSize);
+}
+
+
+function app_addStyle(styleContent) {
+    var app = document.querySelector('gradio-app');
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    app.shadowRoot.appendChild(elStyle);
 }
 
 
