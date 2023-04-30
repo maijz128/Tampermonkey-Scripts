@@ -34,6 +34,7 @@
 
 var Everything = "http://127.0.0.1:8022/";
 var Everything_Query = "?search=%search%&json=1&count=10&path_column=1&size_column=1&date_modified_column=1&date_created_column=1&attributes_column=1&sort=name&ascending=1";
+var EverythingHttpRequest_LOG = true;
 
 (function () {
     setTimeout(function(){
@@ -70,7 +71,8 @@ function EverythingHttpRequest(searchText){
     var req = Everything + Everything_Query;
     searchText = searchText.replace(" ", "+");
     req = req.replace("%search%", searchText);
-    console.log("EverythingHttpRequest: " + req);
+    if(EverythingHttpRequest_LOG)
+        console.log("EverythingHttpRequest: " + req);
     return req;
 }
 function EverythingHttpWeb(searchText){
@@ -484,16 +486,19 @@ function pornhub(){
 
 
 function civitai(){
-    var cssName = "ExistsLocal_GreenColor";
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} div.mantine-Stack-root > div.mantine-Stack-root > div.mantine-Group-root > .mantine-Text-root { color: green !important; }`;
+    Mjztool.addStyle(css);
 
-    var func = function(thisElem){
+    var funcCard = function(thisElem){
         var searchText = null;
         var href = thisElem.attr("href"); // thisElem.text();  thisElem.attr("src")
         var modelId = href.match(/\d+/);
         if (modelId) {
             searchText = modelId + '.models.civitai';
         }
-        console.log(searchText);
+        // console.log(searchText);
 
         EverythingGetJSON(searchText, function(json){
             if (json) {
@@ -503,17 +508,6 @@ function civitai(){
             }
         });
     };
-
-    var selector_list = [
-        "a.mantine-Card-root", 
-    ];
-    selector_list.forEach(selector => {
-        jQuery(selector).each(function(){
-            var thisElem = jQuery(this);
-            func(thisElem);
-        });
-    });
-
     
     if (Mjztool.matchURL("/models/")) {
         var modelId = window.location.href.match(/\d+/);
@@ -526,6 +520,16 @@ function civitai(){
                 }
             }
         });
+    }else{
+        setInterval(() => {
+            var selector =  ".mantine-Card-root > a:nth-of-type(1)";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                if (thisElem.hasClass(cssName) == false) {
+                    funcCard(thisElem);
+                }
+            });  
+        }, 2000);
     }
 
 

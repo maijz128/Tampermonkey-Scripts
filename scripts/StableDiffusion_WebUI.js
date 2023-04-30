@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         MaiJZ - Stable Diffusion Web UI
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      23.04.27
 // @description  描述
 // @author       MaiJZ
-// @match        http://127.0.0.1:7860/
+// @match        http://127.0.0.1:7860/*
 // @icon         http://127.0.0.1:7860/favicon.ico
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -28,14 +29,19 @@ function main() {
 
     var app = document.querySelector('gradio-app');
     var appRoot = app.shadowRoot;
-    var footer = appRoot.querySelector('#footer');
+    var footer;
     var inter = setInterval(function(){
         if (footer) {
             clearInterval(inter);
             app_styles();
+            app_generate_box();
             // app_txt2img();
         }else{
-            footer = appRoot.querySelector('#footer');
+            if (appRoot) {
+                footer = appRoot.querySelector('#footer');
+            }else{
+                footer = document.querySelector('#footer');
+            }
         }
     }, 1000);
 }
@@ -51,7 +57,7 @@ function app_styles(){
             font-variant: normal;
             font-optical-sizing: auto;
             font-kerning: auto;
-            text-rendering: optimizeLegibility!important;
+            text-rendering: optimizeLegibility !important;
         }
 
         /* 去除datalist的下拉图标 */
@@ -62,6 +68,9 @@ function app_styles(){
         }
         #setting_eta_noise_seed_delta span{
             white-space:nowrap;overflow:hidden;text-overflow:ellipsis; width: 100%;
+        }
+        .wrap.default.svelte-gjihhp {
+            display: none !important;
         }
     `;
     var styles01 = `
@@ -106,17 +115,28 @@ function app_styles(){
             min-width: 12em !important; max-width: 12em !important;
         }
     `;
+
+    // 调整结果容器的位置
+    var s03 = `
+        #txt2img_results{
+            top: -100px !important;
+        }
+        #txt2img_prompt_container div:nth-of-type(2){
+            width: 68% !important;
+        }
+    `;
     app_addStyle(baseStyles);
     app_addStyle(styles02);
+    app_addStyle(s03);
 }
 
 function app_txt2img(){
     // 添加候选词
     var app = document.querySelector('gradio-app');
     var appRoot = app.shadowRoot;
-    var txt2img_column_size = appRoot.querySelector('#txt2img_column_size');
-    var txt2img_width_input = appRoot.querySelector('#txt2img_width > div.w-full.flex.flex-col > div > input');
-    var txt2img_height_input = appRoot.querySelector('#txt2img_height > div.w-full.flex.flex-col > div > input');
+    var txt2img_column_size = app_querySelector('#txt2img_column_size');
+    var txt2img_width_input = app_querySelector('#txt2img_width > div.w-full.flex.flex-col > div > input');
+    var txt2img_height_input = app_querySelector('#txt2img_height > div.w-full.flex.flex-col > div > input');
     if (txt2img_width_input) {
         txt2img_width_input.setAttribute("list", "txt2img-size");
     }
@@ -133,13 +153,60 @@ function app_txt2img(){
     txt2img_column_size.insertAdjacentHTML( 'beforeend', datalist_imgSize);
 }
 
+function app_generate_box(){
+    var css = `
+        .generate_box_fixed{
+            position: fixed !important;
+            bottom: 2em !important;
+            right: 2em !important;
+            width: 300px !important;
+            z-index: 888 !important;
+        }
+    `;
+
+    app_addStyle(css);
+
+
+    var className = 'generate_box_fixed';
+    var app = document.querySelector('gradio-app');
+    
+    // $(document).scroll(function() {
+    window.addEventListener('scroll', function() {
+        var txt2img_generate_box = app_querySelector("#txt2img_generate_box");
+        var img2img_generate_box = app_querySelector("#img2img_generate_box");
+        var scrollTop = window.scrollY;
+        if( scrollTop >= 580 ){
+            txt2img_generate_box.classList.add(className);
+            img2img_generate_box.classList.add(className);
+        }else if( scrollTop < 580 ){
+            txt2img_generate_box.classList.remove(className);
+            img2img_generate_box.classList.remove(className);
+        }
+        
+    });
+}
+
 
 function app_addStyle(styleContent) {
     var app = document.querySelector('gradio-app');
     var elStyle = document.createElement("style");
     elStyle.innerHTML = styleContent;
-    app.shadowRoot.appendChild(elStyle);
+    if (app.shadowRoot) {
+        app.shadowRoot.appendChild(elStyle);
+    }else{
+        document.head.appendChild(elStyle);
+    }
 }
+
+function app_querySelector(query) {
+    var app = document.querySelector('gradio-app');
+    if (app.shadowRoot) {
+        return app.shadowRoot.querySelector(query);
+    }else{
+        return app.querySelector(query);
+    }
+}
+
 
 
 /*******************************************************************************/

@@ -1,16 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ - 图床（imagelib）
+// @name         MaiJZ - 起点中文网
 // @namespace    https://github.com/maijz128
-// @version      23.03.28
+// @version      23.04.30
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.imgsen.com/*
-// @match        *://*.imgsto.com/*
-// @match        *://*.fotokiz.com/*
-// @match        *://*.imgstar.eu/*
-// @match        *://*.silverpic.com/*
-// @match        *://*/*.jpg.html
-// @require      https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @match        *://*.qidian.com/*
+// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -30,23 +25,19 @@
 })();
 
 function main() {
-    if (Mjztool.matchUrlList(["imgsen.com", "imgsto.com", "fotokiz.com", "imgstar.eu", "silverpic.com"])) {  }
-    imgsen();
+
+    if (Mjztool.matchURL("/info/")) {
+        BookInfo();
+    }
 }
 
-
-function imgsen() {
-    setInterval(() => {
-        var ctImg = $("body > form > input[type=submit]:nth-child(4)");
-        if (ctImg) {
-            ctImg.click();
-        }
-        var imgRoll = $("body > span.roll");
-        if (imgRoll) {
-            imgRoll.click();
-        }
-    }, 500);
+function BookInfo(){
+    var bookId = window.location.href.replace('https://', '').split('/')[2];
+    var btn_qidiantu_href = 'https://www.qidiantu.com/info/' + bookId;
+    var btn_qidiantu = `<a class="blue-btn" href="${btn_qidiantu_href}" target="_blank">起点图</a>`;
+    $('#topRewardBtn').after(btn_qidiantu);
 }
+
 
 /*******************************************************************************/
 
@@ -67,6 +58,25 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
 }
 
 
