@@ -35,6 +35,7 @@ function BookInfo(){
     var bookId = window.location.href.replace('https://', '').split('/')[2];
     var btn_qidiantu_href = 'https://www.qidiantu.com/info/' + bookId;
     var btn_qidiantu = `<a class="blue-btn" href="${btn_qidiantu_href}" target="_blank">起点图</a>`;
+    $('#topVoteBtn').after(btn_qidiantu);
     $('#topRewardBtn').after(btn_qidiantu);
 }
 

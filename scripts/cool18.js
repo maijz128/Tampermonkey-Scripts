@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
-// @version      0.3.0
+// @version      23.5.31
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.cool18.com/*
@@ -32,7 +32,7 @@ function main() {
     // style += "line-height: 36px !important; font-size: 24px !important;";
     // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
     style += Font_Color_Style;
-    style += "margin: auto;";
+    style += "margin: auto; min-height: 1em;";
 
     addStyle(".img_ad_list{ display: none !important; }");
 

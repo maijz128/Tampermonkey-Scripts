@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      23.03.18
+// @version      23.07.26
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -18,6 +18,9 @@
 // @match        *://*.javdb.com/*
 // @match        *://*.pornhub.com/*
 // @match        *://*.civitai.com/*
+// @match        *://*.douban.com/*
+// @match        *://*.youtube.com/*
+// @match        *://*/mv/*.html
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -57,6 +60,11 @@ function main() {
     if (matchURL("javdb.com")) { setTimeout(javdb_com, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
+    if (matchURL("douban.com")) { setTimeout(douban, 2000); }
+    if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
+
+    if (document.title.indexOf("不太灵影视") > -1) 
+    { setTimeout(butailing, 2000); }
 }
 
 function Styles(){
@@ -425,6 +433,18 @@ function javdb_com(){
         func(thisElem);
     });
 
+    jQuery(".tile-item .video-number").each(function(){
+        var thisElem = jQuery(this);
+        var searchText = thisElem.text();
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    });
+
     var title_id = jQuery(".video-detail > .title > strong:nth-child(1)");
     if (title_id) {
         var searchText = title_id.text();
@@ -533,6 +553,122 @@ function civitai(){
     }
 
 
+}
+
+function douban(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+    var local_filename = hs[4] + '.' + hs[3] + '.douban';
+
+
+    var funcTitle = function(searchText){
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    var title = jQuery("#content h1");
+                    title.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if (Mjztool.matchUrlList(["/subject/"])) {
+        var searchText = hs[4] + '.movie.douban';
+        funcTitle(searchText);
+        funcTitle(local_filename);
+    }
+    if (Mjztool.matchUrlList(["/celebrity/"])) {
+        funcTitle(local_filename);
+    }
+}
+
+function youtube(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var funcVideoItem = function(thisElem){
+        var href = thisElem.attr("href"); 
+        var vid = href.split('=')[1];
+        var searchText = 'Watch-v=' + vid + '.youtube';
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    var title = thisElem.find("#video-title");
+                    title.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var selector = '#dismissible > div > div.metadata.style-scope.ytd-compact-video-renderer > a';
+    jQuery(selector).each(function(){
+        var thisElem = jQuery(this);
+        funcVideoItem(thisElem);
+    });
+
+    if (Mjztool.matchUrlList(["/watch?"])) {
+        var qParams = getQueryParams();
+        var vid = qParams['v'];
+        var searchText = 'Watch-v=' + vid + '.youtube';
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    var title = jQuery("#title");
+                    title.addClass(cssName);
+                }
+            }
+        });
+    }
+
+
+}
+
+
+
+function butailing(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+
+    var funcTitle = function(doubanID, thisElem){
+        var searchText = doubanID + '.movie.douban';
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if (Mjztool.matchUrlList(["/mv/"])) {
+        var doubanID = hs[4].replace('.html', '');
+        var thisElem = jQuery(".info-title");
+        funcTitle(doubanID, thisElem);
+    }else{
+        setInterval(() => {
+            var selector =  ".masonry_item > a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var aHref = thisElem.attr("href");
+                var doubanID = aHref.split('/')[2].replace('.html', '');
+                if (thisElem.hasClass(cssName) == false) {
+                    funcTitle(doubanID, thisElem);
+                }
+            });  
+        }, 2000);
+    }
 }
 
 
