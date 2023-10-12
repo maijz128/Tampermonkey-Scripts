@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         MaiJZ - Cool18（禁忌书屋）
+// @name         MaiJZ - mytvsuper
 // @namespace    https://github.com/maijz128
-// @version      23.5.31
+// @version      23.09.07
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.cool18.com/*
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
+// @match        *://*.mytvsuper.com/*
+// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -15,150 +15,241 @@
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
-// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAIAAAB+eU8wAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAAJESURBVEhL7ZexSgNBEIbzNla+hY8g+AA2tlZ2WllZCtZinc4iViLaiJBGQQQtRLQQ1MIiFkLOb+9f5y43e2dyMdpkGI7Z2dn/n52ZjdjJGmU4HEarUX4M62RbCzPXOU0L/T+aXxGHORXN6ePF4uFy7/4krk0c5lQ03dve0tEqTDevd9ElcZhj0Ty8P5Hy7uUB6UfXt2yc70ADX1xLRjF5vGmal8Fb//mKw9v9vZXjdYBMFWAimpa3IX1VwxSy/esufgWYTEWDgGgcEERvLhSQiw4+P7ChISH5C3GYTb2Bae1sU0zlrlBPPBBgc0toVFiapwCPWUsDFsdImS8Q5aLhFLcqJiWAJU0Nhx1m0whw2DokAyx2KZqcplbDKA4zTUNLUUEwbHwpmnJnFw82t5SnZW9UKAxQ6I34cAoUA49y17UIJgkuhEEGYcthJmiUuGhQzusSotHs0iT86nxFw1mHmaCp4ErplpY2eyjlIn3iaSQBcHO/MJMOs5amkilAZVbIgFPpEAjijEkcZi2N5lgaEsw7bwSwBrh8WORHMeT0mAkajbL1HBWNliSBUi7ysHE3VaTHTNCQIBUrPw6NrGgAKm8p0ho2wfNUHbiNNUklUu7sohhAW29Eo2cQxGEmaOgniECUp0CUKBwEYLCbQxY/CmzJ4zETNIh1hTS5inClCpBdaU8xbKOYtX/WVLEiuyzjd1O4WtocQkOF+aJko12PmabxQqaAGhB5cFFS0RKZ8N3MQuc0LfQPaWpkzP/TylJ7JMu+AMWUf3c+C6RtAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
-var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 (function () {
     setTimeout(function(){
         main();
-    },10);
+    },20);
 })();
 
 function main() {
-    var style = "";
-    // style += "line-height: 36px !important; font-size: 24px !important;";
-    // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
-    style += Font_Color_Style;
-    style += "margin: auto; min-height: 1em;";
+    setTimeout(function(){
+        AllSite();
+        SiteLink();
+    },2000);
 
-    addStyle(".img_ad_list{ display: none !important; }");
-
-    var bbs4IndexCss = "#d_gold_list {height: 180px !important;} #d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
-    bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
-    bbs4IndexCss += "#d_list_page {font-size: 14px;}";
-    addStyle(bbs4IndexCss);
-
-    $("pre").attr("style", "max-width: 820px;" + style);
-    $("pre span").attr("style", style);
-    $("pre p").attr("style", style);
-    $("pre b").attr("style", style);
-    $("pre font").attr("style", style);
-
-    if (Mjztool.matchURL("act=threadview")) {
-        $("body").attr("style", Background_Color_Style);
-        $("tbody").attr("style", Background_Color_Style);
-        $("tbody tr").attr("style", Background_Color_Style);   
+    if (Mjztool.matchURL('/programme/')) {
+        setTimeout(function(){
+            programme();
+            
+        },2000);
     }
 
-    $(".show_content pre font").each(function(){
-        var f = $(this);
-        var text = f.text().trim();
-        if (text == "cool18.com" || text == "www.6park.com") {
-            f.remove(); // f.text("");
+    if (Mjztool.matchURL('/search/')) {
+        setTimeout(function(){
+            SiteSearch();
+        },2000);
+    }
+}
+
+function AllSite(){
+    // textarea: srcText
+    $('.main-wrap').append('<textarea id="srcText" class="srcText" rows="4"></textarea>');
+
+    var css = '';
+    css += '.srcText { position: fixed; bottom: 0; left: 10px; opacity: 0.1;}';
+    css += '.srcText:hover { position: fixed; bottom: 0; left: 10px; opacity: 1;}';
+    // css += '.mix-item-hover { display: none !important; }';
+
+    Mjztool.addStyle(css);
+
+    // new window open item
+    setInterval(() => {
+    
+        $('.mpm-track-item.mix-item-hover').each(function(){
+            var elA = $(this).find('a');
+            // elA.removeClass('hidden');
+            elA.attr('target', '_blank');
+        });
+
+        $(".mpm-track-item.mix-item-hover").click(function(event){
+            // 阻止 click 事件冒泡到父元素
+            event.stopPropagation();
+            // 阻止剩下的事件处理程序被执行
+            event.stopImmediatePropagation();
+    
+            var elA = $(this).find('a');
+            var url = elA.attr('href');
+            
+            console.log("被点击了：" + url);
+            window.open(url, "_blank");
+        });
+
+    }, 1000);
+}
+
+function SiteSearch(){
+
+    var funShowName = function(){
+        $('.mpm-track-item > div > div:nth-child(2)').each(function(){
+            var cssDisplay = $(this).css('display');
+            if(cssDisplay == 'none'){
+                $(this).css('display', 'block');
+            }
+        });
+    };
+
+    funShowName();
+    setInterval(() => {
+        funShowName();
+    }, 4000);
+
+
+
+
+
+
+    
+}
+
+
+function SiteLink(){
+    var title = document.title;
+    var thisLink = '<a herf="' + window.location.href + '">' + title + '</a>';
+    var thisLinkMD = '[' + title + ']'  + '(' + window.location.href + ')';
+
+    var btn = document.createElement("button");
+    btn.textContent = "复制链接（Markdown）";
+    btn.onclick = function(){
+        GM_setClipboard(thisLinkMD);
+    };
+
+    if (Mjztool.matchURL('/programme/')) {
+        $('h1').after(btn);
+    }else{
+        $('.children-container').prepend(btn);
+    }
+    
+}
+
+
+
+function programme() {
+    var imglist = [];
+    var msgs = '';
+
+
+    // hide item lock mask
+    Mjztool.addStyle('[class^=Row_lock__] {display: none;}');
+
+    // a new window
+    $('a.hidden').attr('target', '_blank');
+    $('a.hidden').removeClass('hidden');
+
+    $('div').each((function(){
+        var thisClass = $(this).attr('class');
+
+        if(thisClass){
+            if (thisClass.indexOf('Programme_programme_desc') > -1) {
+                $(this).css('overflow', 'auto');
+                $(this).css('min-height', '60px');
+            }
+        }
+
+    }));
+
+
+    var thisLinkMD = '[' + document.title + ']'  + '(' + window.location.href + ')';
+    var bgMD = '';
+    var programmeName = '';
+    var programmeTrackCount = 1;
+    var programmeDesc = '';
+    var trackItemMD = '';
+
+    // banner img
+    $('div.content-wrap > main > div > div > div').each(function(){
+        var divStyle = $(this).attr('style');
+        var divBG = $(this).css('background-image');
+        // console.log('banner img: ' + divStyle);
+        
+        if(divBG.indexOf('img') > -1){
+            console.log('banner img: ' + divBG);
+
+            divBG = divBG.replace('url("', '');
+            divBG = divBG.replace('")', '');
+
+            bgMD = '![](' + divBG + ')' + '\n\n';
+            msgs += bgMD;
         }
     });
 
-    // var td_btn = `<td><button onclick="remove_br()">删除换行</button></td>`;
-    // $(".show_content table tbody tr").append(td_btn);
-    // window.remove_br = function(){$("tbody br").remove();};
-    
-    var btn = document.createElement("button");
-    btn.textContent = "删除换行";
-    btn.onclick = function ()
-    {
-        $("tbody br").remove();
+    // name & count
+    ppTitle = $('[class*=Programme_programme_title__]');
+    programmeName = '**' + $(ppTitle[0]).text() + '**';
+    programmeTrackCount = $(ppTitle[1]).text();
 
-        // $("tbody p").text(function(i,origText){
-        //     var text = origText;
-        //     text = text.replace(/\r\n/g,"<br>");  
-        //     text = text.replace(/\n/g,"<br>");  
-        //     // console.log(text);
-        //     return text;
-        // });
+    // programme Desc
+    programmeDesc = $('[class*=Programme_programme_desc__]').text();
 
-        // $("tbody pre").text(function(i,origText){
-        //     var text = origText;
-        //     text = text.replace(/\r\n/g,"<br>");  
-        //     text = text.replace(/\n/g,"<br>");  
-        //     // console.log(text);
-        //     return text;
-        // });
-    };
 
-    var btn2 = document.createElement("button");
-    btn2.textContent = "删除换行2";
-    btn2.onclick = function ()
-    {
+    // 集數
+    var funcFindTrackItem = function(){
+        trackItemMD = '## 集數';
+        trackItemMD += '\n\n';
 
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
-        });
+        $('div.content-wrap > main > div > div:nth-child(2) .mpm-track-item').each(function(){
+            var imgSrc = $(this).find('img').attr('src');
+            var imgAlt = $(this).find('p').attr('alt');
 
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
+            if (imgSrc.indexOf('/image/') > -1 || imgSrc.indexOf('img') > -1) {
+                var p1 = $($(this).find('p')[0]);
+                var p2 = $($(this).find('p')[1]);
+                var rd = $(this).find('[class^=Row_duration]');
+                var sTitle = '### ' + p1.text();
+                var sInfo = '' + p2.text();
+                var sImgSrc = '![](' + imgSrc + ')';
+                var sDuration = '*时长：' + rd.text() + '*';
+
+                sTitle = sTitle.replace('集\n', '集 ');
+
+                trackItemMD += sTitle + '\n';
+                trackItemMD += sImgSrc + '\n';
+                trackItemMD += sDuration + '\n\n';
+                trackItemMD += sInfo + '\n';
+
+                trackItemMD += '\n';
+            }
         });
     };
 
-    var btn3 = document.createElement("button");
-    btn3.textContent = "格式化换行";
-    btn3.onclick = function ()
-    {
+    var funcShowMD = function(){
+        msgs = '';
+        msgs += thisLinkMD + '\n\n';
+        msgs += bgMD + '\n\n';
+        msgs += programmeName + '\n';
+        msgs += programmeTrackCount + '\n\n';
+        msgs += programmeDesc + '\n\n';
+        msgs += trackItemMD + '\n\n';
 
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
-
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
+        // console.log ('剧集：');
+        // console.dir (msgs);
+        $('#srcText').text(msgs);
     };
 
-    var btn4 = document.createElement("button");
-    btn4.textContent = "添加空行";
-    btn4.onclick = function ()
-    {
+    funcFindTrackItem();
+    setTimeout(function(){
+        funcShowMD();
+    },2000);
 
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");
-            text = text.replace(/\n/g,"<br>");
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
+    setInterval(function(){
+        funcFindTrackItem();
+        setTimeout(function(){
+            funcShowMD();
+        },2000);
+    }, 4000);
 
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
-    };
-
-    var td = document.createElement("td");
-    td.appendChild(btn);
-    td.appendChild(btn2);
-    td.appendChild(btn3);
-    td.appendChild(btn4);
-
-    $(".show_content table tbody tr").append(td);
 }
 
 
 /*******************************************************************************/
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -171,6 +262,25 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
 }
 
 

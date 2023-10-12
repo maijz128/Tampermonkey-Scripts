@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      23.07.26
+// @version      23.10.05
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -20,7 +20,15 @@
 // @match        *://*.civitai.com/*
 // @match        *://*.douban.com/*
 // @match        *://*.youtube.com/*
-// @match        *://*/mv/*.html
+// @match        *://*.lcsd.gov.hk/*
+// @match        *://*.1bt0.com/*
+// @match        *://*.2bt0.com/*
+// @match        *://*.3bt0.com/*
+// @match        *://*.4bt0.com/*
+// @match        *://*.5bt0.com/*
+// @match        *://*.6bt0.com/*
+// @match        *://*.7bt0.com/*
+// @match        *://*.8bt0.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -62,6 +70,7 @@ function main() {
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
     if (matchURL("douban.com")) { setTimeout(douban, 2000); }
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
+    if (matchURL("lcsd.gov.hk")) { setTimeout(lcsd_gov_hk, 5000); }
 
     if (document.title.indexOf("不太灵影视") > -1) 
     { setTimeout(butailing, 2000); }
@@ -635,7 +644,7 @@ function youtube(){
 function butailing(){
     EverythingHttpRequest_LOG = false;
     var cssName = "Model_ExistsLocal_GreenColor";
-    var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
+    var css = `.${cssName}, .${cssName} span, .${cssName} h5 { color: green !important; }`;
     Mjztool.addStyle(css);
 
     var href = window.location.href;
@@ -656,7 +665,8 @@ function butailing(){
         var doubanID = hs[4].replace('.html', '');
         var thisElem = jQuery(".info-title");
         funcTitle(doubanID, thisElem);
-    }else{
+
+    }else if (Mjztool.matchUrlList(["/search.php"])) {
         setInterval(() => {
             var selector =  ".masonry_item > a";
             jQuery(selector).each(function(){
@@ -664,12 +674,58 @@ function butailing(){
                 var aHref = thisElem.attr("href");
                 var doubanID = aHref.split('/')[2].replace('.html', '');
                 if (thisElem.hasClass(cssName) == false) {
-                    funcTitle(doubanID, thisElem);
+                    funcTitle(doubanID, thisElem.parent());
                 }
             });  
         }, 2000);
+
+    }else{
+        
     }
 }
+
+function lcsd_gov_hk(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} h5 { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+
+    var funcTitle = function(newspaperAndDate, thisElem){
+        var searchText = newspaperAndDate;
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if (Mjztool.matchUrlList(["/coverpage/"])) {
+        var thisElem = jQuery(".header-title");
+        var newspaperAndDate = thisElem.text();
+        funcTitle(newspaperAndDate, thisElem);
+
+    }else if (Mjztool.matchUrlList(["/search-result?"])) {
+        setInterval(() => {
+            var selector =  ".result-title > a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var newspaperAndDate = thisElem.text();
+                if (thisElem.hasClass(cssName) == false) {
+                    funcTitle(newspaperAndDate, thisElem);
+                }
+            });  
+        }, 2000);
+
+    }else{
+        
+    }
+}
+
 
 
 /*******************************************************************************/

@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         MaiJZ - Cool18（禁忌书屋）
+// @name         MaiJZ - wikipedia
 // @namespace    https://github.com/maijz128
-// @version      23.5.31
+// @version      23.09.03
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.cool18.com/*
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
+// @match        *://*.wikipedia.org/*
+// @match        *://*.baike.com/*
+// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -15,11 +16,8 @@
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
-// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAIAAAB+eU8wAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAAJESURBVEhL7ZexSgNBEIbzNla+hY8g+AA2tlZ2WllZCtZinc4iViLaiJBGQQQtRLQQ1MIiFkLOb+9f5y43e2dyMdpkGI7Z2dn/n52ZjdjJGmU4HEarUX4M62RbCzPXOU0L/T+aXxGHORXN6ePF4uFy7/4krk0c5lQ03dve0tEqTDevd9ElcZhj0Ty8P5Hy7uUB6UfXt2yc70ADX1xLRjF5vGmal8Fb//mKw9v9vZXjdYBMFWAimpa3IX1VwxSy/esufgWYTEWDgGgcEERvLhSQiw4+P7ChISH5C3GYTb2Bae1sU0zlrlBPPBBgc0toVFiapwCPWUsDFsdImS8Q5aLhFLcqJiWAJU0Nhx1m0whw2DokAyx2KZqcplbDKA4zTUNLUUEwbHwpmnJnFw82t5SnZW9UKAxQ6I34cAoUA49y17UIJgkuhEEGYcthJmiUuGhQzusSotHs0iT86nxFw1mHmaCp4ErplpY2eyjlIn3iaSQBcHO/MJMOs5amkilAZVbIgFPpEAjijEkcZi2N5lgaEsw7bwSwBrh8WORHMeT0mAkajbL1HBWNliSBUi7ysHE3VaTHTNCQIBUrPw6NrGgAKm8p0ho2wfNUHbiNNUklUu7sohhAW29Eo2cQxGEmaOgniECUp0CUKBwEYLCbQxY/CmzJ4zETNIh1hTS5inClCpBdaU8xbKOYtX/WVLEiuyzjd1O4WtocQkOF+aJko12PmabxQqaAGhB5cFFS0RKZ8N3MQuc0LfQPaWpkzP/TylJ7JMu+AMWUf3c+C6RtAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; font-family: 微软雅黑, 宋体 !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
-var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 (function () {
     setTimeout(function(){
@@ -28,137 +26,80 @@ var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 })();
 
 function main() {
-    var style = "";
-    // style += "line-height: 36px !important; font-size: 24px !important;";
-    // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
-    style += Font_Color_Style;
-    style += "margin: auto; min-height: 1em;";
 
-    addStyle(".img_ad_list{ display: none !important; }");
-
-    var bbs4IndexCss = "#d_gold_list {height: 180px !important;} #d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
-    bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
-    bbs4IndexCss += "#d_list_page {font-size: 14px;}";
-    addStyle(bbs4IndexCss);
-
-    $("pre").attr("style", "max-width: 820px;" + style);
-    $("pre span").attr("style", style);
-    $("pre p").attr("style", style);
-    $("pre b").attr("style", style);
-    $("pre font").attr("style", style);
-
-    if (Mjztool.matchURL("act=threadview")) {
-        $("body").attr("style", Background_Color_Style);
-        $("tbody").attr("style", Background_Color_Style);
-        $("tbody tr").attr("style", Background_Color_Style);   
+    
+    
+    if (Mjztool.matchURL('wikipedia.org')) {
+        wikipedia();
     }
 
-    $(".show_content pre font").each(function(){
-        var f = $(this);
-        var text = f.text().trim();
-        if (text == "cool18.com" || text == "www.6park.com") {
-            f.remove(); // f.text("");
-        }
-    });
+    if (Mjztool.matchURL('baike.com')) {
+        shidian_baike();
+    }
+}
 
-    // var td_btn = `<td><button onclick="remove_br()">删除换行</button></td>`;
-    // $(".show_content table tbody tr").append(td_btn);
-    // window.remove_br = function(){$("tbody br").remove();};
-    
-    var btn = document.createElement("button");
-    btn.textContent = "删除换行";
-    btn.onclick = function ()
-    {
-        $("tbody br").remove();
+function shidian_baike(){
+    // hide edit button
+    Mjztool.addStyle('.ref-vnNMWt{display: none;}');
+}
 
-        // $("tbody p").text(function(i,origText){
-        //     var text = origText;
-        //     text = text.replace(/\r\n/g,"<br>");  
-        //     text = text.replace(/\n/g,"<br>");  
-        //     // console.log(text);
-        //     return text;
-        // });
+function wikipedia() {
+    // hide edit button
+    Mjztool.addStyle('.mw-editsection{display: none;}');
 
-        // $("tbody pre").text(function(i,origText){
-        //     var text = origText;
-        //     text = text.replace(/\r\n/g,"<br>");  
-        //     text = text.replace(/\n/g,"<br>");  
-        //     // console.log(text);
-        //     return text;
-        // });
-    };
+    SiteLink();
+    wikipedia_hide_reference();
+}
 
-    var btn2 = document.createElement("button");
-    btn2.textContent = "删除换行2";
-    btn2.onclick = function ()
-    {
 
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
-        });
+function SiteLink(){
+    var title = document.title;
+    var thisLink = '<a herf="' + window.location.href + '">' + title + '</a>';
+    // $('#firstHeading').append(thisLink);
+    // GM_setClipboard(thisLink);
 
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
-        });
-    };
+    var titleDiv = document.querySelector("#firstHeading");
+    if (titleDiv) {
+        var btn = document.createElement("button");
+        btn.textContent = "复制链接（Markdown）";
+        btn.onclick = function(){
+            var title = document.title;
+            var thisLink = '[' + title + ']'  + '(' + window.location.href + ')';
+            GM_setClipboard(thisLink);
+        };
+        titleDiv.appendChild(btn);
+    }
+}
 
-    var btn3 = document.createElement("button");
-    btn3.textContent = "格式化换行";
-    btn3.onclick = function ()
-    {
+function wikipedia_hide_reference(){
+    var titleDiv = document.querySelector("#firstHeading");
+    if (titleDiv) {
+        var btn = document.createElement("button");
+        btn.textContent = "隐藏引用";
+        btn.onclick = function(){
+            Mjztool.addStyle('sup.reference { display: none; }');
 
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
-
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
-    };
-
-    var btn4 = document.createElement("button");
-    btn4.textContent = "添加空行";
-    btn4.onclick = function ()
-    {
-
-        $("tbody p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");
-            text = text.replace(/\n/g,"<br>");
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
-
-        $("tbody pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
-    };
-
-    var td = document.createElement("td");
-    td.appendChild(btn);
-    td.appendChild(btn2);
-    td.appendChild(btn3);
-    td.appendChild(btn4);
-
-    $(".show_content table tbody tr").append(td);
+            $('a').each(function(){
+                var title = $(this).attr('title');
+                if (title && title.indexOf('（页面不存在）') > -1) {
+                    // $(this).attr('href', '');
+                    $(this).removeAttr('href');
+                }
+                
+            });
+        };
+        titleDiv.appendChild(btn);
+    }
 }
 
 
 /*******************************************************************************/
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -171,6 +112,25 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
 }
 
 
