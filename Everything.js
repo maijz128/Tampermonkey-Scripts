@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      23.10.05
+// @version      23.11.02
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -14,6 +14,7 @@
 // @match        *://chan.sankakucomplex.com/*
 // @match        *://rule34.xxx/*
 // @match        *://render-state.to/*
+// @match        *://*.cool18.com/*
 // @match        *://*.jable.tv/*
 // @match        *://*.javdb.com/*
 // @match        *://*.pornhub.com/*
@@ -71,6 +72,7 @@ function main() {
     if (matchURL("douban.com")) { setTimeout(douban, 2000); }
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
     if (matchURL("lcsd.gov.hk")) { setTimeout(lcsd_gov_hk, 5000); }
+    if (matchURL("cool18.com")) { setTimeout(cool18, 5000); }
 
     if (document.title.indexOf("不太灵影视") > -1) 
     { setTimeout(butailing, 2000); }
@@ -704,10 +706,26 @@ function lcsd_gov_hk(){
         });
     };
 
+    var funcTitleEl = function(el, thisElem){
+        var newspaperAndDate = el.text().trim();
+        var searchText = newspaperAndDate;
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
     if (Mjztool.matchUrlList(["/coverpage/"])) {
-        var thisElem = jQuery(".header-title");
-        var newspaperAndDate = thisElem.text();
-        funcTitle(newspaperAndDate, thisElem);
+        var headerTitle = jQuery(".header-title");
+        funcTitleEl(headerTitle, headerTitle);
+        
+        jQuery('.recommended_text_link').each(function(){
+            var thisElem = jQuery(this);
+            funcTitleEl(thisElem, thisElem);
+        });  
 
     }else if (Mjztool.matchUrlList(["/search-result?"])) {
         setInterval(() => {
@@ -726,6 +744,63 @@ function lcsd_gov_hk(){
     }
 }
 
+
+function cool18(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} h5 { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+
+    var params = getQueryParams();
+
+    var funcTitle = function(searchText, thisElem){
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var funcTitleEl = function(ahref, thisElem){
+        var tid = ahref.split('tid=')[1];
+        var searchText = tid + '.article.cool18';
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if(Mjztool.matchURL('/bbs4/')){
+        if (Mjztool.matchUrlList(["act=threadview"])) {
+            var tid = params["tid"];
+            var searchText = tid + '.article.cool18';
+            var headerTitle = jQuery("body > table:nth-child(4) > tbody > tr:nth-child(2) > td > center > font > b");
+            funcTitle(searchText, headerTitle);
+            
+
+        }else {
+            setTimeout(() => {
+                var selector =  "a";
+                jQuery(selector).each(function(){
+                    var thisElem = jQuery(this);
+                    var ahref = thisElem.attr('href');
+                    if (ahref.indexOf('tid=')  > 0) {
+                        funcTitleEl(ahref, thisElem);
+                    }
+                });  
+            }, 1000);
+
+        }
+    }
+}
 
 
 /*******************************************************************************/
