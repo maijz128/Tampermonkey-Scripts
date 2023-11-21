@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         MJZ - BitTorrents
 // @namespace    https://github.com/maijz128
-// @version      0.2.0
+// @version      23.11.09
 // @description  描述
 // @author       MaiJZ
 // @match        *://sukebei.nyaa.si/*
 // @match        *://*.btdig.com/*
 // @match        *://*.pkmp4.com/*
+// @match        *://anybt.eth.limo/*
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
@@ -41,6 +42,21 @@ function main() {
             iTorrents_pkmp4();
         },500);
     }
+
+    if(Mjztool.matchURL("anybt.eth.limo"))
+    {
+        var count = 0;
+        var anybt_Int = setInterval(function(){
+            if(count < 10){
+                count++;
+                anybt();
+            }else{
+                clearInterval(anybt_Int);
+            }
+        }, 1000);
+    
+    }
+    
 }
 
 function iTorrents_Nyaa(){
@@ -134,6 +150,31 @@ function gotoStoreTorrents(){
     }
 }
 
+
+
+function anybt(){
+    if(Mjztool.matchURL("/search?"))
+    {
+        console.log('try anybt');
+
+        // $(".search-result-item").each(function(){
+        $(".copy-container").each(function(){
+            var magnet = $(this).text();
+            var href = magnet;
+            var elA = `<a href="${href}" class="magnet-item"> 磁力链接 </a>`;
+
+            if($(this).hasClass('added-magnet')){
+                
+            }else{
+                $(this).addClass('added-magnet');
+                $(this).parent().append(elA);
+                // $(this).append(elA);
+            }
+            
+        });
+        return;
+    }
+}
 
 
 

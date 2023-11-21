@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-SankakuComplex助手
 // @namespace    https://github.com/maijz128
-// @version      0.2.0
+// @version      23.11.18
 // @description  描述
 // @author       MaiJZ
 // @match        *://chan.sankakucomplex.com/*
@@ -36,7 +36,7 @@ function main() {
     // Mjztool.addStyle(".content .popular-preview-post { width: 204px; height: 150px; }");
     
 
-    if (Mjztool.matchURL("/post/")) {
+    if (Mjztool.matchURL("/posts/")) {
 
         // 改用插件实现
         funcVideo();
@@ -44,7 +44,7 @@ function main() {
         setTimeout(function () {
             PostVideo();
 
-            jQuery("#search-form").after($("#stats"));
+            jQuery("#search-form").after(jQuery("#stats"));
         }, 1000);
     }
 

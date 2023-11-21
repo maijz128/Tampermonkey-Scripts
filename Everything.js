@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      23.11.02
+// @version      23.11.21
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -17,6 +17,7 @@
 // @match        *://*.cool18.com/*
 // @match        *://*.jable.tv/*
 // @match        *://*.javdb.com/*
+// @match        *://*.javlibrary.com/*
 // @match        *://*.pornhub.com/*
 // @match        *://*.civitai.com/*
 // @match        *://*.douban.com/*
@@ -67,6 +68,7 @@ function main() {
     if (matchURL("render-state.to")) { render_state(); }
     if (matchURL("jable.tv")) { jable_tv(); }
     if (matchURL("javdb.com")) { setTimeout(javdb_com, 2000); }
+    if (matchURL("javlibrary.com")) { setTimeout(javlibrary, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
     if (matchURL("douban.com")) { setTimeout(douban, 2000); }
@@ -261,7 +263,7 @@ function sankakucomplex_check(){
         sankakucomplex_func(img);
     });
 
-    if (matchURL("/post/show/")) {
+    if (matchURL("/post/show/") || matchURL("/posts/")) {
         var highres = jQuery("#highres");
         if (highres) {
             sankakucomplex_func(highres);
@@ -470,6 +472,39 @@ function javdb_com(){
 
 }
 
+function javlibrary(){
+    var cssName = "ExistsLocal_GreenColor";
+
+    var func = function(searchText, thisElem){
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+
+
+    if (Mjztool.matchURL('/?v=')) {
+        var avid = jQuery('#avid').attr('avid');
+        var elem = jQuery('#video_title');
+        func(avid, elem);
+    }
+
+
+
+    jQuery(".videos .video").each(function(){
+        var avidElem = jQuery(this).find('.id');
+        var avid = avidElem.text().split(' ')[0];
+        func(avid, avidElem);
+    });
+
+}
+
 function pornhub(){
     var cssName = "ExistsLocal_GreenColor";
 
@@ -668,7 +703,7 @@ function butailing(){
         var thisElem = jQuery(".info-title");
         funcTitle(doubanID, thisElem);
 
-    }else if (Mjztool.matchUrlList(["/search.php"])) {
+    }else if (Mjztool.matchUrlList(["/search.php", "/movie/"])) {
         setInterval(() => {
             var selector =  ".masonry_item > a";
             jQuery(selector).each(function(){
