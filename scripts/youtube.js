@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-Youtube助手
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      24.02.17
 // @description  描述
 // @author       MaiJZ
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
@@ -16,25 +16,41 @@
 // ==/UserScript==
 
 
-(function () {
-    OpenInNewTab();
 
-    setTimeout(function () {
-        main();
-    }, 100);
+console.log("MJZ-Youtube助手 is loading");
+(async () => // onStart
+{
+    let tryTimes = 0;
+    while(true)
+    {
+        // console.log("try load");
+        if(document.querySelector("#start")!=null)
+        {
+            main();
+            return;
+        }
+        if(++tryTimes>10) return;
+        await delay(300);
+    }
 })();
 
-function main() {
-    // 隐藏频道水印
-    addStyle(".iv-branding{display: none;}");
 
-    // 全屏时隐藏UI
-    var css = "";
-    css += ".ytp-gradient-top, .ytp-gradient-bottom {opacity: 0;}";
-    css += ".ytp-fullscreen .ytp-chrome-top {opacity: 0;}";
-    css += ".ytp-fullscreen .ytp-chrome-bottom {opacity: 0;}";
-    css += ".ytp-fullscreen .ytp-chrome-bottom:Hover {opacity: 1;}";
-    addStyle(css);
+function delay(ms = 0){return new Promise((r)=>{setTimeout(r, ms)})}
+
+
+function main() {
+    OpenInNewTab();
+
+    if (matchURL('/watch?')) {
+        // 隐藏频道水印
+        addStyle(".iv-branding{display: none;}");
+
+        // 全屏时隐藏UI
+        OnFullscreenHideUI();
+        
+        // 按钮，滚动至顶部
+        OnClickButtonToTop();
+    }
 }
 
 // Youtube 新标签页打开
@@ -204,6 +220,44 @@ function OpenInNewTab() {
         updateAEleBatch(selector.aEle);
     });
 }
+
+// 全屏时隐藏UI
+function OnFullscreenHideUI(){
+    var css = "";
+    css += ".ytp-gradient-top, .ytp-gradient-bottom {opacity: 0;}";
+    // css += ".ytp-fullscreen .ytp-chrome-top {opacity: 0;}";
+    // css += ".ytp-fullscreen .ytp-chrome-bottom {opacity: 0;}";
+    // css += ".ytp-fullscreen .ytp-chrome-bottom:Hover {opacity: 1;}";
+    css += ".ytp-chrome-top {opacity: 0;}";
+    css += ".ytp-chrome-bottom {opacity: 0;}";
+    css += ".ytp-chrome-bottom:Hover {opacity: 1;}";
+    addStyle(css);
+}
+
+// 按钮，滚动至顶部
+function OnClickButtonToTop() {
+ 
+    (async () => // onStart
+    {
+        let tryTimes = 0;
+        while(true)
+        {
+            // console.log("try load");
+            var btnToTopID = 'btnGoToTop';
+            if(document.querySelector("#top-level-buttons-computed") != null 
+            && document.querySelector(`#${btnToTopID}`) == null)
+            {
+                var btnToTop = `<button id="${btnToTopID}" class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-leading" aria-label="To Top" title="To Top" onclick="window.scrollTo(0, 0);">Top</button>`;
+                $("#top-level-buttons-computed").append(btnToTop);
+                // return;
+            }
+            // if(++tryTimes>10000) return;
+            await delay(500);
+        }
+    })();
+    
+}
+
 
 function backOpenVideo() {
     $('a.ytd-thumbnail').each(function (index, element) {

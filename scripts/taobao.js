@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      0.6.0
+// @version      23.11.22
 // @description  自动登录
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
@@ -57,6 +57,8 @@ function TaoBao(){
     setTimeout(function () {
         HUABEI_TotalAmount();
         HUABEI_TotalAmount_bind();
+
+        Item_li();
     }, 3000);
 
     // 商品 URL
@@ -89,6 +91,17 @@ function Tmall(){
         
     }, 1000);
 }
+
+// 商品选项分类，排版
+function Item_li(){
+    var css = '';
+    css += '#detail .tb-key .tb-prop .tb-img li span { display: inline !important; padding-left: 40px;}';
+    css += '#detail .tb-key .tb-prop .tb-img li a { background-position-x: left !important; }';
+    css += '.J_Prop .J_TSaleProp { overflow: auto; max-height: 300px; }';
+
+    addStyle(css);
+}
+
 
 // 计算并显示分期总额
 function HUABEI_TotalAmount() {

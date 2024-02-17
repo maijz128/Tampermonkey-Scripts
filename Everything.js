@@ -1,20 +1,26 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      23.11.21
+// @version      24.02.14
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
 // @match        *://steamcommunity.com/workshop/browse/*
-// @match        *://steamcommunity.com/profiles/*/myworkshopfiles/*
-// @match        *://steamcommunity.com/id/*/myworkshopfiles/*
-// @match        *://bangumi.tv/subject/*
-// @match        *://bangumi.tv/anime/browser/*
+// @match        *://steamcommunity.com/workshop/filedetails/*
+// @match        *://steamcommunity.com/profiles/*
+// @match        *://steamcommunity.com/id/*
+// @match        *://steamcommunity.com/app/*
+// @match        *://bgm.tv/*
+// @match        *://bangumi.tv/*
 // @match        *://illusioncards.booru.org/*
 // @match        *://chan.sankakucomplex.com/*
 // @match        *://rule34.xxx/*
+// @match        *://e-hentai.org/*
+// @match        *://exhentai.org/*
 // @match        *://render-state.to/*
 // @match        *://*.cool18.com/*
+// @match        *://*.34king.life/*
+// @match        *://*.laowang.vip/*
 // @match        *://*.jable.tv/*
 // @match        *://*.javdb.com/*
 // @match        *://*.javlibrary.com/*
@@ -58,15 +64,14 @@ var EverythingHttpRequest_LOG = true;
 function main() {
     Styles();
     if (matchURL("steamcommunity.com/sharedfiles")) { steamcommunity_sharedfiles(); }
-    if (matchURL("steamcommunity.com/workshop/browse")) { steamcommunity_workshop(); }
-    if (matchURL("steamcommunity.com") && matchURL("myworkshopfiles")) { steamcommunity_workshop(); }
-    if (matchURL("bangumi.tv/subject")) { bangumi_subject(); }
-    if (matchURL("bangumi.tv/anime/browser")) { bangumi_anime_browser(); }
+    if (matchURL("steamcommunity.com")) { steamcommunity_workshop(); }
+    
+    if (Mjztool.matchUrlList(["bangumi.tv", 'bgm.tv'])) { Bangumi(); }
     if (matchURL("illusioncards.booru.org")) { illusioncards_booru_org(); }
     if (matchURL("chan.sankakucomplex.com")) { sankakucomplex(); }
     if (matchURL("rule34.xxx")) { rule34_xxx(); }
     if (matchURL("render-state.to")) { render_state(); }
-    if (matchURL("jable.tv")) { jable_tv(); }
+    if (matchURL("jable.tv")) { setTimeout(jable_tv, 2000); }
     if (matchURL("javdb.com")) { setTimeout(javdb_com, 2000); }
     if (matchURL("javlibrary.com")) { setTimeout(javlibrary, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
@@ -75,6 +80,12 @@ function main() {
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
     if (matchURL("lcsd.gov.hk")) { setTimeout(lcsd_gov_hk, 5000); }
     if (matchURL("cool18.com")) { setTimeout(cool18, 5000); }
+    // 绅次元
+    if (Mjztool.matchUrlList(["34king.life"])) { setTimeout(Home34, 3000); }
+    // 老王论坛
+    if (Mjztool.matchUrlList(["laowang.vip"])) { setTimeout(laowang_vip, 3000); }
+    if (Mjztool.matchUrlList(["exhentai.org", 'e-hentai.org'])) 
+        { setTimeout(EHentai, 3000); }
 
     if (document.title.indexOf("不太灵影视") > -1) 
     { setTimeout(butailing, 2000); }
@@ -83,6 +94,7 @@ function main() {
 function Styles(){
     var css ="";
     css +=".ExistsLocal_GreenBackground { background: green !important; }";
+    css +=".ExistsLocal_child_GreenColor, .ExistsLocal_child_GreenColor > * { color: green !important; }";
     css +=".ExistsLocal_GreenColor { color: green !important; }";
     css +="";
     Mjztool.addStyle(css);
@@ -120,10 +132,13 @@ function EverythingGetJSON(searchText, callback){
     GM_xmlhttpRequest({
         url: url,
         method :"GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
         responseType: "json",
-        onload:function(xhr){
-            // console.log(xhr.responseText);
-            if(callback) { callback(xhr.response);}
+        onload:function(response){
+            // console.log(response.responseText);
+            if(callback) { callback(response.response);}
         }
     });
 }
@@ -163,20 +178,46 @@ function steamcommunity_sharedfiles(){
 
 }
 function steamcommunity_workshop(){
-    jQuery(".workshopBrowseItems > div > a:nth-child(5)").each(function(){
-        var thisElem = jQuery(this);
-        // console.log(thisElem);
-        var searchText = thisElem.attr("href").split("id=");
-        searchText = searchText[1].split("&")[0];
 
+    var funcTitleEl = function(ahref, thisElem){
+        var searchText = ahref.split("id=");
+        searchText = searchText[1].split("&")[0];
         EverythingGetJSON(searchText, function(json){
             if (json) {
                 if (json["totalResults"] > 0) {
-                    thisElem.addClass("ExistsLocal_GreenBackground");
+                    thisElem.addClass("ExistsLocal_child_GreenColor");
                 }
             }
         });
-    });
+    };
+
+    if (matchURL("myworkshopfiles") || matchURL('/workshop/browse')) {
+        jQuery(".workshopBrowseItems > div > a:nth-child(5)").each(function(){
+            var thisElem = jQuery(this);
+            var ahref = thisElem.attr("href");
+            funcTitleEl(ahref, thisElem);
+        });
+    }
+    
+    if (matchURL("/workshop/filedetails/")) {
+        jQuery(".collectionItemDetails > a").each(function(){
+            var thisElem = jQuery(this);
+            var ahref = thisElem.attr("href");
+            funcTitleEl(ahref, thisElem);
+        });
+    }
+    
+
+}
+
+function Bangumi(){
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    if (matchURL("/subject")) { bangumi_subject(); }
+
+    bangumi_browserItemList(); 
 }
 
 function bangumi_subject(){
@@ -195,12 +236,11 @@ function bangumi_subject(){
         }
     });
 }
-function bangumi_anime_browser(){
+function bangumi_browserItemList(){
     Mjztool.addStyle(".workshopBrowseItems_green h3 a { color: green !important; }");
 
     jQuery("#browserItemList .item").each(function(){
         var thisElem = jQuery(this);
-        // console.log(thisElem);
         var searchText = thisElem.attr("id").replace("item_", "");
         searchText = searchText + ".bangumi";
 
@@ -213,6 +253,7 @@ function bangumi_anime_browser(){
         });
     });
 }
+
 
 function illusioncards_booru_org(){
     Mjztool.addStyle(".thumb_img_green { border: 1px solid green; }");
@@ -623,6 +664,25 @@ function douban(){
         });
     };
 
+    var funcHref = function(href, elem){
+        if (href.indexOf('subject/') >= 0) {
+            var id = href.split('/')[4];
+            var searchText = id;
+            if (href.indexOf('movie.douban') >= 0){
+                searchText = id + '.movie.douban';
+            }
+            console.log(searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        elem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
     if (Mjztool.matchUrlList(["/subject/"])) {
         var searchText = hs[4] + '.movie.douban';
         funcTitle(searchText);
@@ -631,6 +691,14 @@ function douban(){
     if (Mjztool.matchUrlList(["/celebrity/"])) {
         funcTitle(local_filename);
     }
+
+    jQuery('a').each(function(){
+        var href = jQuery(this).attr('href');
+        if (href && href.indexOf('subject') >= 0) {
+            funcHref(href, jQuery(this));
+        }
+    });
+
 }
 
 function youtube(){
@@ -639,38 +707,106 @@ function youtube(){
     var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
     Mjztool.addStyle(css);
 
-    var funcVideoItem = function(thisElem){
-        var href = thisElem.attr("href"); 
-        var vid = href.split('=')[1];
-        var searchText = 'Watch-v=' + vid + '.youtube';
+    var funcLocalButton = function() {
+        var btnId = 'btnLocal';
+        var baseBtnText = 'Local';
+        var buttonMarginLeft = '20';
+        var container = document.querySelector('ytd-watch-metadata');
+        var h1 = container.querySelector('h1');
+        var title = h1.querySelector('yt-formatted-string');
+        // h1.style.position = 'relative'
+        var button = document.createElement('button');
+        button.innerText = baseBtnText;
+        button.style.color = 'green';
+        button.addEventListener('click', function() {
+            if (isInitReady) {
+                // changeVideo();
+            }
+            else {
+                alert('please wait for the video ready');
+            }
+        });
+        title.after(button);
+        // button.style.position = 'absolute'
+        button.style.marginLeft = buttonMarginLeft + 'px';
+        button.setAttribute('id', btnId);
+    };
+
+    var funcSearch = function(searchText, thisElem){
+        console.log('search: ' + searchText);
         EverythingGetJSON(searchText, function(json){
             if (json) {
                 if (json["totalResults"] > 0) {
-                    var title = thisElem.find("#video-title");
-                    title.addClass(cssName);
+                    console.log('search: ' + searchText + '\n    exists local.');
+                    thisElem.addClass(cssName);
                 }
             }
         });
     };
 
-    var selector = '#dismissible > div > div.metadata.style-scope.ytd-compact-video-renderer > a';
-    jQuery(selector).each(function(){
-        var thisElem = jQuery(this);
-        funcVideoItem(thisElem);
-    });
+    var funcTitle = function(searchText){
+        console.log('search: ' + searchText);
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    console.log('search: ' + searchText + '\n    exists local.');
+                    funcLocalButton();
+                }
+            }
+        });
+    };
+
+    
+
+    var checkVideoItem = function(){ 
+        jQuery('ytd-rich-item-renderer').each(function(){
+            var thisElem = jQuery(this);
+
+            if (thisElem.attr('local-check') != 'checked') {
+
+                var elMetadataLine = thisElem.find('#metadata-line');
+                var elVideoTitleLink = thisElem.find('a#video-title-link');
+                var videoLink = elVideoTitleLink.attr('href');
+                var vid = videoLink.split('=')[1];
+        
+                var searchText1 = vid;
+                var searchText2 = 'Watch-v=' + vid + '.youtube';
+                var searchText = searchText1;
+                EverythingGetJSON(searchText, function(json){
+                    if (json) {
+                        if (json["totalResults"] > 0) {
+                            console.log('search: ' + searchText + '\n    exists local.');
+                            thisElem.attr('local-check', 'checked');
+                            elMetadataLine.addClass(cssName);
+                            elMetadataLine.append(`<span class="inline-metadata-item style-scope ytd-video-meta-block ${cssName}">Local</span>`);
+
+                        }
+                    }
+                });
+            }
+        });
+    };
+
+
+
+    if (Mjztool.matchUrlList(["/watch?"])) {
+        setTimeout(checkVideoItem, 3000);
+    }else{
+        setInterval(checkVideoItem, 3000);
+    }
+
 
     if (Mjztool.matchUrlList(["/watch?"])) {
         var qParams = getQueryParams();
         var vid = qParams['v'];
-        var searchText = 'Watch-v=' + vid + '.youtube';
-        EverythingGetJSON(searchText, function(json){
-            if (json) {
-                if (json["totalResults"] > 0) {
-                    var title = jQuery("#title");
-                    title.addClass(cssName);
-                }
-            }
-        });
+
+        var searchText1 =  vid;
+        var searchText2 = 'Watch-v=' + vid + '.youtube';
+
+        var titleEl = jQuery("#title");
+
+        funcTitle(searchText1);
+        funcTitle(searchText2);
     }
 
 
@@ -834,6 +970,193 @@ function cool18(){
             }, 1000);
 
         }
+    }
+}
+
+function Home34(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} h5 { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+    var params = getQueryParams();
+
+    var funcTitleEl = function(bookTitle, thisElem){
+        var bookName = bookTitle;
+        bookName = bookName.replaceAll(/【.{2,5}】/g, '');
+        bookName = bookName.replaceAll(/\[.{2,5}\]/g, '');
+        bookName = bookName.replaceAll(/\(.*\)/g, '');
+        bookName = bookName.replaceAll(/（.*）/g, '');
+        bookName = bookName.replaceAll(/1.*篇.*/g, '');
+        bookName = bookName.replaceAll(/1.*章.*/g, '');
+        bookName = bookName.replaceAll(/1.*集.*/g, '');
+        bookName = bookName.replaceAll(/1.*完.*/g, '');
+        bookName = bookName.replaceAll(/1.*全.*/g, '');
+        bookName = bookName.replaceAll(/全本/g, '');
+        var searchText = bookName;
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if (Mjztool.matchUrlList(["&tid="])) {
+        var bookTitle = jQuery('#thread_subject').text();
+        var headerTitle = jQuery("#postlist h1");
+        funcTitleEl(bookTitle, headerTitle);
+        
+    }else {
+        setTimeout(() => {
+            var selector =  ".new a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref && ahref.indexOf('&tid=')  > 0) {
+                    var bookTitle = thisElem.text();
+                    funcTitleEl(bookTitle, thisElem);
+                }
+            });  
+        }, 1000);
+    }
+}
+
+function laowang_vip(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} h5 { color: green !important; }`;
+    css += '.jammer {    display: none !important;}';
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+    var hs = href.split('/');
+    var params = getQueryParams();
+
+    var funcTitleEl = function(bookTitle, thisElem){
+        var bookName = bookTitle;
+        bookName = bookName.replaceAll(/【.{2,5}】/g, '');
+        bookName = bookName.replaceAll(/\[.{2,6}\]/g, '');
+        bookName = bookName.replaceAll(/\(.*\)/g, '');
+        bookName = bookName.replaceAll(/（.*）/g, '');
+        bookName = bookName.replaceAll(/《/g, '');
+        bookName = bookName.replaceAll(/》/g, '');
+        bookName = bookName.replaceAll(/作者.*/g, '');
+        bookName = bookName.replaceAll(/1.*篇.*/g, '');
+        bookName = bookName.replaceAll(/1.*章.*/g, '');
+        bookName = bookName.replaceAll(/1.*集.*/g, '');
+        bookName = bookName.replaceAll(/1.*完.*/g, '');
+        bookName = bookName.replaceAll(/1.*全.*/g, '');
+        bookName = bookName.replaceAll(/全本/g, '');
+        bookName = bookName.trim().split(' ')[0];
+        var searchText = bookName.trim();
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    if (Mjztool.matchUrlList(["&tid="])) {
+        var bookTitle = jQuery('#thread_subject').text();
+        var headerTitle = jQuery("#postlist h1");
+        funcTitleEl(bookTitle, headerTitle);
+        
+    }else if (Mjztool.matchUrlList(["/search/"])) {
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref && ahref.indexOf('&tid=')  > 0) {
+                    var bookTitle = thisElem.text();
+                    bookTitle = bookTitle.trim().split(' ')[1];
+                    funcTitleEl(bookTitle, thisElem);
+                }
+            });  
+        }, 1000);
+
+    }else {
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref && ahref.indexOf('&tid=')  > 0) {
+                    var bookTitle = thisElem.text();
+                    funcTitleEl(bookTitle, thisElem);
+                }
+            });  
+        }, 1000);
+    }
+}
+
+function EHentai(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+
+    var params = getQueryParams();
+
+    var funcTitle = function(searchText, thisElem){
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var funcTitleEl = function(ahref, thisElem){
+        ahref = ahref.replace('https://', '');
+        var urlPaths = ahref.split('/');
+        var searchText = '';
+        if (ahref.indexOf('/g/')  > -1) {
+            searchText = urlPaths[2] + '.' + urlPaths[3] + '.g.e-hentai';
+        }
+        
+        if (searchText != '') { 
+            console.log('search local file:' + searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        thisElem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
+    if (Mjztool.matchURL('/g/')) {
+        var headerTitle = jQuery("#gd2 #gn");
+        funcTitleEl(href, headerTitle);
+
+    }else {
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref.indexOf('/g/')  > -1) {
+                    funcTitleEl(ahref, thisElem);
+                }
+            });  
+        }, 1000);
+
     }
 }
 
