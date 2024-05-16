@@ -252,7 +252,7 @@ function OnClickButtonToTop() {
                 // return;
             }
             // if(++tryTimes>10000) return;
-            await delay(500);
+            await delay(1000);
         }
     })();
     

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ - BitTorrents
 // @namespace    https://github.com/maijz128
-// @version      23.11.09
+// @version      24.02.18
 // @description  描述
 // @author       MaiJZ
 // @match        *://sukebei.nyaa.si/*
@@ -76,6 +76,10 @@ function iTorrents_Nyaa(){
 
 function iTorrents_BTDig(){
     var favicon = iTorrents_Favicon;
+
+    Mjztool.addStyle('.torrent_size {color: magenta !important;}');
+
+
     if(Mjztool.matchURL("/search?"))
     {
         $(".one_result .torrent_magnet a").each(function(){

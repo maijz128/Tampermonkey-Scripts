@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MJZ-淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      23.11.22
-// @description  自动登录
+// @version      24.04.21
+// @description  淘宝助手
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
 // @match        *://*.tmall.com/*
@@ -23,7 +23,7 @@ function main() {
     } else if (matchURL('https://login.taobao.com/member/login.jhtml')) {
         // autoLogin();
     }else if (matchURL("/search?")){
-        EnterToInput();
+        TaoBaoSearch();
     }else if (matchURL("/item.htm?")){
         if (matchURL("taobao.com")) {
             TaoBao();
@@ -35,30 +35,19 @@ function main() {
 }
 
 
-function TaoBao(){
-    setTimeout(function () {
-            
-        var div_main_pic = $('div.tb-main-pic:first');
-        var btn = document.createElement("button");
-        btn.textContent = "原图";
-        btn.style = "position: absolute; opacity: 0.5;";
-        btn.addEventListener("click", function(){
-            var imgBooth = document.getElementById("J_ImgBooth");
-            var imgLink = imgBooth.getAttribute("src");
-            imgLink = imgLink.replace("_400x400.jpg", "");
-            window.open(imgLink);
-            
-        }, false);
-        div_main_pic.prepend(btn);
-        
-    }, 1000);
 
+function TaoBao(){
+    console.log('taobao item ...');
+
+    Thumbnail_img_src();
+
+    Item_li();
 
     setTimeout(function () {
         HUABEI_TotalAmount();
         HUABEI_TotalAmount_bind();
 
-        Item_li();
+        
     }, 3000);
 
     // 商品 URL
@@ -75,6 +64,13 @@ function TaoBao(){
 }
 
 function Tmall(){
+    console.log('Tmall item ...');
+
+    Thumbnail_img_src();
+
+    Item_li();
+
+
     setTimeout(function () {
         var div_main_pic = $('div.tb-booth:first');
         var btn = document.createElement("button");
@@ -92,12 +88,89 @@ function Tmall(){
     }, 1000);
 }
 
+function TaoBaoSearch(){
+    console.log('taobao sea ...');
+    EnterToInput();
+
+    var css = '';
+
+    css += '';
+    css += '.tb-toolkit{opacity: 0 !important;} .tb-toolkit:hover{opacity: 1 !important;}';
+    css += '';
+
+    addStyle(css);
+
+    setTimeout(function () {
+        var mainPicWrapSelector = "div[class^='RightLay--rightWrap'],div[class*=' RightLay--rightWrap']";
+        $(mainPicWrapSelector).each(function (index, element) {
+            var rightWrap = $(this);
+            rightWrap.css('display', 'none');
+        });
+    
+        var mainPicWrapSelector = "div[class^='LeftLay--leftWrap'],div[class*=' LeftLay--leftWrap']";
+        $(mainPicWrapSelector).each(function (index, element) {
+            var rightWrap = $(this);
+            rightWrap.css('width', '1024px');
+        });
+    
+    }, 2000);
+
+}
+
+function Thumbnail_img_src(){
+
+    var btn = document.createElement("button");
+    btn.textContent = "原图";
+    btn.id = "btn_img_src";
+    btn.style = "position: absolute; right: 0; opacity: 0.4; z-index: 9999;";
+    btn.addEventListener("click", function(){
+        var imgLink = '';
+        var imgBooth = document.querySelector(".js-image-zoom__zoomed-image");
+        if (imgBooth) {
+            // var imgLink = imgBooth.getAttribute("background-image");
+            var style = imgBooth.currentStyle || window.getComputedStyle(imgBooth, false),
+            imgLink = style.backgroundImage.slice(4, -1).replace(/"/g, "");
+            imgLink = imgLink.replace("url(", "");
+            imgLink = imgLink.replace(");", "");
+        }else{
+            var btn_img_src = document.getElementById("btn_img_src");
+            imgBooth = btn_img_src.parentElement.querySelector('img');
+            //  imgBooth = $('#btn_img_src').parent().child('img').first();
+            if (imgBooth) {
+                imgLink = imgBooth.getAttribute("src");
+            }
+        }
+        if (imgLink) {
+            window.open(imgLink);
+        }
+        
+    }, false);
+
+    setTimeout(function () {
+        
+        var mainPicWrapSelector = "div[class^='PicGallery--mainPicWrap'],div[class*=' PicGallery--mainPicWrap']";
+        $(mainPicWrapSelector).each(function (index, element) {
+            var mainPicWrap = $(this);
+            mainPicWrap.prepend(btn);
+        });
+        
+    }, 1000);
+
+}
+
 // 商品选项分类，排版
 function Item_li(){
     var css = '';
     css += '#detail .tb-key .tb-prop .tb-img li span { display: inline !important; padding-left: 40px;}';
     css += '#detail .tb-key .tb-prop .tb-img li a { background-position-x: left !important; }';
     css += '.J_Prop .J_TSaleProp { overflow: auto; max-height: 300px; }';
+
+    // 商品选项
+    css += 'div.skuItemWrapper {max-height: 300px; overflow-y: auto;}'
+
+    // 保障服务
+    css += 'div.service {max-height: 100px; overflow-y: auto;}'
+
 
     addStyle(css);
 }

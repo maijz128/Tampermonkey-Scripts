@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mjz-Porn helper
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      24.04.22
 // @description  remove AD.
 // @author       MaiJZ
 // @match        *://*.pornhub.com/*
@@ -17,7 +17,7 @@
 
 function main() {
     if (matchURL("pornhub.com") && matchURL("view_video.php")) {
-        pornhub_ViewVideo();
+        PornHub_ViewVideo();
     }
 
     if (matchURL("jable.tv") && matchURL("/videos/")) {
@@ -42,12 +42,14 @@ function removeAD() {
 }
 
 
-function pornhub_ViewVideo() {
+function PornHub_ViewVideo() {
 
     var css = "";
     css += ".mgp_progress{opacity: 0.4;}";
     css += ".mgp_fullscreen .mgp_controlBar {opacity: 0.2;}";
     css += ".mgp_fullscreen .mgp_controlBar:hover {opacity: 1.0;}";
+    css += '.mgp_playbackParentHidePauseNoControls{opacity: 0;} ';
+    css += '.mgp_playbackParentHidePauseNoControls:hover{opacity: 1;} ';
     addStyle(css);
 
     function removeRightAD() {

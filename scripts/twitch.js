@@ -1,18 +1,17 @@
 // ==UserScript==
-// @name         MJZ 18+漫画
+// @name         MaiJZ - Twitch
 // @namespace    https://github.com/maijz128
-// @version      24.05.15
+// @version      24.04.02
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.18comic.org/*
-// @match        *://*.wnacg.org/*
-// @match        *://*.wnacg.com/*
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://*.twitch.tv/*
+// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
-// @grant        GM.cookie 
+// @grant        GM.cookie
 // @grant        GM_setClipboard
+// @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
@@ -25,36 +24,71 @@
     },10);
 })();
 
-function main(){
-    if (Mjztool.matchURL("18comic.org")) {
-        comic18();   
-    }
-
-    if (Mjztool.matchUrlList(["wnacg", "wnacg.com"])) {
-        wnacg();   
-    }
-
-
-}
-
-
-function comic18() {
-    Mjztool.addStyle("#Comic_Top_Nav,.top-nav { opacity: 0; } #Comic_Top_Nav:hover,.top-nav:hover { opacity: 1; }");
-    Mjztool.addStyle(".menu-bolock { opacity: 0 !important; } .menu-bolock:hover { opacity: 1 !important; }");
-}
-
-
-function wnacg() {
-    var css = '';
-    css += '';
-    css += '';
-    css += ".uwconn > label { font-size: xx-large; } ";
-    css += '#img_list { width: 80%; margin: auto;}';
-    css += '';
-
+function main() {
+    var css = "";
+    css += '.top-bar, .player-controls, #channel-player-disclosures {opacity: 0;}';
+    css += '.top-bar:hover, .player-controls:hover, #channel-player-disclosures:hover {opacity: 1;}';
     Mjztool.addStyle(css);
 }
 
+
+/*******************************************************************************/
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
+
+function addStyle(styleContent) {
+    var elStyle = document.createElement("style");
+    elStyle.innerHTML = styleContent;
+    document.head.appendChild(elStyle);
+}
+
+
+function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
+    var urlSearchParams = new URLSearchParams(window.location.search);
+    var params = Object.fromEntries(urlSearchParams.entries());
+    return params;
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
+}
+
+
+function forceDownload(url, fileName){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.responseType = "blob";
+    xhr.onload = function(){
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = imageUrl;
+        tag.download = fileName;
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+    };
+    xhr.send();
+}
 
 function getCookie(name) {
     var nameEQ = name + "=";
@@ -79,13 +113,62 @@ function deleteCookie( name ) {
     document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+
+// Usage: fireKeyEvent(input元素, 'keydown', 13);  
+// http://blog.csdn.net/lovelyelfpop/article/details/52471878
+function fireKeyEvent(el, evtType, keyCode) {
+    var doc = el.ownerDocument;
+    var win = doc.defaultView || doc.parentWindow,
+        evtObj;
+    if (doc.createEvent) {
+        if (win.KeyEvent) {
+            evtObj = doc.createEvent('KeyEvents');
+            evtObj.initKeyEvent( evtType, true, true, win, false, false, false, false, keyCode, 0 );
+        }
+        else {
+            evtObj = doc.createEvent('UIEvents');
+            Object.defineProperty(evtObj, 'keyCode', {
+                get : function () { return this.keyCodeVal; }
+            });
+            Object.defineProperty(evtObj, 'which', {
+                get : function () { return this.keyCodeVal; }
+            });
+            evtObj.initUIEvent( evtType, true, true, win, 1 );
+            evtObj.keyCodeVal = keyCode;
+            if (evtObj.keyCode !== keyCode) {
+                console.log("keyCode " + evtObj.keyCode + " 和 (" + evtObj.which + ") 不匹配");
+            }
+        }
+        el.dispatchEvent(evtObj);
+    }
+    else if (doc.createEventObject) {
+        evtObj = doc.createEventObject();
+        evtObj.keyCode = keyCode;
+        el.fireEvent('on' + evtType, evtObj);
+    }
+}
+function eventFire(el, eType){
+    if (el.fireEvent) {
+      el.fireEvent('on' + eType);
+    } else {
+      var evObj = document.createEvent('Events');
+      evObj.initEvent(eType, true, false);
+      el.dispatchEvent(evObj);
+    }
+}
+
+function matchURL(url) {
+    var URL = window.location.href;
+    return URL.indexOf(url) > -1;
+}
+
 // toolkit
 function Mjztool(){}
 Mjztool.bytesToSize = function(bytes) {
     if (bytes === 0) return '0 B';
     var k = 1024;
-    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    i = Math.floor(Math.log(bytes) / Math.log(k));
+    var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
 };

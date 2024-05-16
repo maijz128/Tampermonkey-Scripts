@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      24.02.14
+// @version      24.05.16
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -37,6 +37,7 @@
 // @match        *://*.6bt0.com/*
 // @match        *://*.7bt0.com/*
 // @match        *://*.8bt0.com/*
+// @match        *://*.wnacg.com/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -76,7 +77,7 @@ function main() {
     if (matchURL("javlibrary.com")) { setTimeout(javlibrary, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
-    if (matchURL("douban.com")) { setTimeout(douban, 2000); }
+    if (matchURL("douban.com")) { setTimeout(DouBan, 2000); }
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
     if (matchURL("lcsd.gov.hk")) { setTimeout(lcsd_gov_hk, 5000); }
     if (matchURL("cool18.com")) { setTimeout(cool18, 5000); }
@@ -86,6 +87,9 @@ function main() {
     if (Mjztool.matchUrlList(["laowang.vip"])) { setTimeout(laowang_vip, 3000); }
     if (Mjztool.matchUrlList(["exhentai.org", 'e-hentai.org'])) 
         { setTimeout(EHentai, 3000); }
+
+    if (Mjztool.matchUrlList(["wnacg.com",])) 
+        { setTimeout(WNACG, 3000); }
 
     if (document.title.indexOf("不太灵影视") > -1) 
     { setTimeout(butailing, 2000); }
@@ -642,7 +646,7 @@ function civitai(){
 
 }
 
-function douban(){
+function DouBan(){
     EverythingHttpRequest_LOG = false;
     var cssName = "Model_ExistsLocal_GreenColor";
     var css = `.${cssName}, .${cssName} > span { color: green !important; }`;
@@ -692,12 +696,19 @@ function douban(){
         funcTitle(local_filename);
     }
 
-    jQuery('a').each(function(){
-        var href = jQuery(this).attr('href');
-        if (href && href.indexOf('subject') >= 0) {
-            funcHref(href, jQuery(this));
-        }
+    var selector_list = ["#recommendations a", ".info a", ".article li a" ];
+
+
+    selector_list.forEach(function(selector){
+        jQuery(selector).each(function(){
+            var href = jQuery(this).attr('href');
+            if (href && href.indexOf('subject') >= 0) {
+                funcHref(href, jQuery(this));
+            }
+        });
     });
+
+    
 
 }
 
@@ -709,12 +720,17 @@ function youtube(){
 
     var funcLocalButton = function() {
         var btnId = 'btnLocal';
-        var baseBtnText = 'Local';
+        var baseBtnText = 'Local💾';
         var buttonMarginLeft = '20';
         var container = document.querySelector('ytd-watch-metadata');
         var h1 = container.querySelector('h1');
         var title = h1.querySelector('yt-formatted-string');
         // h1.style.position = 'relative'
+
+        if (document.querySelector(`#${btnId}`) != null) {
+            return;
+        }
+
         var button = document.createElement('button');
         button.innerText = baseBtnText;
         button.style.color = 'green';
@@ -787,26 +803,37 @@ function youtube(){
         });
     };
 
+    var lastHref = '';
 
 
     if (Mjztool.matchUrlList(["/watch?"])) {
-        setTimeout(checkVideoItem, 3000);
+
+        setInterval(function(){
+            if (lastHref != window.location.href) {
+                lastHref = window.location.href;
+
+                setTimeout(checkVideoItem, 3000);
+
+                var qParams = getQueryParams();
+                var vid = qParams['v'];
+        
+                var searchText1 =  vid;
+                var searchText2 = 'Watch-v=' + vid + '.youtube';
+        
+                var titleEl = jQuery("#title");
+        
+                funcTitle(searchText1);
+                funcTitle(searchText2);
+            }
+        }, 2000);
+
     }else{
         setInterval(checkVideoItem, 3000);
     }
 
 
     if (Mjztool.matchUrlList(["/watch?"])) {
-        var qParams = getQueryParams();
-        var vid = qParams['v'];
 
-        var searchText1 =  vid;
-        var searchText2 = 'Watch-v=' + vid + '.youtube';
-
-        var titleEl = jQuery("#title");
-
-        funcTitle(searchText1);
-        funcTitle(searchText2);
     }
 
 
@@ -1157,6 +1184,60 @@ function EHentai(){
             });  
         }, 1000);
 
+    }
+}
+
+function WNACG(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+
+    var params = getQueryParams();
+
+    var funcTitleEl = function(ahref, thisElem){
+        ahref = ahref.replace('https://', '');
+        // var urlPaths = ahref.split('/');
+        var searchText = '';
+        
+        var pID = ahref.match('/photos-index-aid-(.*).html');
+        if (pID) {
+            var photosID = pID[1];
+            searchText = photosID + '.photos.wnacg';
+        } 
+        
+        if (searchText != '') { 
+            console.log('search local file:' + searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        thisElem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
+    if (Mjztool.matchURL('/photos-index-aid-')) {
+
+        var headerTitle = jQuery("h2");
+        funcTitleEl(href, headerTitle);
+
+    }else {
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref.indexOf('.html')  > -1) {
+                    funcTitleEl(ahref, thisElem);
+                }
+            });  
+        }, 1000);
+        
     }
 }
 
