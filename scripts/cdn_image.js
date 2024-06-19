@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         MaiJZ - alicdn_image
+// @name         MaiJZ - CDN_Image（高质量图片）
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      24.06.14
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.alicdn.com/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
+// @match        *://*.steamstatic.com/*
+// @match        *://*.media-amazon.com/*
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -26,15 +27,32 @@
 })();
 
 function main() {
-    if (matchURL("_640x640.jpg")) {
-        var url = window.location.href;
-        window.location.href = url.replace("_640x640.jpg", "");
+    if (matchURL('alicdn.com')) {
+        if (matchURL("_640x640.jpg")) {
+            var url = window.location.href;
+            window.location.href = url.replace("_640x640.jpg", "");
+        }
+        if (matchURL("_640x640.png")) {
+            var url = window.location.href;
+            window.location.href = url.replace("_640x640.png", "");
+        }
     }
-    if (matchURL("_640x640.png")) {
-        var url = window.location.href;
-        window.location.href = url.replace("_640x640.png", "");
+
+    if (matchURL('steamstatic.com')) {
+        if (matchURL(".600x338.jpg")) {
+            var url = window.location.href;
+            window.location.href = url.replace(".600x338.jpg", ".jpg");
+        }
+    }
+
+    if (matchURL('media-amazon.com')) {
+        if (matchURL("._AC_UF894,1000_QL80_.jpg")) {
+            var url = window.location.href;
+            window.location.href = url.replace("._AC_UF894,1000_QL80_.jpg", ".jpg");
+        }
     }
 }
+
 
 
 /*******************************************************************************/

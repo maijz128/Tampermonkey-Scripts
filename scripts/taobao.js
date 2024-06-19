@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      24.04.21
+// @version      24.06.18
 // @description  淘宝助手
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
@@ -13,10 +13,18 @@
 
 
 (function () {
-    main();
+    setTimeout(() => {
+        main();
+    }, 1000);
 })();
 
 function main() {
+
+    if (matchURL('https://web.m.taobao.com/app/mtb/pc-itaotool/collect?tab=shop')) {
+        window.location.href = 'https://shoucang.taobao.com/shop_collect_list.htm';
+    }
+
+    TB_All();
     if (matchURLAbsolute('https://www.taobao.com/')) {
         console.log('官网首页');
         // jumpToLogin();
@@ -32,9 +40,20 @@ function main() {
         }
     }
     Mercury_Album_Box();
+    EnterShopAllSearch();
 }
 
+function TB_All(){
 
+    var css = '';
+
+    css += '';
+    // css += '.tb-toolkit{opacity: 0 !important;} .tb-toolkit:hover{opacity: 1 !important;}';
+    css += '.tb-toolkit{display: none !important;} ';
+    css += '';
+
+    addStyle(css);
+}
 
 function TaoBao(){
     console.log('taobao item ...');
@@ -92,29 +111,32 @@ function TaoBaoSearch(){
     console.log('taobao sea ...');
     EnterToInput();
 
-    var css = '';
 
-    css += '';
-    css += '.tb-toolkit{opacity: 0 !important;} .tb-toolkit:hover{opacity: 1 !important;}';
-    css += '';
+    var css = '';
+    css += "div[class^='RightLay--rightWrap'],div[class*=' RightLay--rightWrap'] {display: none !important;}";
+    css += "div[class^='LeftLay--leftWrap'],div[class*=' LeftLay--leftWrap'] {width: 1024px !important;}";
 
     addStyle(css);
 
-    setTimeout(function () {
-        var mainPicWrapSelector = "div[class^='RightLay--rightWrap'],div[class*=' RightLay--rightWrap']";
-        $(mainPicWrapSelector).each(function (index, element) {
-            var rightWrap = $(this);
-            rightWrap.css('display', 'none');
-        });
-    
-        var mainPicWrapSelector = "div[class^='LeftLay--leftWrap'],div[class*=' LeftLay--leftWrap']";
-        $(mainPicWrapSelector).each(function (index, element) {
-            var rightWrap = $(this);
-            rightWrap.css('width', '1024px');
-        });
-    
-    }, 2000);
 
+}
+
+// 在商品页面，添加‘所有商品’按钮
+function EnterShopAllSearch(){
+
+    if (matchURL('item.htm')) {
+        var ShopHeader_optionWrap = "div[class^='ShopHeader--optionWrap'],div[class*=' ShopHeader--optionWrap']";
+        $(ShopHeader_optionWrap).each(function (index, element) {
+            var sHeader = $(this);
+            // var $child =  $(this).children("a:last-child").clone(true,true);
+            var lastChild =  $(this).children("a:last-child");
+            var btnClass = lastChild.attr('class');
+            var shopHref = lastChild.attr('href').split('?')[0];
+            var btnHref = shopHref + '/search.htm'; 
+            var btn = '<a class="' + btnClass + '" _target="_blank" href="' + btnHref + '"><span>所有商品</span></a>';
+            sHeader.append(btn);
+        });
+    }
 }
 
 function Thumbnail_img_src(){
@@ -166,10 +188,18 @@ function Item_li(){
     css += '.J_Prop .J_TSaleProp { overflow: auto; max-height: 300px; }';
 
     // 商品选项
-    css += 'div.skuItemWrapper {max-height: 300px; overflow-y: auto;}'
+    css += '.skuItemWrapper {max-height: 300px; overflow-y: auto;}'
+    css += '.skuItem {max-width: 100% !important; }'
+    css += '.skuItem .skuValueName {max-width: 100% !important; }'
 
     // 保障服务
     css += 'div.service {max-height: 100px; overflow-y: auto;}'
+
+
+    css += "div[class^='Item2024--mainInnerWrap'],div[class*=' Item2024--mainInnerWrap'] {width: 86% !important;}";
+    css += '.skuWrapper {max-height: 300px; overflow-y: auto;}'
+    css += "#purchasePanel { width: 60% !important;     position: initial !important;}";
+    css += "#purchasePanel div[class^='PurchasePanel--footWrap'],div[class*=' PurchasePanel--footWrap'] {position: initial !important;}";
 
 
     addStyle(css);

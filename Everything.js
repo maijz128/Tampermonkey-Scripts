@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      24.05.16
+// @version      24.06.19
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -24,6 +24,8 @@
 // @match        *://*.jable.tv/*
 // @match        *://*.javdb.com/*
 // @match        *://*.javlibrary.com/*
+// @match        *://*.javbus.com/*
+// @match        *://sukebei.nyaa.si/*
 // @match        *://*.pornhub.com/*
 // @match        *://*.civitai.com/*
 // @match        *://*.douban.com/*
@@ -75,6 +77,8 @@ function main() {
     if (matchURL("jable.tv")) { setTimeout(jable_tv, 2000); }
     if (matchURL("javdb.com")) { setTimeout(javdb_com, 2000); }
     if (matchURL("javlibrary.com")) { setTimeout(javlibrary, 2000); }
+    if (matchURL("javbus.com")) { setTimeout(javbus, 2000); }
+    if (matchURL("sukebei.nyaa.si")) { setTimeout(nyaa, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
     if (matchURL("douban.com")) { setTimeout(DouBan, 2000); }
@@ -549,6 +553,92 @@ function javlibrary(){
     });
 
 }
+
+function javbus(){
+    var cssName = "ExistsLocal_GreenColor_javbus";
+    var css = '.ExistsLocal_GreenColor_javbus { color: green !important; }';
+    css += '.ExistsLocal_GreenColor_javbus .photo-info span { color: green !important; }';
+    Mjztool.addStyle(css);
+    
+    var func = function(searchText, thisElem){
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+
+    var h3Title = jQuery('h3');
+    if (h3Title) {
+        var avid = h3Title.text().split(' ')[0];
+        var elem = h3Title;
+        func(avid, elem);
+    }
+
+
+
+    jQuery("a.movie-box").each(function(){
+        var avidElem = jQuery(this);
+        var avidHref = jQuery(this).attr('href');
+        avidHref = avidHref.replace('https://', '');
+        var avid = avidHref.split('/')[1];
+        avid = avid.replace('/', '');
+        func(avid, avidElem);
+    });
+
+}
+
+function nyaa(){
+    var cssName = "ExistsLocal_GreenColor";
+    
+    var func = function(searchText, thisElem){
+        console.log(searchText);
+
+        EverythingGetJSON(searchText, function(json){
+            if (json) {
+                if (json["totalResults"] > 0) {
+                    thisElem.addClass(cssName);
+                }
+            }
+        });
+    };
+
+    var funcAV = function(text, thisElem){
+        var avidText = text;
+        // var avidText = text.replace(/\[.*?\]/g, '');
+        var avidList = avidText.trim().split(' ');
+        for (let i = 0; i < avidList.length; i++) {
+            const avid = avidList[i];
+            if (avid.indexOf('-') > -1) {
+                func(avid, thisElem);
+            }
+        }
+    };
+
+
+    var h3Title = jQuery('h3');
+    if (h3Title) {
+        var avidText = h3Title.text();
+        var elem = h3Title;
+        funcAV(avidText, elem);
+    }
+
+
+
+    jQuery(".container .table-responsive table td:nth-child(2) > a").each(function(){
+        var avidElem = jQuery(this);
+        var avidText = jQuery(this).text();
+        
+        funcAV(avidText, avidElem);
+    });
+
+}
+
 
 function pornhub(){
     var cssName = "ExistsLocal_GreenColor";
