@@ -921,12 +921,6 @@ function youtube(){
         setInterval(checkVideoItem, 3000);
     }
 
-
-    if (Mjztool.matchUrlList(["/watch?"])) {
-
-    }
-
-
 }
 
 

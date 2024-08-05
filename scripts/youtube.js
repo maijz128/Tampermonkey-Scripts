@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-Youtube助手
 // @namespace    https://github.com/maijz128
-// @version      24.05.22
+// @version      24.07.13
 // @description  描述
 // @author       MaiJZ
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
@@ -264,9 +264,9 @@ function OnClickButtonToTop() {
 // 自动隐藏滚动条
 function OnAutoHideScrollBar() {
     var css = "";
-    css += "body { overflow: hidden !important; }";
-    css += "body:hover { overflow: auto !important; }";
-    css += "html:hover body { overflow: auto !important; }";
+    css += "body { overflow-x: hidden !important;  overflow-y: hidden !important; }";
+    css += "body:hover { overflow-y: auto !important; }";
+    css += "html:hover body { overflow-y: auto !important; }";
     addStyle(css);
 }
 

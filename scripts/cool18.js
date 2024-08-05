@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
-// @version      24.03.05
+// @version      24.08.05
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.cool18.com/*
-//// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -52,7 +51,16 @@ function main() {
         $("body").attr("style", Background_Color_Style);
         $("tbody").attr("style", Background_Color_Style);
         $("tbody tr").attr("style", Background_Color_Style);   
+
+        ThreadView();
     }
+
+
+
+
+}
+
+function ThreadView(){
 
     $(".show_content pre font").each(function(){
         var f = $(this);
@@ -61,6 +69,7 @@ function main() {
             f.remove(); // f.text("");
         }
     });
+
 
     // var td_btn = `<td><button onclick="remove_br()">删除换行</button></td>`;
     // $(".show_content table tbody tr").append(td_btn);
@@ -111,7 +120,6 @@ function main() {
     btn3.textContent = "格式化换行";
     btn3.onclick = function ()
     {
-
         $("tbody p").text(function(i,origText){
             var text = origText;
             text = text.replace(/\r\n/g,"<br>");  
@@ -149,14 +157,28 @@ function main() {
         });
     };
 
+    var btnCopy = document.createElement("button");
+    btnCopy.textContent = "复制内容";
+    btnCopy.onclick = function ()
+    {
+        // var text =  $("tbody pre").text();
+        var elText = document.querySelector("tbody pre");
+        var text = elText.innerText || elText.textContent;
+        Mjztool.GM_setClipboard(text);
+    };
+
     var td = document.createElement("td");
     td.appendChild(btn);
     td.appendChild(btn2);
     td.appendChild(btn3);
     td.appendChild(btn4);
+    td.appendChild(btnCopy);
 
     $(".show_content table tbody tr").append(td);
 }
+
+
+
 
 
 /*******************************************************************************/

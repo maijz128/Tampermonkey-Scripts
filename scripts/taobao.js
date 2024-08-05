@@ -147,7 +147,7 @@ function Thumbnail_img_src(){
     btn.style = "position: absolute; right: 0; opacity: 0.4; z-index: 9999;";
     btn.addEventListener("click", function(){
         var imgLink = '';
-        var imgBooth = document.querySelector(".js-image-zoom__zoomed-image");
+        var imgBooth = document.querySelector(".js-image-zoom__zoomed-image:last-child");
         if (imgBooth) {
             // var imgLink = imgBooth.getAttribute("background-image");
             var style = imgBooth.currentStyle || window.getComputedStyle(imgBooth, false),

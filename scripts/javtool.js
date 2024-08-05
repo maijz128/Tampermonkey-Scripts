@@ -1,63 +1,86 @@
 // ==UserScript==
-// @name         MaiJZ - CDN_Image（高质量图片）
+// @name         JavTool - MaiJZ
 // @namespace    https://github.com/maijz128
-// @version      24.06.22
+// @version      24.07.18
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.alicdn.com/*
-// @match        *://*.steamstatic.com/*
-// @match        *://*.media-amazon.com/*
-// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_cookie
-// @grant        GM.cookie
-// @grant        GM_setClipboard
-// @grant        GM_xmlhttpRequest
-// @grant        unsafeWindow
-// @grant        window.close
-// @grant        window.focus
+// @match        *://www.jav321.com/video/*
+// @match        *://*.javdb.com/*
+// @grant        none
 // ==/UserScript==
 
+const VOLUME = 0.3;
+const id = "vjs_sample_player_html5_api";
 
 (function () {
-    setTimeout(function(){
-        main();
-    },10);
+    main();
 })();
 
+
+
 function main() {
-    if (matchURL('alicdn.com')) {
-        if (matchURL("_640x640.jpg")) {
-            var url = window.location.href;
-            window.location.href = url.replace("_640x640.jpg", "");
-        }
-        if (matchURL("_640x640.png")) {
-            var url = window.location.href;
-            window.location.href = url.replace("_640x640.png", "");
-        }
+    if (matchURL('jav321.com')) {
+        jav321_lowerVolume();
+        jav321_setPlayerStyle();
     }
 
-    if (matchURL('steamstatic.com')) {
-        if (matchURL(".600x338.jpg")) {
-            var url = window.location.href;
-            window.location.href = url.replace(".600x338.jpg", ".jpg");
-        }
+    if (matchURL('javdb.com')) {
+        setTimeout(JavDB, 1000);
     }
 
-    if (matchURL('media-amazon.com')) {
-        if (matchURL("._AC_UF")) {
-            var url = window.location.href;
-            var urlNew = url;
-            urlNew = url.replace(/\._AC_.*_/g, "");
-            window.location.href = urlNew;
-        }
+}
+
+function jav321_lowerVolume() {
+    // document.getElementById(id).volume = volume;
+    var videos = document.querySelectorAll("video");
+    for (let index = 0; index < videos.length; index++) {
+        const element = videos[index];
+        element.volume = VOLUME;
     }
 }
 
 
+function jav321_setPlayerStyle() {
+    // var styleContent = "#player_3x2_close { font-size: 15em; } ";
+    // addStyle(styleContent);
+
+    var player_iframe = document.querySelector("iframe");
+    if (player_iframe) {
+        // player_iframe.setAttribute("width", "800");
+        // player_iframe.setAttribute("height", "600");
+        player_iframe.setAttribute("scrolling", "no");        
+        player_iframe.setAttribute("id", "player_iframe");
+        var styleContent = "#player_iframe { width: 1000px; height: 650px; position: relative; z-index: 99;}";
+        addStyle(styleContent);
+    }
+}
+
+function JavDB() {
+    if (matchURL('/v/')) {
+        var panel = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block');
+
+        // Add Button jump nyaa
+        {
+            var avid = '';
+            avid = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block  span').innerText;
+            var hrefNyaa = 'https://sukebei.nyaa.si/?f=0&c=0_0&q=' + avid;
+            var btnNyaa = document.createElement('a');
+            btnNyaa.setAttribute('class', 'button');
+            btnNyaa.setAttribute('href', hrefNyaa);
+            btnNyaa.innerText = 'Nyaa';
+            panel.appendChild(btnNyaa);
+        }
+
+    }
+}
 
 /*******************************************************************************/
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -70,6 +93,25 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
 }
 
 
@@ -249,3 +291,4 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
+

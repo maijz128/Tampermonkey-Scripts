@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
-// @version      23.2.2
+// @version      24.06.30
 // @description  描述
 // @author       MaiJZ
 // @require      https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
@@ -70,6 +70,7 @@
 // @match        *://*.penghe.net/*
 // @match        *://*.sjks88.com/*
 // @match        *://*.xbyuan.com/*
+// @match        *://*.xn--fiq228cu93a4kh.com/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -148,6 +149,7 @@ function main() {
     if (Mjztool.matchUrlList(["penghe.net"])) { penghe(); }       
     if (Mjztool.matchUrlList(["sjks88.com"])) { sjks88(); }       
     if (Mjztool.matchUrlList(["xbyuan.com"])) { xbyuan(); }       
+    if (Mjztool.matchUrlList(["xn--fiq228cu93a4kh.com"])) { feixs(); }       
    
     
 }
@@ -1058,9 +1060,39 @@ function xbyuan(){
     
 }
 
+function feixs(){
+    var css1 = '';
+    css1 += "";
+    css1 += "body { font-family: 微软雅黑, 宋体 !important; font-size: 16px !important; }";
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL("/index.html")) {
+        var author = $('#main > div.bookinfo > div.info > p:nth-child(2) > span');
+        var newText = author.text().replace('文 / ', '\n 作者：');
+        author.text(newText);
+
+        $('.recbooks a').each(function(){
+            var ahref = $(this).attr('href');
+            var host = window.location.origin;
+            var newhref = ahref.replace(/http.*com/g, host);
+            $(this).attr('href', newhref);
+        });
+    }
+    
+}
 
 
 
+
+
+
+
+
+
+
+
+/*****************************************************************************************/
+/*****************************************************************************************/
 /*****************************************************************************************/
 
 var AD_CheckerInterval = 5000;
