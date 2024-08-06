@@ -39,6 +39,13 @@ function open_in_new_tab(selector){
 }
 
 
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string, sink) => string
+    });
+}
+
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
     elStyle.innerHTML = styleContent;

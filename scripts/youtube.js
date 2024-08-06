@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         MJZ-Youtube助手
 // @namespace    https://github.com/maijz128
-// @version      24.07.13
+// @version      24.08.06
 // @description  描述
 // @author       MaiJZ
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @match        *://*.youtube.com/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
+//// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -17,28 +17,62 @@
 
 
 
-console.log("MJZ-Youtube助手 is loading");
-(async () => // onStart
+setTimeout(() => {
+    console.log("MJZ-Youtube助手 is loading");
+    // waitElementLoad("#start", 1, 10, 300).then(main);
+    waitElementLoad2("#start", 1, 10, 300, main);
+}, 100);
+
+const delay = (ms = 0) => {return new Promise((r)=>{setTimeout(r, ms)})};
+
+const waitElementLoad = (elementSelector, selectCount = 1, tryTimes = 1, interval = 0) =>
 {
-    let tryTimes = 0;
-    while(true)
+    return new Promise(async (resolve, reject)=>
     {
-        // console.log("try load");
-        if(document.querySelector("#start")!=null)
+        let t = 1, result;
+        while(true)
         {
-            main();
-            return;
+            if(selectCount != 1) {if((result = document.querySelectorAll(elementSelector)).length >= selectCount) break;}
+            else {if(result = document.querySelector(elementSelector)) break;}
+
+            if(tryTimes>0 && ++t>tryTimes) return reject(new Error("Wait Timeout"));
+            await delay(interval);
         }
-        if(++tryTimes>10) return;
-        await delay(300);
-    }
-})();
+        resolve(result);
+    })
+};
 
 
-function delay(ms = 0){return new Promise((r)=>{setTimeout(r, ms)})}
+function waitElementLoad2 (elementSelector, selectCount = 1, tryTimes = 1, interval = 0, func) {
+    let tryCount = 0;
+    let inter = setInterval(() => {
+        var done = false;
+        if(selectCount != 1) {
+            if((result = document.querySelectorAll(elementSelector)).length >= selectCount) 
+            done = true;
+        }
+        else {
+            if(result = document.querySelector(elementSelector)) 
+            done = true;
+        }
+
+        if(tryTimes > 0 && ++tryCount > tryTimes) {
+            done = true;
+        }
+
+        if (done) {
+            if(func) func();
+            clearInterval(inter);
+        }
+
+    }, interval);
+}
 
 
-function main() {
+
+
+const main = () =>
+{
     OpenInNewTab();
 
     if (matchURL('/watch?')) {
@@ -54,6 +88,8 @@ function main() {
         // 自动隐藏滚动条
         OnAutoHideScrollBar();
     }
+
+    console.log("MJZ-Youtube助手 is done");
 }
 
 // Youtube 新标签页打开
@@ -226,6 +262,7 @@ function OpenInNewTab() {
 
 // 全屏时隐藏UI
 function OnFullscreenHideUI(){
+    console.log('全屏时隐藏UI');
     var css = "";
     css += ".ytp-gradient-top, .ytp-gradient-bottom {opacity: 0;}";
     // css += ".ytp-fullscreen .ytp-chrome-top {opacity: 0;}";
@@ -239,19 +276,23 @@ function OnFullscreenHideUI(){
 
 // 按钮，滚动至顶部
 function OnClickButtonToTop() {
- 
+    console.log('按钮，滚动至顶部');
     (async () => // onStart
     {
         let tryTimes = 0;
         while(true)
         {
-            // console.log("try load");
             var btnToTopID = 'btnGoToTop';
-            if(document.querySelector("#top-level-buttons-computed") != null 
+            var buttons = document.querySelector("#top-level-buttons-computed");
+            if(buttons != null 
             && document.querySelector(`#${btnToTopID}`) == null)
             {
                 var btnToTop = `<button id="${btnToTopID}" class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-leading" aria-label="To Top" title="To Top" onclick="window.scrollTo(0, 0);">Top</button>`;
-                $("#top-level-buttons-computed").append(btnToTop);
+
+                var elDiv = document.createElement("div");
+                elDiv.innerHTML = btnToTop;
+                buttons.appendChild(elDiv);
+
                 // return;
             }
             // if(++tryTimes>10000) return;
@@ -263,6 +304,7 @@ function OnClickButtonToTop() {
 
 // 自动隐藏滚动条
 function OnAutoHideScrollBar() {
+    console.log('自动隐藏滚动条');
     var css = "";
     css += "body { overflow-x: hidden !important;  overflow-y: hidden !important; }";
     css += "body:hover { overflow-y: auto !important; }";
@@ -290,6 +332,14 @@ function matchURLAbsolute(url) {
     const href = window.location.href;
     const len = href.length;
     return href.indexOf(url) > -1 && url.length == len;
+}
+
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string, sink) => string
+    });
 }
 
 function addStyle(styleContent) {
