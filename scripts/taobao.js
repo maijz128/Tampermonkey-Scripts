@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-淘宝助手
 // @namespace    https://github.com/maijz128
-// @version      24.06.18
+// @version      24.10.09
 // @description  淘宝助手
 // @author       MaiJZ
 // @match        *://*.taobao.com/*
@@ -113,8 +113,8 @@ function TaoBaoSearch(){
 
 
     var css = '';
-    css += "div[class^='RightLay--rightWrap'],div[class*=' RightLay--rightWrap'] {display: none !important;}";
-    css += "div[class^='LeftLay--leftWrap'],div[class*=' LeftLay--leftWrap'] {width: 1024px !important;}";
+    css += "div[class^='rightWrap--'],div[class*=' rightWrap--'] {display: none !important;}";
+    css += "div[class^='leftWrap--'],div[class*=' leftWrap--'] {width: 1024px !important;}";
 
     addStyle(css);
 
@@ -188,12 +188,12 @@ function Item_li(){
     css += '.J_Prop .J_TSaleProp { overflow: auto; max-height: 300px; }';
 
     // 商品选项
-    css += '.skuItemWrapper {max-height: 300px; overflow-y: auto;}'
-    css += '.skuItem {max-width: 100% !important; }'
-    css += '.skuItem .skuValueName {max-width: 100% !important; }'
+    css += "div[class^='skuWrapper '],div[class*=' skuWrapper'] {max-height: 300px; overflow-y: auto;}";
+    css += "div[class^='valueItem '],div[class*=' valueItem'] {max-width: 100% !important; }";
+    css += "span[class^='valueItemText '],span[class*=' valueItemText'] {max-width: 100% !important; }"
 
     // 保障服务
-    css += 'div.service {max-height: 100px; overflow-y: auto;}'
+    css += "div[class^='Service '],div[class*=' Service'] {max-height: 100px; overflow-y: auto;}";
 
 
     css += "div[class^='Item2024--mainInnerWrap'],div[class*=' Item2024--mainInnerWrap'] {width: 86% !important;}";

@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
-// @version      24.06.30
+// @version      24.10.20
 // @description  描述
 // @author       MaiJZ
-// @require      https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @require      https://code.jquery.com/jquery-2.1.1.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -71,6 +71,7 @@
 // @match        *://*.sjks88.com/*
 // @match        *://*.xbyuan.com/*
 // @match        *://*.xn--fiq228cu93a4kh.com/*
+// @match        *://*.shuhaige.net/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -99,6 +100,12 @@ function main() {
         onKeyDown();
     }, timeout);
 
+    if (Mjztool.matchURL('m.') && Mjztool.matchURL('.html')) {
+        var css = '';
+        css += '#info .tui a {   font-size: 16px !important;     margin: 0 6px !important;     line-height: 1.5em !important; }';
+        css += '';
+        Mjztool.addStyle(css);
+    }
 
     if (Mjztool.matchUrlList(["shouda88.com", "shouda8.com", "shouda88.net"])) {
         shouda8();
@@ -150,6 +157,7 @@ function main() {
     if (Mjztool.matchUrlList(["sjks88.com"])) { sjks88(); }       
     if (Mjztool.matchUrlList(["xbyuan.com"])) { xbyuan(); }       
     if (Mjztool.matchUrlList(["xn--fiq228cu93a4kh.com"])) { feixs(); }       
+    if (Mjztool.matchUrlList(["shuhaige.net"])) { shuhaige(); }       
    
     
 }
@@ -1064,6 +1072,10 @@ function feixs(){
     var css1 = '';
     css1 += "";
     css1 += "body { font-family: 微软雅黑, 宋体 !important; font-size: 16px !important; }";
+    css1 += ".book a { font-size: 16px; } ";
+    css1 += ".book .tab3 { width: 300px; } ";
+    css1 += ".book .tab4 { width: 200px; } ";
+    css1 += ".book_woman .tab3 a { color: gray !important; } ";
     Mjztool.addStyle(css1);
 
     if (Mjztool.matchURL("/index.html")) {
@@ -1078,10 +1090,36 @@ function feixs(){
             $(this).attr('href', newhref);
         });
     }
+
+    if (Mjztool.matchURL("/book/")) {
+        var clist = ['古代言情', '快穿', '豪门总裁', '双男主', '青春甜宠', '宫斗宅斗', '现言', '现言脑洞', '现代言情', '星光璀璨', '幻想言情', '女生小说'];
+    
+        $('.book li a').each(function(){
+            var atext = $(this).text();
+            if (clist.indexOf(atext) > -1) {
+                $(this).parent().parent().parent().addClass('book_woman');
+            }
+        });
+    }
     
 }
 
 
+
+
+function shuhaige(){
+    var css1 = '';
+    css1 += "";
+    css1 += "body { font-family: 微软雅黑, 宋体 !important; font-size: 16px !important; }";
+    // Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL(".html") && Mjztool.matchURL("/list_")) {
+        var href = window.location.href;
+        href = href.replace('/list_', '/');
+        window.location.href = href;
+    }
+    
+}
 
 
 

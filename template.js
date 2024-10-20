@@ -5,9 +5,7 @@
 // @description  描述
 // @author       MaiJZ
 // @match        *://*/*
-//// @require      https://cdn.bootcdn.net/ajax/libs/jquery/1.6.4/jquery.min.js
-//// @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js
-// @require        https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
+// @require      https://code.jquery.com/jquery-2.2.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -57,6 +55,20 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+
+function downloadText(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
 }
 
 /**
@@ -209,6 +221,24 @@ Mjztool.addFunction = function(func, name) {
 Mjztool.GM_setClipboard = function(content) {
 	// @grant        GM_setClipboard
     GM_setClipboard(content);
+};
+Mjztool.GM_downloadImg = function(pic_url, filename) {
+	// @grant        GM_xmlhttpRequest
+    GM_xmlhttpRequest ( {
+        method:         'GET',
+        url:            pic_url,
+        responseType:   'blob',
+        onload:         function (resp) {
+            var blob = resp.response;
+            var link = document.createElement("a");
+            link.download = filename;
+            link.href = window.URL.createObjectURL(blob); 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+        }
+    } );
 };
 Mjztool.appendScriptLink = function(src) {
     var f = document.createElement('script');

@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         JavTool - MaiJZ
 // @namespace    https://github.com/maijz128
-// @version      24.07.18
+// @version      24.08.08
 // @description  描述
 // @author       MaiJZ
 // @match        *://www.jav321.com/video/*
 // @match        *://*.javdb.com/*
-// @grant        none
+// @match        *://*.javlibrary.com/*
+// @grant        GM_setClipboard
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
 const VOLUME = 0.3;
@@ -26,6 +28,10 @@ function main() {
 
     if (matchURL('javdb.com')) {
         setTimeout(JavDB, 1000);
+    }
+
+    if (matchURL('javlibrary.com')) {
+        setTimeout(JavLibrary, 1000);
     }
 
 }
@@ -74,7 +80,37 @@ function JavDB() {
     }
 }
 
+function JavLibrary() {
+    if (matchURL('/?v=')) {
+        var panel = document.querySelector('#video_jacket_info #video_info');
+
+        // Add Button for download
+        {
+
+            var btn= document.createElement('button');
+            btn.setAttribute('class', 'button');
+            // btn.setAttribute('href', '#');
+            btn.innerText = 'Download Metadata';
+            btn.addEventListener('click', function(){
+                var avid = document.querySelector('#avid > a').innerText;
+                var avCoverUrl = document.querySelector('#video_jacket_img').src;
+                Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
+
+                var link = window.location.href;
+                var linkName = link.split('=')[1] + '.video.javlibrary';
+                downloadText(linkName, link);
+            });
+
+            panel.appendChild(btn);
+        }
+
+    }
+}
+
 /*******************************************************************************/
+
+
+
 
 function open_in_new_tab(selector){
     // $('a').attr('target', '_blank');
@@ -93,6 +129,20 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+
+function downloadText(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
 }
 
 /**
@@ -245,6 +295,24 @@ Mjztool.addFunction = function(func, name) {
 Mjztool.GM_setClipboard = function(content) {
 	// @grant        GM_setClipboard
     GM_setClipboard(content);
+};
+Mjztool.GM_downloadImg = function(pic_url, filename) {
+	// @grant        GM_xmlhttpRequest
+    GM_xmlhttpRequest ( {
+        method:         'GET',
+        url:            pic_url,
+        responseType:   'blob',
+        onload:         function (resp) {
+            var blob = resp.response;
+            var link = document.createElement("a");
+            link.download = filename;
+            link.href = window.URL.createObjectURL(blob); 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+        }
+    } );
 };
 Mjztool.appendScriptLink = function(src) {
     var f = document.createElement('script');

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ 18+漫画
 // @namespace    https://github.com/maijz128
-// @version      24.05.18
+// @version      24.09.29
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.18comic.org/*
@@ -51,7 +51,8 @@ function wnacg() {
     // 页数，大字体
     css += ".uwconn > label { font-size: x-large; } ";
     // 浏览页面缩放80%
-    css += '#img_list { width: 80%; margin: auto;}';
+    css += '#img_list { width: 80%; margin: auto; overflow: hidden;}';
+    css += '#img_list img { width: 100% !important; }';
     // 页数，上传日期
     css += '.grid .info .info_col { color: darkblue !important;}';
     // 汉化标签，高亮显示
