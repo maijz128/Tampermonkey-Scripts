@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
-// @version      24.08.05
+// @version      24.11.19
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.cool18.com/*
@@ -50,7 +50,9 @@ function main() {
     if (Mjztool.matchURL("act=threadview")) {
         $("body").attr("style", Background_Color_Style);
         $("tbody").attr("style", Background_Color_Style);
-        $("tbody tr").attr("style", Background_Color_Style);   
+        $("tbody tr").attr("style", Background_Color_Style);
+
+        addStyle("body {overflow-x: hidden;}");
 
         ThreadView();
     }

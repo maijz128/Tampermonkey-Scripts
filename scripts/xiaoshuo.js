@@ -72,6 +72,8 @@
 // @match        *://*.xbyuan.com/*
 // @match        *://*.xn--fiq228cu93a4kh.com/*
 // @match        *://*.shuhaige.net/*
+// @match        *://*.38xs.com/*
+// @match        *://*.51eshu.com/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -158,6 +160,7 @@ function main() {
     if (Mjztool.matchUrlList(["xbyuan.com"])) { xbyuan(); }       
     if (Mjztool.matchUrlList(["xn--fiq228cu93a4kh.com"])) { feixs(); }       
     if (Mjztool.matchUrlList(["shuhaige.net"])) { shuhaige(); }       
+    if (Mjztool.matchUrlList(["38xs.com", '51eshu.com'])) { com_38xs(); }       
    
     
 }
@@ -1092,7 +1095,7 @@ function feixs(){
     }
 
     if (Mjztool.matchURL("/book/")) {
-        var clist = ['古代言情', '快穿', '豪门总裁', '双男主', '青春甜宠', '宫斗宅斗', '现言', '现言脑洞', '现代言情', '星光璀璨', '幻想言情', '女生小说'];
+        var clist = ['职场婚恋', '霸总', '豪门爽文', '豪门世家', '女频衍生', '古代言情', '快穿', '豪门总裁', '双男主', '青春甜宠', '宫斗宅斗', '宫闱宅斗', '现言', '现言脑洞', '现代言情', '星光璀璨', '幻想言情', '女生小说', '古装言情', '古言脑洞', '古代情缘', '玄幻言情', '年代', '浪漫青春'];
     
         $('.book li a').each(function(){
             var atext = $(this).text();
@@ -1122,6 +1125,18 @@ function shuhaige(){
 }
 
 
+
+function com_38xs(){
+    var css1 = '';
+    css1 += "";
+    css1 += "#bookintro { overflow: auto !important; width: 100%}";
+    // css1 += "body { font-family: 微软雅黑, 宋体 !important; font-size: 16px !important; }";
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL(".html") ) {
+    }
+    
+}
 
 
 

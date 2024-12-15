@@ -113,8 +113,13 @@ function TaoBaoSearch(){
 
 
     var css = '';
-    css += "div[class^='rightWrap--'],div[class*=' rightWrap--'] {display: none !important;}";
-    css += "div[class^='leftWrap--'],div[class*=' leftWrap--'] {width: 1024px !important;}";
+    css += "div[class^='leftWrap--'],div[class*=' leftWrap--'] {width: 1224px !important;}";
+    css += '#search-content-leftWrap {    margin: auto;}'
+
+    //  隐藏右侧栏，广告
+    // css += "div[class^='rightWrap--'],div[class*=' rightWrap--'] {display: none !important;}";
+    css += "#pageContent {width: 1224px !important;}";
+    css += "#pageContent > div > div:nth-child(2) {display: none !important;}";
 
     addStyle(css);
 
