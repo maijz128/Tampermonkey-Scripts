@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ 18+漫画
 // @namespace    https://github.com/maijz128
-// @version      24.09.29
+// @version      25.04.13
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.18comic.org/*
@@ -61,10 +61,45 @@ function wnacg() {
     css += '.grid .pic_box.cate-10::before { color: chartreuse !important;} ';
     css += '.grid .pic_box.cate-20::before { color: chartreuse !important;} ';
 
+    if (Mjztool.isMatchUrl(".html")) {
+        
+    }
+    if (Mjztool.matchURL(".html")) {
+        var a = $("#bodywrap .asTB .asTBcell.uwconn");
+        var b = $("#bodywrap .asTB .asTBcell.uwthumb");
+        exchange_element(a,b); // 交换元素位置
+    }
+
 
     Mjztool.addStyle(css);
 
 }
+
+
+function exchange_element(a,b) {
+
+    if(undefined == $(a).html()){
+        return;
+    }
+    if(undefined == $(b).html()){
+        return;
+    }
+    var $div1 = $(a);
+    var $div3 = $(b);
+    var $temobj1 = $("<div></div>");
+    var $temobj2 = $("<div></div>");
+
+    $temobj1.insertBefore($div1);
+    $temobj2.insertBefore($div3);
+
+    $div1.insertAfter($temobj2);
+    $div3.insertAfter($temobj1);
+
+    $temobj1.remove();
+    $temobj2.remove();
+
+}
+
 
 
 function getCookie(name) {
@@ -99,6 +134,10 @@ Mjztool.bytesToSize = function(bytes) {
     i = Math.floor(Math.log(bytes) / Math.log(k));
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
+};
+Mjztool.isMatchUrl = function(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
 };
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;

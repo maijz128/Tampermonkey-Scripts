@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         JavTool - MaiJZ
 // @namespace    https://github.com/maijz128
-// @version      24.08.08
+// @version      24.12.26
 // @description  描述
 // @author       MaiJZ
 // @match        *://www.jav321.com/video/*
 // @match        *://*.javdb.com/*
+// @match        *://*.javdb368.com/*
 // @match        *://*.javlibrary.com/*
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
@@ -15,19 +16,24 @@ const VOLUME = 0.3;
 const id = "vjs_sample_player_html5_api";
 
 (function () {
-    main();
+    setTimeout(Main, 10);
 })();
 
 
 
-function main() {
+function Main() {
     if (matchURL('jav321.com')) {
         jav321_lowerVolume();
         jav321_setPlayerStyle();
     }
 
-    if (matchURL('javdb.com')) {
-        setTimeout(JavDB, 1000);
+    if (Mjztool.matchUrlList(['javdb.com', 'javdb368.com'])) {
+        if (matchURL('javdb.com')) {
+            setTimeout(JavDB, 1000);
+        }else {
+            var host = window.location.host;
+            window.location.href = location.href.replace(host, 'javdb.com');
+        }
     }
 
     if (matchURL('javlibrary.com')) {

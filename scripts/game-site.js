@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         MaiJZ - Cool18（禁忌书屋）
+// @name         MaiJZ - 游戏网 
 // @namespace    https://github.com/maijz128
-// @version      24.11.19
+// @version      25.01.09
 // @description  描述
 // @author       MaiJZ
-// @match        *://*.cool18.com/*
+// @match        *://*.ali213.net/*
+// @match        *://*.youxi527.com/*
+// @require      https://code.jquery.com/jquery-2.2.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_cookie
@@ -14,12 +16,8 @@
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
-// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAjCAIAAAB+eU8wAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAHYcAAB2HAY/l8WUAAAJESURBVEhL7ZexSgNBEIbzNla+hY8g+AA2tlZ2WllZCtZinc4iViLaiJBGQQQtRLQQ1MIiFkLOb+9f5y43e2dyMdpkGI7Z2dn/n52ZjdjJGmU4HEarUX4M62RbCzPXOU0L/T+aXxGHORXN6ePF4uFy7/4krk0c5lQ03dve0tEqTDevd9ElcZhj0Ty8P5Hy7uUB6UfXt2yc70ADX1xLRjF5vGmal8Fb//mKw9v9vZXjdYBMFWAimpa3IX1VwxSy/esufgWYTEWDgGgcEERvLhSQiw4+P7ChISH5C3GYTb2Bae1sU0zlrlBPPBBgc0toVFiapwCPWUsDFsdImS8Q5aLhFLcqJiWAJU0Nhx1m0whw2DokAyx2KZqcplbDKA4zTUNLUUEwbHwpmnJnFw82t5SnZW9UKAxQ6I34cAoUA49y17UIJgkuhEEGYcthJmiUuGhQzusSotHs0iT86nxFw1mHmaCp4ErplpY2eyjlIn3iaSQBcHO/MJMOs5amkilAZVbIgFPpEAjijEkcZi2N5lgaEsw7bwSwBrh8WORHMeT0mAkajbL1HBWNliSBUi7ysHE3VaTHTNCQIBUrPw6NrGgAKm8p0ho2wfNUHbiNNUklUu7sohhAW29Eo2cQxGEmaOgniECUp0CUKBwEYLCbQxY/CmzJ4zETNIh1hTS5inClCpBdaU8xbKOYtX/WVLEiuyzjd1O4WtocQkOF+aJko12PmabxQqaAGhB5cFFS0RKZ8N3MQuc0LfQPaWpkzP/TylJ7JMu+AMWUf3c+C6RtAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-// font-family: 微软雅黑, 宋体 !important; 
-var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
-var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 (function () {
     setTimeout(function(){
@@ -28,146 +26,46 @@ var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 })();
 
 function main() {
-    var style = "";
-    // style += "line-height: 36px !important; font-size: 24px !important;";
-    // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
-    style += Font_Color_Style;
-    style += "margin: auto; min-height: 1em;";
+    if (Mjztool.matchURL('ali213.net')) {
+        Ali213();
+    }
+    if (Mjztool.matchURL('youxi527.com')) {
+        Mjztool.addStyle(`#xunleiypbtn { float: right;} `);
+    }
+}
 
-    addStyle(".img_ad_list{ display: none !important; } #d_list{ margin-top: 22px;}");
+// 游侠网
+function Ali213() {
+    var css = '';
 
-    var bbs4IndexCss = "#d_gold_list {height: 200px !important;} #d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
-    bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
-    bbs4IndexCss += "#d_list_page {font-size: 14px;     margin-top: 46px;}";
-    addStyle(bbs4IndexCss);
-
-    $("pre").attr("style", "max-width: 820px;" + style);
-    $("pre span").attr("style", style);
-    $("pre p").attr("style", style);
-    $("pre b").attr("style", style);
-    $("pre font").attr("style", style);
-
-    if (Mjztool.matchURL("act=threadview")) {
-        $("body").attr("style", Background_Color_Style);
-        $("tbody").attr("style", Background_Color_Style);
-        $("tbody tr").attr("style", Background_Color_Style);
-
-        addStyle("body {overflow-x: hidden;}");
-
-        ThreadView();
+    if (Mjztool.matchURL('patch.ali213.net/showpatch')) {
+        css += `
+            .contentLinkContainer .normalDownContainer1 {
+                float: right !important;    margin-right: 30px;
+            }
+            .downAddressContainer .common_down_l {
+                float: right !important;    margin-right: -200px;
+            }
+        `;
     }
 
-
-
-
+    Mjztool.addStyle(css);
 }
-
-function ThreadView(){
-
-    $(".post-content pre font").each(function(){
-        var f = $(this);
-        var text = f.text().trim();
-        if (text == "cool18.com" || text == "www.6park.com") {
-            f.remove(); // f.text("");
-        }
-    });
-
-
-    // var td_btn = `<td><button onclick="remove_br()">删除换行</button></td>`;
-    // $(".show_content table tbody tr").append(td_btn);
-    // window.remove_br = function(){$("tbody br").remove();};
-    
-    var btn = document.createElement("button");
-    btn.textContent = "删除换行";
-    btn.onclick = function ()
-    {
-        $("#content-section br").remove();
-    };
-
-    var btn2 = document.createElement("button");
-    btn2.textContent = "删除换行2";
-    btn2.onclick = function ()
-    {
-
-        $("#content-section p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
-        });
-
-        $("#content-section pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/([^\x00-\xff])\n([^\x00-\xff])/g, "$1$2");  
-            return text;
-        });
-    };
-
-    var btn3 = document.createElement("button");
-    btn3.textContent = "格式化换行";
-    btn3.onclick = function ()
-    {
-        $("#content-section p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
-
-        $("#content-section pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            return text;
-        });
-    };
-
-    var btn4 = document.createElement("button");
-    btn4.textContent = "添加空行";
-    btn4.onclick = function ()
-    {
-
-        $("#content-section p").text(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");
-            text = text.replace(/\n/g,"<br>");
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
-
-        $("#content-section pre").html(function(i,origText){
-            var text = origText;
-            text = text.replace(/\r\n/g,"<br>");  
-            text = text.replace(/\n/g,"<br>");  
-            text = text.replace(/<br>/g,"<br><br>");
-            return text;
-        });
-    };
-
-    var btnCopy = document.createElement("button");
-    btnCopy.textContent = "复制内容";
-    btnCopy.onclick = function ()
-    {
-        // var text =  $("tbody pre").text();
-        var elText = document.querySelector("#content-section pre");
-        var text = elText.innerText || elText.textContent;
-        Mjztool.GM_setClipboard(text);
-    };
-
-    var td = document.createElement("td");
-    td.appendChild(btn);
-    td.appendChild(btn2);
-    td.appendChild(btn3);
-    td.appendChild(btn4);
-    td.appendChild(btnCopy);
-
-    $(".main-content .subtitle-line:first").append(td);
-}
-
-
-
-
 
 /*******************************************************************************/
+
+function open_in_new_tab(selector){
+    // $('a').attr('target', '_blank');
+    $(selector).attr('target', '_blank');
+}
+
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string, sink) => string
+    });
+}
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -180,6 +78,39 @@ function getQueryParams(){  // 当前网页查询参数。?id=xxxxx
     var urlSearchParams = new URLSearchParams(window.location.search);
     var params = Object.fromEntries(urlSearchParams.entries());
     return params;
+}
+
+
+function downloadText(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+}
+
+/**
+ * 图片下载
+ * @param {*} pic_url  图片链接
+ * @param {*} filename  文件名
+ */
+ function downloadImg(pic_url, filename) {
+    var x = new XMLHttpRequest();
+    x.open("GET", pic_url, true);
+    x.responseType = 'blob';
+    x.onload = function (e) {
+        var url = window.URL.createObjectURL(x.response);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+    };
+    x.send();
 }
 
 
@@ -313,6 +244,24 @@ Mjztool.addFunction = function(func, name) {
 Mjztool.GM_setClipboard = function(content) {
 	// @grant        GM_setClipboard
     GM_setClipboard(content);
+};
+Mjztool.GM_downloadImg = function(pic_url, filename) {
+	// @grant        GM_xmlhttpRequest
+    GM_xmlhttpRequest ( {
+        method:         'GET',
+        url:            pic_url,
+        responseType:   'blob',
+        onload:         function (resp) {
+            var blob = resp.response;
+            var link = document.createElement("a");
+            link.download = filename;
+            link.href = window.URL.createObjectURL(blob); 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            delete link;
+        }
+    } );
 };
 Mjztool.appendScriptLink = function(src) {
     var f = document.createElement('script');

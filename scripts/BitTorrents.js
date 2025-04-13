@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name         MJZ - BitTorrents
 // @namespace    https://github.com/maijz128
-// @version      24.02.18
+// @version      24.12.23
 // @description  描述
 // @author       MaiJZ
 // @match        *://sukebei.nyaa.si/*
 // @match        *://*.btdig.com/*
 // @match        *://*.pkmp4.com/*
 // @match        *://anybt.eth.limo/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @require      https://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js
+// @require      https://cdnjs.webstatic.cn/ajax/libs/clipboard.js/1.7.1/clipboard.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -24,7 +24,7 @@ const iTorrents_Favicon = 'https://itorrents.org/favicon.ico';
 (function () {
     setTimeout(function(){
         main();
-    },10);
+    },1000);
 })();
 
 function main() {

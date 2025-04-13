@@ -190,6 +190,10 @@ Mjztool.bytesToSize = function(bytes) {
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
 };
+Mjztool.isMatchUrl = function(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+};
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;

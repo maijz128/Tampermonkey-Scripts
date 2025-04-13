@@ -1,12 +1,10 @@
 // ==UserScript==
 // @name              MJZ-Youtube Fullscreen Mode
 // @name:zh-CN        MJZ-Youtube全屏模式
-
 // @description       Automatically switch YouTube screens to 100 height and 100 width screens.
 // @description:zh-CN YouTube画面自动转换成100高、100宽的画面。
-
 // @namespace         https://ndaesik.tistory.com/
-// @version           24.12.15
+// @version           25.01.26
 // @author            MaiJZ
 // @icon              https://lh3.googleusercontent.com/iLZyxGK7l1343U4E7eAfgKbRWW6qhzCJq-Z92M60JzCMntFyaFF2GUQVRxPhfGcy6qRISLjHv4fX1vtq0TZkZMAzBjM
 // @match             *://*.youtube.com/*
@@ -80,3 +78,15 @@ window.addEventListener('click', _ => {
         }
     }, 100);
 });
+
+// 自动隐藏滚动条
+function OnAutoHideScrollBar() {
+    console.log('自动隐藏滚动条');
+    var css = "";
+
+    css += "body { overflow-x: hidden !important;  overflow-y: hidden !important; }";
+    css += "body:hover { overflow-y: auto !important; }";
+    css += "html:hover body { overflow-y: auto !important; }";
+
+    addStyle(css);
+}

@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         MJZ-Youtube助手
 // @namespace    https://github.com/maijz128
-// @version      24.08.06
+// @version      25.01.23
 // @description  描述
 // @author       MaiJZ
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @match        *://*.youtube.com/*
-//// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_setClipboard
@@ -21,7 +20,13 @@ setTimeout(() => {
     console.log("MJZ-Youtube助手 is loading");
     // waitElementLoad("#start", 1, 10, 300).then(main);
     waitElementLoad2("#start", 1, 10, 300, main);
-}, 100);
+
+    if (matchURL('/watch?')) {
+        // 自动隐藏滚动条
+        OnAutoHideScrollBar();
+    }
+
+}, 10);
 
 const delay = (ms = 0) => {return new Promise((r)=>{setTimeout(r, ms)})};
 
@@ -86,7 +91,7 @@ const main = () =>
         OnClickButtonToTop();
 
         // 自动隐藏滚动条
-        OnAutoHideScrollBar();
+        // OnAutoHideScrollBar();
     }
 
     console.log("MJZ-Youtube助手 is done");
@@ -306,9 +311,11 @@ function OnClickButtonToTop() {
 function OnAutoHideScrollBar() {
     console.log('自动隐藏滚动条');
     var css = "";
+
     css += "body { overflow-x: hidden !important;  overflow-y: hidden !important; }";
     css += "body:hover { overflow-y: auto !important; }";
     css += "html:hover body { overflow-y: auto !important; }";
+
     addStyle(css);
 }
 

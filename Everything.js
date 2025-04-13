@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      24.06.19
+// @version      25.04.07
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -544,6 +544,14 @@ function javlibrary(){
         func(avid, elem);
     }
 
+    
+    if (Mjztool.matchURL('/userposts')) {
+        jQuery("#video_comments .comment").each(function(){
+            var avNameElem = jQuery(this).find('strong a');
+            var avid = avNameElem.text().split(' ')[0];
+            func(avid, avNameElem);
+        });
+    }
 
 
     jQuery(".videos .video").each(function(){
@@ -1064,23 +1072,20 @@ function cool18(){
         if (Mjztool.matchUrlList(["act=threadview"])) {
             var tid = params["tid"];
             var searchText = tid + '.article.cool18';
-            var headerTitle = jQuery("body > table:nth-child(4) > tbody > tr:nth-child(2) > td > center > font > b");
+            var headerTitle = jQuery(".main-content h1");
             funcTitle(searchText, headerTitle);
-            
-
-        }else {
-            setTimeout(() => {
-                var selector =  "a";
-                jQuery(selector).each(function(){
-                    var thisElem = jQuery(this);
-                    var ahref = thisElem.attr('href');
-                    if (ahref.indexOf('tid=')  > 0) {
-                        funcTitleEl(ahref, thisElem);
-                    }
-                });  
-            }, 1000);
-
         }
+
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref && ahref.indexOf('tid=')  > 0) {
+                    funcTitleEl(ahref, thisElem);
+                }
+            });  
+        }, 1000);
     }
 }
 

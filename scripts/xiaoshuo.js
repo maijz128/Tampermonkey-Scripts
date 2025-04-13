@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-小说网
 // @namespace    https://github.com/maijz128
-// @version      24.10.20
+// @version      25.03.06
 // @description  描述
 // @author       MaiJZ
 // @require      https://code.jquery.com/jquery-2.1.1.min.js
@@ -74,6 +74,7 @@
 // @match        *://*.shuhaige.net/*
 // @match        *://*.38xs.com/*
 // @match        *://*.51eshu.com/*
+// @match        *://*.book18.org/*
 // ==/UserScript==
 
 var KEYS = { ENTER: 13, SPACE: 32, ESC: 27, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, E: 69, F: 70, R: 82, S: 83, W: 87, Z: 90, Q: 81 };
@@ -161,6 +162,7 @@ function main() {
     if (Mjztool.matchUrlList(["xn--fiq228cu93a4kh.com"])) { feixs(); }       
     if (Mjztool.matchUrlList(["shuhaige.net"])) { shuhaige(); }       
     if (Mjztool.matchUrlList(["38xs.com", '51eshu.com'])) { com_38xs(); }       
+    if (Mjztool.matchUrlList(["book18.org"])) { book18(); }       
    
     
 }
@@ -1139,6 +1141,20 @@ function com_38xs(){
 }
 
 
+
+function book18(){
+    var css1 = '';
+    css1 += "";
+    css1 += "#content { margin: auto !important;}";
+    css1 += ".fixed-bottom .fa-chevron-circle-down{ opacity: 0; }";
+    css1 += ".fixed-bottom .fa-chevron-circle-down:hover{ opacity: 1; }";
+    // css1 += "body { font-family: 微软雅黑, 宋体 !important; font-size: 16px !important; }";
+    Mjztool.addStyle(css1);
+
+    if (Mjztool.matchURL(".html") ) {
+    }
+    
+}
 
 
 
