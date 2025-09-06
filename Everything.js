@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      25.04.07
+// @version      25.09.06
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -12,6 +12,7 @@
 // @match        *://steamcommunity.com/app/*
 // @match        *://bgm.tv/*
 // @match        *://bangumi.tv/*
+// @match        *://dlsite.com/*
 // @match        *://illusioncards.booru.org/*
 // @match        *://chan.sankakucomplex.com/*
 // @match        *://rule34.xxx/*
@@ -85,6 +86,8 @@ function main() {
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
     if (matchURL("lcsd.gov.hk")) { setTimeout(lcsd_gov_hk, 5000); }
     if (matchURL("cool18.com")) { setTimeout(cool18, 5000); }
+    if (matchURL("dlsite.com")) { setTimeout(DLSite, 5000); }
+
     // 绅次元
     if (Mjztool.matchUrlList(["34king.life"])) { setTimeout(Home34, 3000); }
     // 老王论坛
@@ -1329,6 +1332,62 @@ function WNACG(){
         
     }
 }
+
+
+function DLSite(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+
+    var params = getQueryParams();
+
+    var funcTitleEl = function(ahref, thisElem){
+        ahref = ahref.replace('https://', '');
+        // var urlPaths = ahref.split('/');
+        var searchText = '';
+        
+        var pID = ahref.match('/product_id/(.*).html');
+        if (pID) {
+            var productID = pID[1];
+            searchText = productID + '.product.dlsite';
+        } 
+        
+        if (searchText != '') { 
+            console.log('search local file:' + searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        thisElem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
+    if (Mjztool.matchURL('.html')) {
+
+        var headerTitle = jQuery("h1#work_name");
+        funcTitleEl(href, headerTitle);
+
+    }else {
+        setTimeout(() => {
+            var selector =  "a";
+            jQuery(selector).each(function(){
+                var thisElem = jQuery(this);
+                var ahref = thisElem.attr('href');
+                if (ahref.indexOf('.html')  > -1) {
+                    funcTitleEl(ahref, thisElem);
+                }
+            });  
+        }, 1000);
+        
+    }
+}
+
 
 
 /*******************************************************************************/

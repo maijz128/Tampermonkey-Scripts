@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         MaiJZ - 游戏网 
 // @namespace    https://github.com/maijz128
-// @version      25.01.09
+// @version      25.07.27
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.ali213.net/*
 // @match        *://*.youxi527.com/*
+// @match        *://*.galgame.dev/*
 // @require      https://code.jquery.com/jquery-2.2.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -32,6 +33,11 @@ function main() {
     if (Mjztool.matchURL('youxi527.com')) {
         Mjztool.addStyle(`#xunleiypbtn { float: right;} `);
     }
+
+    // 真紅の資源討論組
+    if (Mjztool.matchURL('galgame.dev')) {
+        GalgameDev();
+    }
 }
 
 // 游侠网
@@ -51,6 +57,128 @@ function Ali213() {
 
     Mjztool.addStyle(css);
 }
+
+
+// 真紅の資源討論組
+function GalgameDev() {
+    var css = '';
+    // 已访问的链接颜色
+    css += `a:visited { color: #8B008B !important; }    `;
+    Mjztool.addStyle(css);
+
+    GalgameDev_OpenInNewTab(); // 新标签页打开
+    
+}
+
+// 新标签页打开
+function GalgameDev_OpenInNewTab() {   
+    "use strict";
+    const updateAEle = function (selector) {
+        const aEle = [...document.querySelectorAll(selector)];
+
+        aEle.forEach((ele) => {
+            
+            ele.setAttribute("target", "_blank");
+            // ele.setAttribute("hrefold", ele.getAttribute("href"));
+            ele.onclick = (e) => {
+                e.stopPropagation();
+                var href = ele.getAttribute("href");
+                window.open(href, "_blank");
+                return false;
+            };
+
+            // ele.setAttribute("href", "#");
+        });
+    };
+
+    const updateAEleBatch = function (aEleList) {
+        if (intervalTimes !== intervalDefaultTimes) return; // 避免重复更新
+
+        aEleList.forEach((curSelector) => {
+            updateAEle(curSelector);
+        });
+    };
+
+    const getCurPath = () => {
+        const {
+            pathname
+        } = window.location;
+        const secondIndex = pathname.indexOf("/", 2);
+        const path =
+            secondIndex === -1 ? pathname : pathname.substr(0, secondIndex);
+        return path;
+    };
+
+    const getSelectorAtCurPath = function () {
+        const path = getCurPath();
+
+        return (
+            selectorPathMap[path] || {
+                observeEle: "#page-manager",
+                aEle: ['#dismissible a:not([target])'],
+            }
+        );
+    };
+
+    const initObserver = function (selector) {
+        const observeEle = document.querySelector(selector.observeEle);
+        if (!observeEle) return;
+
+        new MutationObserver(() => {
+            updateAEleBatch(selector.aEle);
+        }).observe(observeEle, {
+            childList: true,
+            subtree: true, // 监视子孙节点
+        });
+    };
+
+    const watchPathChange = function (cb = () => {}) {
+        setInterval(() => {
+            const path = window.location.pathname;
+            if (intervalTimes === 0) {
+                initPath = path;
+                intervalTimes = intervalDefaultTimes;
+            }
+
+            if (initPath !== path) {
+                intervalTimes--;
+                cb();
+            }
+        }, 200);
+    };
+
+
+    // init
+
+    const selectorPathMap = {
+        "/": {
+            observeEle: "#panel",
+            aEle: ['#dismissible a:not([target])'],
+        },
+        "/category": {
+            observeEle: "#panel",
+            aEle: ['ul li h3 a:not([target])'],
+        },
+    };
+
+    const selector = getSelectorAtCurPath();
+    let initPath = window.location.pathname;
+    let intervalDefaultTimes = 100;
+    let intervalTimes = intervalDefaultTimes;
+
+    window.onload = () => {
+        initObserver(selector);
+        updateAEleBatch(selector.aEle);
+    };
+
+    watchPathChange(() => {
+        initObserver(selector);
+        updateAEleBatch(selector.aEle);
+    });
+}
+
+
+
 
 /*******************************************************************************/
 

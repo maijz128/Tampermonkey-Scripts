@@ -1,163 +1,41 @@
 // ==UserScript==
-// @name         JavTool - MaiJZ
+// @name         MaiJZ - StripChat
 // @namespace    https://github.com/maijz128
-// @version      25.07.26
+// @version      25.09.06
 // @description  描述
 // @author       MaiJZ
-// @match        *://www.jav321.com/video/*
-// @match        *://*.javdb.com/*
-// @match        *://*.javdb368.com/*
-// @match        *://*.javlibrary.com/*
-// @match        *://*.javbus.com/*
+// @match        *://*.stripchat.com/*
+// @require      https://code.jquery.com/jquery-2.2.4.min.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
-const VOLUME = 0.3;
-const id = "vjs_sample_player_html5_api";
 
 (function () {
-    setTimeout(Main, 10);
+    setTimeout(function(){
+        main();
+    },10);
 })();
 
+function main() {
 
+    var css = ` /* css */`;
+    css += '.watermark { display: none !important; }';
+    css += '.chat-message { max-width: 100% !important; }';
+    css += '.plugin-panel--wheel-of-fortune { display: none !important; }';
 
-function Main() {
-    if (matchURL('jav321.com')) {
-        jav321_lowerVolume();
-        jav321_setPlayerStyle();
-    }
-
-    if (Mjztool.matchUrlList(['javdb.com', 'javdb368.com'])) {
-        if (matchURL('javdb.com')) {
-            setTimeout(JavDB, 1000);
-        }else {
-            var host = window.location.host;
-            window.location.href = location.href.replace(host, 'javdb.com');
-        }
-    }
-
-    if (matchURL('javlibrary.com')) {
-        setTimeout(JavLibrary, 1000);
-    }
-
-    if (matchURL('javbus.com')) {
-        setTimeout(JavBus, 1000);
-    }
-
-}
-
-function jav321_lowerVolume() {
-    // document.getElementById(id).volume = volume;
-    var videos = document.querySelectorAll("video");
-    for (let index = 0; index < videos.length; index++) {
-        const element = videos[index];
-        element.volume = VOLUME;
-    }
-}
-
-
-function jav321_setPlayerStyle() {
-    // var styleContent = "#player_3x2_close { font-size: 15em; } ";
-    // addStyle(styleContent);
-
-    var player_iframe = document.querySelector("iframe");
-    if (player_iframe) {
-        // player_iframe.setAttribute("width", "800");
-        // player_iframe.setAttribute("height", "600");
-        player_iframe.setAttribute("scrolling", "no");        
-        player_iframe.setAttribute("id", "player_iframe");
-        var styleContent = "#player_iframe { width: 1000px; height: 650px; position: relative; z-index: 99;}";
-        addStyle(styleContent);
-    }
-}
-
-function JavDB() {
-    if (matchURL('/v/')) {
-        var panel = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block');
-
-        // Add Button jump nyaa
-        {
-            var avid = '';
-            avid = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block  span').innerText;
-            var hrefNyaa = 'https://sukebei.nyaa.si/?f=0&c=0_0&q=' + avid;
-            var btnNyaa = document.createElement('a');
-            btnNyaa.setAttribute('class', 'button');
-            btnNyaa.setAttribute('href', hrefNyaa);
-            btnNyaa.innerText = 'Nyaa';
-            panel.appendChild(btnNyaa);
-        }
-
-    }
-}
-
-function JavLibrary() {
-    if (matchURL('/?v=')) {
-        var panel = document.querySelector('#video_jacket_info #video_info');
-
-        // Add Button for download
-        {
-
-            var btn= document.createElement('button');
-            btn.setAttribute('class', 'button');
-            // btn.setAttribute('href', '#');
-            btn.innerText = 'Download Metadata';
-            btn.addEventListener('click', function(){
-                var avid = document.querySelector('#avid > a').innerText;
-                var avCoverUrl = document.querySelector('#video_jacket_img').src;
-                Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-
-                var link = window.location.href;
-                var linkName = link.split('=')[1] + '.video.javlibrary';
-                downloadText(linkName, link);
-            });
-
-            panel.appendChild(btn);
-        }
-
-    }
-}
-
-function JavBus() {
-
-    var inter = setInterval(function(){
-
-        var panel = document.querySelector('#video_info');
-        if (panel) {
-            clearInterval(inter);
-        }else {
-            return;
-        }
-        // Add Button for download
-        console.log('Add Button for download');
-    
-        var btn= document.createElement('button');
-        btn.setAttribute('class', 'button');
-        // btn.setAttribute('href', '#');
-        btn.innerText = 'Download Metadata';
-        btn.addEventListener('click', function(){
-            var avid = document.querySelector('#avid > a').innerText;
-            var avCoverUrl = document.querySelector('.bigImage > img').src;
-            // console.log(avCoverUrl);
-            Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-    
-            var link = window.location.href;
-            var linkName = avid + '.javbus';
-            downloadText(linkName, link);
-        });
-    
-        panel.appendChild(btn);
-
-    }, 500);
-
-
+    addStyle(css);
 }
 
 
 /*******************************************************************************/
-
-
-
 
 function open_in_new_tab(selector){
     // $('a').attr('target', '_blank');
@@ -165,9 +43,26 @@ function open_in_new_tab(selector){
 }
 
 
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+    window.trustedTypes.createPolicy('default', {
+        createHTML: string => string
+        // Optional, only needed for script (url) tags
+        ,createScriptURL: string => string
+        ,createScript: string => string,
+    });
+}
+escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+    createHTML: (to_escape) => to_escape
+})
+function InnerHTML(styleContent)
+{
+    return escapeHTMLPolicy.createHTML(styleContent);
+}
+
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
+    elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
     document.head.appendChild(elStyle);
 }
 
@@ -311,6 +206,10 @@ Mjztool.bytesToSize = function(bytes) {
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
 };
+Mjztool.isMatchUrl = function(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+};
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;
@@ -406,4 +305,3 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
-

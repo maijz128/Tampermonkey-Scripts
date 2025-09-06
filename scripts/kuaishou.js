@@ -1,169 +1,135 @@
 // ==UserScript==
-// @name         JavTool - MaiJZ
+// @name         MaiJZ - 快手
 // @namespace    https://github.com/maijz128
-// @version      25.07.26
+// @version      25.06.07
 // @description  描述
 // @author       MaiJZ
-// @match        *://www.jav321.com/video/*
-// @match        *://*.javdb.com/*
-// @match        *://*.javdb368.com/*
-// @match        *://*.javlibrary.com/*
-// @match        *://*.javbus.com/*
+// @match        *://*.kuaishou.com/*
+// @require      https://code.jquery.com/jquery-2.2.4.min.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
-const VOLUME = 0.3;
-const id = "vjs_sample_player_html5_api";
 
 (function () {
-    setTimeout(Main, 10);
+    setTimeout(function(){
+        main();
+    },10);
 })();
 
+function main() {
 
-
-function Main() {
-    if (matchURL('jav321.com')) {
-        jav321_lowerVolume();
-        jav321_setPlayerStyle();
+    // 视频推荐
+    if (matchURL('/new-reco')) {
+        NewReco();
     }
 
-    if (Mjztool.matchUrlList(['javdb.com', 'javdb368.com'])) {
-        if (matchURL('javdb.com')) {
-            setTimeout(JavDB, 1000);
-        }else {
-            var host = window.location.host;
-            window.location.href = location.href.replace(host, 'javdb.com');
+    // 直播间
+    if (matchURL('live.kuaishou.com/u/')) {
+        KS_Live();
+    }
+}
+
+function NewReco(){
+    var css = '';
+
+    // 自动隐藏头部
+    css += 'header.header {opacity:0 !important;}';
+    css += 'header.header:hover {opacity:1 !important;}';
+
+    // 调整视频区域大小
+    css += '.new-reco-page {top: 0px !important;  height: 100% !important;}';
+    css += '.feed-container {margin-bottom: 0px !important;}';
+
+    // body 隐藏滚动条
+    css += 'body {overflow: hidden !important;}';
+
+    // 隐藏视频底部信息
+    css += '.kwai-player-plugins .feed-info {opacity:0 !important;}';
+    css += '.kwai-player-plugins .right-bar {opacity:0 !important;}';
+    css += '.kwai-player-plugins .kwai-player-plugin-bar-wrap {opacity:0 !important;}';
+    css += '.kwai-player-plugins .feed-info:hover {opacity:1 !important;}';
+    css += '.kwai-player-plugins .right-bar:hover {opacity:1 !important;}';
+    css += '.kwai-player-plugins .kwai-player-plugin-bar-wrap:hover {opacity:1 !important;}';
+
+    // 调整视频显示大小
+    css += '.kwai-player-container-video .player-video {height: calc(100% - 0px) !important; top: -0px !important;}';
+
+    addStyle(css);
+
+
+    setTimeout(function(){
+        if ($('.kwai-player-volume-sound > span').length > 0) {
+            // clearInterval(mutedInter);
+            // 取消静音
+            $('.kwai-player-volume-sound > span').click();
+            // 恢复播放
+            // setTimeout(function(){
+            //     $('.player-bar-play > span').click();
+            // }, 500);
         }
-    }
-
-    if (matchURL('javlibrary.com')) {
-        setTimeout(JavLibrary, 1000);
-    }
-
-    if (matchURL('javbus.com')) {
-        setTimeout(JavBus, 1000);
-    }
-
+    }, 3000);
 }
 
-function jav321_lowerVolume() {
-    // document.getElementById(id).volume = volume;
-    var videos = document.querySelectorAll("video");
-    for (let index = 0; index < videos.length; index++) {
-        const element = videos[index];
-        element.volume = VOLUME;
-    }
+function KS_Live() {
+    var css = '';
+
+    // 隐藏顶部主播栏
+    css += '.player .top {opacity:0 !important;}';
+    css += '.player .top:hover {opacity:1 !important;}';
+
+    // 隐藏底部播放栏
+    css += '.player .bar-bottom .bar-wrap {opacity:0 !important;}';
+    css += '.player .bar-bottom .bar-wrap:hover {opacity:1 !important;}';
+
+
+    // 隐藏底部礼物栏
+    css += '.player .foot {opacity:0 !important;}';
+    css += '.player .foot:hover {opacity:1 !important;}';
+
+    // 隐藏右边控制菜单
+    css += '.control-wrapper {opacity:0 !important;}';
+    css += '.control-wrapper:hover {opacity:1 !important;}';
+
+    addStyle(css);
+
+    // 网页全屏
+    setTimeout(function(){
+        // $('.kwai-player-container-video .kwai-player-plugins .bar-bottom .right-part > div.theater > div > div > span').click();
+
+        // $('.kwai-player-container-video .kwai-player-plugins .bar-bottom div.volume-sound span').click();
+        // $('.kwai-player-container-video .kwai-player-plugins .bar-bottom div.refresh span').click();
+
+
+        // $('.kwai-player-container-video').focus();
+        // var e = jQuery.Event("keydown"); //模拟一个键盘事件
+        // e.keyCode = 89; // Y键
+        // e.which = 89;  //增加设置which
+        // $('.kwai-player-container-video').trigger(e); //模拟按键
+    }, 1000);
 }
-
-
-function jav321_setPlayerStyle() {
-    // var styleContent = "#player_3x2_close { font-size: 15em; } ";
-    // addStyle(styleContent);
-
-    var player_iframe = document.querySelector("iframe");
-    if (player_iframe) {
-        // player_iframe.setAttribute("width", "800");
-        // player_iframe.setAttribute("height", "600");
-        player_iframe.setAttribute("scrolling", "no");        
-        player_iframe.setAttribute("id", "player_iframe");
-        var styleContent = "#player_iframe { width: 1000px; height: 650px; position: relative; z-index: 99;}";
-        addStyle(styleContent);
-    }
-}
-
-function JavDB() {
-    if (matchURL('/v/')) {
-        var panel = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block');
-
-        // Add Button jump nyaa
-        {
-            var avid = '';
-            avid = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block  span').innerText;
-            var hrefNyaa = 'https://sukebei.nyaa.si/?f=0&c=0_0&q=' + avid;
-            var btnNyaa = document.createElement('a');
-            btnNyaa.setAttribute('class', 'button');
-            btnNyaa.setAttribute('href', hrefNyaa);
-            btnNyaa.innerText = 'Nyaa';
-            panel.appendChild(btnNyaa);
-        }
-
-    }
-}
-
-function JavLibrary() {
-    if (matchURL('/?v=')) {
-        var panel = document.querySelector('#video_jacket_info #video_info');
-
-        // Add Button for download
-        {
-
-            var btn= document.createElement('button');
-            btn.setAttribute('class', 'button');
-            // btn.setAttribute('href', '#');
-            btn.innerText = 'Download Metadata';
-            btn.addEventListener('click', function(){
-                var avid = document.querySelector('#avid > a').innerText;
-                var avCoverUrl = document.querySelector('#video_jacket_img').src;
-                Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-
-                var link = window.location.href;
-                var linkName = link.split('=')[1] + '.video.javlibrary';
-                downloadText(linkName, link);
-            });
-
-            panel.appendChild(btn);
-        }
-
-    }
-}
-
-function JavBus() {
-
-    var inter = setInterval(function(){
-
-        var panel = document.querySelector('#video_info');
-        if (panel) {
-            clearInterval(inter);
-        }else {
-            return;
-        }
-        // Add Button for download
-        console.log('Add Button for download');
-    
-        var btn= document.createElement('button');
-        btn.setAttribute('class', 'button');
-        // btn.setAttribute('href', '#');
-        btn.innerText = 'Download Metadata';
-        btn.addEventListener('click', function(){
-            var avid = document.querySelector('#avid > a').innerText;
-            var avCoverUrl = document.querySelector('.bigImage > img').src;
-            // console.log(avCoverUrl);
-            Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-    
-            var link = window.location.href;
-            var linkName = avid + '.javbus';
-            downloadText(linkName, link);
-        });
-    
-        panel.appendChild(btn);
-
-    }, 500);
-
-
-}
-
 
 /*******************************************************************************/
-
-
-
 
 function open_in_new_tab(selector){
     // $('a').attr('target', '_blank');
     $(selector).attr('target', '_blank');
 }
 
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string, sink) => string
+    });
+}
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -311,6 +277,10 @@ Mjztool.bytesToSize = function(bytes) {
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
 };
+Mjztool.isMatchUrl = function(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+};
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;
@@ -406,4 +376,3 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
-

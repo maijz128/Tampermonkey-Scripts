@@ -38,15 +38,25 @@ function open_in_new_tab(selector){
 
 
 // How to fix TrustedHTML assignment error with Angular [innerHTML]
-if (window.trustedTypes && window.trustedTypes.createPolicy) {
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
     window.trustedTypes.createPolicy('default', {
-      createHTML: (string, sink) => string
+        createHTML: string => string
+        // Optional, only needed for script (url) tags
+        ,createScriptURL: string => string
+        ,createScript: string => string,
     });
+}
+escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+    createHTML: (to_escape) => to_escape
+})
+function InnerHTML(styleContent)
+{
+    return escapeHTMLPolicy.createHTML(styleContent);
 }
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
+    elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
     document.head.appendChild(elStyle);
 }
 

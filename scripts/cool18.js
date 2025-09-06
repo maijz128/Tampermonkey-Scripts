@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - Cool18（禁忌书屋）
 // @namespace    https://github.com/maijz128
-// @version      24.11.19
+// @version      25.04.28
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.cool18.com/*
@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 // font-family: 微软雅黑, 宋体 !important; 
-var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 1.8 !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
+var Font_Color_Style = "color: #3C3C3C !important; font-size: 27px !important; line-height: 2em !important; letter-spacing: 0.04em !important; text-align: justify !important; text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
 var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 
 (function () {
@@ -28,42 +28,59 @@ var Background_Color_Style = "background-color: rgb(228, 235, 241) !important;";
 })();
 
 function main() {
-    var style = "";
-    // style += "line-height: 36px !important; font-size: 24px !important;";
-    // style += "font-family: 'Microsoft YaHei',system-ui,-apple-system,BlinkMacSystemFont,Helvetica,sans-serif,'iconfont','icomoon','FontAwesome','Material Icons Extended','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji',emoji !important;";
-    style += Font_Color_Style;
-    style += "margin: auto; min-height: 1em;";
 
-    addStyle(".img_ad_list{ display: none !important; } #d_list{ margin-top: 22px;}");
-
-    var bbs4IndexCss = "#d_gold_list {height: 200px !important;} #d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
-    bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
-    bbs4IndexCss += "#d_list_page {font-size: 14px;     margin-top: 46px;}";
-    addStyle(bbs4IndexCss);
-
-    $("pre").attr("style", "max-width: 820px;" + style);
-    $("pre span").attr("style", style);
-    $("pre p").attr("style", style);
-    $("pre b").attr("style", style);
-    $("pre font").attr("style", style);
 
     if (Mjztool.matchURL("act=threadview")) {
-        $("body").attr("style", Background_Color_Style);
-        $("tbody").attr("style", Background_Color_Style);
-        $("tbody tr").attr("style", Background_Color_Style);
-
-        addStyle("body {overflow-x: hidden;}");
-
         ThreadView();
+    }else{
+        addStyle(".img_ad_list{ display: none !important; } #d_list{ margin-top: 22px;}");
+    
+        var bbs4IndexCss = "#d_gold_list {height: 200px !important;} #d_list{ font-size: 16px !important; } #d_list li {line-height: 20px !important;}";
+        bbs4IndexCss += ".gold_td {font-size: 16px !important;}";
+        bbs4IndexCss += "#d_list_page {font-size: 14px;     margin-top: 46px;}";
+        addStyle(bbs4IndexCss);
+    
+   
     }
-
-
 
 
 }
 
 function ThreadView(){
+    var css = '';
+    css += '';
+    css += '';
+    css += 'body {overflow-x: hidden;}';
+    addStyle(css);
 
+    $("body").attr("style", Background_Color_Style);
+    $("tbody").attr("style", Background_Color_Style);
+    $("tbody tr").attr("style", Background_Color_Style);
+
+    var style = '';
+
+
+    var fontFamily_CT = "font-family: 微软雅黑, 宋体 !important;";
+    var fontSize_CT = "font-size: 20pt !important;";
+    var textShadow_CT = "text-shadow: 0 0 1.15px #fcf6ecd9, 0 0 1px #7b7b7b, 0 0 0.75px #65625e57 !important;";
+    var fontIndent_CT = "text-indent: 24pt !important;";
+    var lineHeight_CT = "line-height: 1.8em !important;";
+    var other_CT = ''; 
+    other_CT += 'letter-spacing: 0.04em !important;'; 
+    var cssText = textShadow_CT + fontFamily_CT + fontSize_CT + fontIndent_CT + lineHeight_CT + other_CT;
+
+    $("pre").attr("style", "max-width: 820px; margin: auto;" + cssText);
+
+    $("pre span").css({"cssText" : cssText});
+    $("pre p").css({"cssText" : cssText});
+    $("pre b").css({"cssText" : cssText});
+    $("pre font").css({"cssText" : cssText});
+    // $("pre span").css("text-shadow", textShadow);
+    // $("pre span").css("font-family", fontFamily);
+    // $("pre span").css("font-size", fontSize);
+
+
+    // remove cool18.com and www.6park.com
     $(".post-content pre font").each(function(){
         var f = $(this);
         var text = f.text().trim();
@@ -121,6 +138,23 @@ function ThreadView(){
         });
     };
 
+    var btn31 = document.createElement("button");
+    btn31.textContent = "格式化换行2";
+    btn31.onclick = function ()
+    {
+        $("#content-section p").text(function(i,origText){
+            var text = origText;
+            text = text.replace(/　　/g,"<br>　　");  
+            return text;
+        });
+
+        $("#content-section pre").html(function(i,origText){
+            var text = origText;
+            text = text.replace(/　　/g,"\r\n　　");  
+            return text;
+        });
+    };
+
     var btn4 = document.createElement("button");
     btn4.textContent = "添加空行";
     btn4.onclick = function ()
@@ -157,6 +191,7 @@ function ThreadView(){
     td.appendChild(btn);
     td.appendChild(btn2);
     td.appendChild(btn3);
+    td.appendChild(btn31);
     td.appendChild(btn4);
     td.appendChild(btnCopy);
 

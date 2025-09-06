@@ -1,24 +1,39 @@
 // ==UserScript==
-// @name         知乎
+// @name         MJZ - 知乎
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      25.04.25
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.zhihu.com/*
-// @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @grant        none
 // ==/UserScript==
+//// @require      http://code.jquery.com/jquery-1.12.4.min.js
 
 
 (function () {
-    main();
+    setTimeout(function(){
+        main();
+    }, 10);
 })();
 
 function main() {
     if (matchURL("/question/") && matchURL("/answer/")) {
-        CollectAnswer();
+        // CollectAnswer();
+    }
+
+    if (matchURL("/question/")) {
+        CenterAnswer();
     }
 }
+
+// 回答居中
+function CenterAnswer() {
+    var css = "";
+    css += ".Question-mainColumn {margin: 0 auto; width: 800px !important;} ";
+    css += ".Question-sideColumn {display: none !important;} ";
+    addStyle(css);
+}
+
 
 // 收藏
 function CollectAnswer() {

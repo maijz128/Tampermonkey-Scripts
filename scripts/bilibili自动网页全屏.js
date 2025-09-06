@@ -4,7 +4,7 @@
 // @license     MIT
 // @namespace   MaiJZ
 // @description 自动网页全屏
-// @version     25.01.23
+// @version     25.04.23
 // @include     http://www.bilibili.com/video/BV*
 // @include     https://www.bilibili.com/video/BV*
 // @include     https://www.bilibili.com/video/av*
@@ -85,7 +85,7 @@ function Main(){
                 }
                 setTimeout(function () {
                     enterFullscreen();
-                }, 1000);
+                }, 2000);
             }
         });
     }
@@ -118,6 +118,8 @@ function enterFullscreen() {
         return;
     }
 
+    if (playerStateEntered()) return;
+
     // window._enterFullscreen_once = true;
 
     let elementNames = [];
@@ -146,6 +148,25 @@ function enterFullscreen() {
     }
 }
 
+function playerStateEntered(){
+    // 宽屏？
+    let wideMode = GM_getValue('wide-enter-mode');
+    if (wideMode) {
+        // 宽屏
+        var element = document.querySelector('.bpx-player-ctrl-wide.bpx-state-entered');
+        if (element) {
+            return true;
+        }
+    }else{
+        // 网页全屏
+        var element = document.querySelector('.bpx-player-ctrl-web.bpx-state-entered');
+        if (element) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function waitElement(elementName) {
     this.$ = unsafeWindow.jQuery;
     var _times = 20,
@@ -153,7 +174,9 @@ function waitElement(elementName) {
         _self = document.getElementsByClassName(elementName)[0],
         _iIntervalID;
     if( _self != undefined){
-        _self.click();
+        if (playerStateEntered() == false) {
+            _self.click();
+        }
     } else {
         _iIntervalID = setInterval(function() {
             if(!_times) {
@@ -165,7 +188,9 @@ function waitElement(elementName) {
                _self = document.getElementById(elementName);
             }
             if(_self != undefined){
-                _self.click();
+                if (playerStateEntered() == false) {
+                    _self.click();
+                }
                 clearInterval(_iIntervalID);
             }
         }, _interval);

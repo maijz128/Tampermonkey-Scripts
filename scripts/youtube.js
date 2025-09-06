@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ-Youtube助手
 // @namespace    https://github.com/maijz128
-// @version      25.01.23
+// @version      25.06.08
 // @description  描述
 // @author       MaiJZ
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
@@ -12,6 +12,7 @@
 // @grant        unsafeWindow
 // @grant        window.close
 // @grant        window.focus
+// @icon              https://lh3.googleusercontent.com/iLZyxGK7l1343U4E7eAfgKbRWW6qhzCJq-Z92M60JzCMntFyaFF2GUQVRxPhfGcy6qRISLjHv4fX1vtq0TZkZMAzBjM
 // ==/UserScript==
 
 
@@ -26,7 +27,12 @@ setTimeout(() => {
         OnAutoHideScrollBar();
     }
 
-}, 10);
+    if (matchURL('/shorts/')) {
+        // 自动隐藏overlay
+        Shorts_OnAutoHideOverlay();
+    }
+
+}, 100);
 
 const delay = (ms = 0) => {return new Promise((r)=>{setTimeout(r, ms)})};
 
@@ -295,7 +301,7 @@ function OnClickButtonToTop() {
                 var btnToTop = `<button id="${btnToTopID}" class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-leading" aria-label="To Top" title="To Top" onclick="window.scrollTo(0, 0);">Top</button>`;
 
                 var elDiv = document.createElement("div");
-                elDiv.innerHTML = btnToTop;
+                elDiv.innerHTML = InnerHTML(btnToTop);
                 buttons.appendChild(elDiv);
 
                 // return;
@@ -316,6 +322,14 @@ function OnAutoHideScrollBar() {
     css += "body:hover { overflow-y: auto !important; }";
     css += "html:hover body { overflow-y: auto !important; }";
 
+    addStyle(css);
+}
+
+// 自动隐藏overlay
+function Shorts_OnAutoHideOverlay(){
+    var css = "";
+    css += ".metadata-container #overlay { opacity: 0 !important; }";
+    css += ".metadata-container #overlay:hover { opacity: 1 !important; }";
     addStyle(css);
 }
 
@@ -343,14 +357,24 @@ function matchURLAbsolute(url) {
 
 
 // How to fix TrustedHTML assignment error with Angular [innerHTML]
-if (window.trustedTypes && window.trustedTypes.createPolicy) {
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
     window.trustedTypes.createPolicy('default', {
-      createHTML: (string, sink) => string
+        createHTML: string => string
+        // Optional, only needed for script (url) tags
+        ,createScriptURL: string => string
+        ,createScript: string => string,
     });
+}
+escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+    createHTML: (to_escape) => to_escape
+})
+function InnerHTML(styleContent)
+{
+    return escapeHTMLPolicy.createHTML(styleContent);
 }
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
+    elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
     document.head.appendChild(elStyle);
 }

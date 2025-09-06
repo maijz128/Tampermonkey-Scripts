@@ -1,169 +1,114 @@
 // ==UserScript==
-// @name         JavTool - MaiJZ
+// @name         MaiJZ - 抖音优化
 // @namespace    https://github.com/maijz128
-// @version      25.07.26
+// @version      25.07.27
 // @description  描述
 // @author       MaiJZ
-// @match        *://www.jav321.com/video/*
-// @match        *://*.javdb.com/*
-// @match        *://*.javdb368.com/*
-// @match        *://*.javlibrary.com/*
-// @match        *://*.javbus.com/*
+// @match        *://*.douyin.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=douyin.com
+// @require      https://code.jquery.com/jquery-2.2.4.min.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_cookie
+// @grant        GM.cookie
 // @grant        GM_setClipboard
 // @grant        GM_xmlhttpRequest
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
-const VOLUME = 0.3;
-const id = "vjs_sample_player_html5_api";
 
 (function () {
-    setTimeout(Main, 10);
+    setTimeout(function(){
+        main();
+    },10);
 })();
 
+function main() {
 
-
-function Main() {
-    if (matchURL('jav321.com')) {
-        jav321_lowerVolume();
-        jav321_setPlayerStyle();
-    }
-
-    if (Mjztool.matchUrlList(['javdb.com', 'javdb368.com'])) {
-        if (matchURL('javdb.com')) {
-            setTimeout(JavDB, 1000);
-        }else {
-            var host = window.location.host;
-            window.location.href = location.href.replace(host, 'javdb.com');
-        }
-    }
-
-    if (matchURL('javlibrary.com')) {
-        setTimeout(JavLibrary, 1000);
-    }
-
-    if (matchURL('javbus.com')) {
-        setTimeout(JavBus, 1000);
-    }
-
-}
-
-function jav321_lowerVolume() {
-    // document.getElementById(id).volume = volume;
-    var videos = document.querySelectorAll("video");
-    for (let index = 0; index < videos.length; index++) {
-        const element = videos[index];
-        element.volume = VOLUME;
+    if (Mjztool.matchURL('live.douyin.com')){
+        DouYin_Live();
+    }else{
+        DouYin();
+        DouYin_Video();
     }
 }
 
+function DouYin(){
+    var css = '';
 
-function jav321_setPlayerStyle() {
-    // var styleContent = "#player_3x2_close { font-size: 15em; } ";
-    // addStyle(styleContent);
+    {
+        // 隐藏点击进入直播间按钮
+        css += 'a.DXIZeYGy {display: none !important;}';
+        css += 'div.Jk65uwWm {display: none !important;}';
 
-    var player_iframe = document.querySelector("iframe");
-    if (player_iframe) {
-        // player_iframe.setAttribute("width", "800");
-        // player_iframe.setAttribute("height", "600");
-        player_iframe.setAttribute("scrolling", "no");        
-        player_iframe.setAttribute("id", "player_iframe");
-        var styleContent = "#player_iframe { width: 1000px; height: 650px; position: relative; z-index: 99;}";
-        addStyle(styleContent);
+        // 隐藏直播用户信息
+        css += '#room_info_bar {opacity: 0 !important;} #room_info_bar:hover {opacity: 1 !important;}';
+        css += '.dXl06fc1 {opacity: 0 !important;} .dXl06fc1:hover {opacity: 1 !important;}';
+
+        // 隐藏直播用户控制栏
+        css += '.xgplayer-controls {opacity: 0 !important;} .xgplayer-controls:hover {opacity: 1 !important;}';
+
+        // /follow/live/
+        // 隐藏直播间顶部信息栏
+        css += '#live_outer_container .RTEOroU7 {opacity: 0 !important;} #live_outer_container .RTEOroU7:hover {opacity: 1 !important;}';
+        // 隐藏直播间底部礼物栏
+        css += '.GDP2iTsQ {display: none !important;}';
     }
+
+    addStyle(css);
+
+    // 删除下载抖音精选
+    // $('#douyin-navigation div').each(function(){
+    //     if ($(this).text() == '下载抖音精选'){
+    //         $(this).parent().remove();
+    //     }
+    // });
+
 }
 
-function JavDB() {
-    if (matchURL('/v/')) {
-        var panel = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block');
+function DouYin_Video(){
+    var css = '';
 
-        // Add Button jump nyaa
-        {
-            var avid = '';
-            avid = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block  span').innerText;
-            var hrefNyaa = 'https://sukebei.nyaa.si/?f=0&c=0_0&q=' + avid;
-            var btnNyaa = document.createElement('a');
-            btnNyaa.setAttribute('class', 'button');
-            btnNyaa.setAttribute('href', hrefNyaa);
-            btnNyaa.innerText = 'Nyaa';
-            panel.appendChild(btnNyaa);
-        }
+    // 自动隐藏 右侧工具栏
+    css += '.I6U7FiE8 {opacity: 0 !important;}';
+    css += '.I6U7FiE8:hover {opacity: 1 !important;}';
+    // 自动隐藏 底部信息栏
+    css += '#video-info-wrap {opacity: 0 !important;}';
+    css += '#video-info-wrap:hover {opacity: 1 !important;}';
 
-    }
+    // 视频全高度显示
+    css += '.xg-video-container {bottom: 0px !important;}';
+
+    addStyle(css);
 }
 
-function JavLibrary() {
-    if (matchURL('/?v=')) {
-        var panel = document.querySelector('#video_jacket_info #video_info');
 
-        // Add Button for download
-        {
+function DouYin_Live(){
+    var css = '';
 
-            var btn= document.createElement('button');
-            btn.setAttribute('class', 'button');
-            // btn.setAttribute('href', '#');
-            btn.innerText = 'Download Metadata';
-            btn.addEventListener('click', function(){
-                var avid = document.querySelector('#avid > a').innerText;
-                var avCoverUrl = document.querySelector('#video_jacket_img').src;
-                Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-
-                var link = window.location.href;
-                var linkName = link.split('=')[1] + '.video.javlibrary';
-                downloadText(linkName, link);
-            });
-
-            panel.appendChild(btn);
-        }
-
-    }
-}
-
-function JavBus() {
-
-    var inter = setInterval(function(){
-
-        var panel = document.querySelector('#video_info');
-        if (panel) {
-            clearInterval(inter);
-        }else {
-            return;
-        }
-        // Add Button for download
-        console.log('Add Button for download');
+    // 视频区域内 - 顶栏信息 - 自动隐藏
+    css += '#live_outer_container #island_4264f > div:hover {opacity: 1 !important;}';
+    css += '#live_outer_container #island_4264f > div {opacity: 0 !important;}';
     
-        var btn= document.createElement('button');
-        btn.setAttribute('class', 'button');
-        // btn.setAttribute('href', '#');
-        btn.innerText = 'Download Metadata';
-        btn.addEventListener('click', function(){
-            var avid = document.querySelector('#avid > a').innerText;
-            var avCoverUrl = document.querySelector('.bigImage > img').src;
-            // console.log(avCoverUrl);
-            Mjztool.GM_downloadImg(avCoverUrl, avid + '.jpg');
-    
-            var link = window.location.href;
-            var linkName = avid + '.javbus';
-            downloadText(linkName, link);
-        });
-    
-        panel.appendChild(btn);
-
-    }, 500);
-
-
+    addStyle(css);
 }
-
 
 /*******************************************************************************/
-
-
-
 
 function open_in_new_tab(selector){
     // $('a').attr('target', '_blank');
     $(selector).attr('target', '_blank');
 }
 
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy) {
+    window.trustedTypes.createPolicy('default', {
+      createHTML: (string, sink) => string
+    });
+}
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
@@ -311,6 +256,10 @@ Mjztool.bytesToSize = function(bytes) {
     return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];  
 };
+Mjztool.isMatchUrl = function(url) {
+    const URL = window.location.href;
+    return URL.indexOf(url) > -1;
+};
 Mjztool.matchURL = function(url) {
     const URL = window.location.href;
     return URL.indexOf(url) > -1;
@@ -406,4 +355,3 @@ Mjztool.printIt = function (printThis) {
 	win.print();
 	win.close();
 };
-

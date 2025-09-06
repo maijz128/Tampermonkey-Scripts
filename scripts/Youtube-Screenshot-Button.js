@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        MJZ - Youtube Screenshot Button
 // @namespace   https://riophae.com/
-// @version     24.08.06
+// @version     25.06.08
 // @description Adds a button that enables you to take screenshots for YouTube videos.
 // @author      Riophae Lee
 // @match       https://www.youtube.com/*
@@ -11,15 +11,107 @@
 // @license     MIT
 // ==/UserScript==
 
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+// if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+//   window.trustedTypes.createPolicy('default', {
+//       createHTML: string => string
+//       // Optional, only needed for script (url) tags
+//       //,createScriptURL: string => string
+//       //,createScript: string => string,
+//   });
+// }
+//   escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+//       createHTML: (to_escape) => to_escape
+//   })
+//   function InnerHTML(styleContent)
+//   {
+//       return escapeHTMLPolicy.createHTML(styleContent);
+//   }
+
+  // NOTE: 为了解决 `This document requires 'TrustedHTML' assignment.` 问题
+  // 首先，检查 trustedTypes 是否可用
+  let trusted_policy = null;
+  if (window.trustedTypes) {
+    // 如果默认策略不存在，创建一个新的默认策略
+    if (!window.trustedTypes.defaultPolicy) {
+      try {
+        window.trustedTypes.createPolicy("default", {
+          createHTML: (string, sink) => {
+            return string;
+          },
+        });
+      } catch (error) {
+        console.error("Failed to create default Trusted Types policy:", error);
+      }
+    }
+
+    // 如果默认策略存在但没有 createHTML 方法，尝试添加这个方法
+    if (
+      window.trustedTypes.defaultPolicy &&
+      !window.trustedTypes.defaultPolicy.createHTML
+    ) {
+      try {
+        Object.defineProperty(window.trustedTypes.defaultPolicy, "createHTML", {
+          value: function (string, sink) {
+            return string;
+          },
+          writable: false,
+          enumerable: true,
+          configurable: false,
+        });
+      } catch (error) {
+        console.error(
+          "Failed to add createHTML to default Trusted Types policy:",
+          error
+        );
+      }
+    }
+
+    try {
+      trusted_policy = window.trustedTypes.createPolicy("safe", {
+        createHTML: (string, sink) => {
+          return string;
+        },
+      });
+    } catch (error) {
+      console.error("Failed to create default Trusted Types policy:", error);
+    }
+  }
+
+  /**
+   * @param {string} string
+   * @returns {string | TrustedHTML}
+   */
+  function trusted_html(string) {
+    if (window.trustedTypes?.defaultPolicy?.createHTML) {
+      try {
+        return window.trustedTypes.defaultPolicy.createHTML(string);
+      } catch (error) {
+        // console.error("Failed to create trusted HTML:", error);
+      }
+      try {
+        if (trusted_policy) {
+          return trusted_policy.createHTML(string);
+        }
+      } catch (error) {
+        // console.error("Failed to create trusted HTML:", error);
+      }
+    }
+    return string;
+  }
+
+  function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = trusted_html(htmlString.trim());
+  
+    // Change this to div.childNodes to support multiple top-level nodes.
+    return div.firstChild;
+  }
+
 (function () {
     'use strict';
 
-    // How to fix TrustedHTML assignment error with Angular [innerHTML]
-    if (window.trustedTypes && window.trustedTypes.createPolicy) {
-      window.trustedTypes.createPolicy('default', {
-        createHTML: (string, sink) => string
-      });
-    }
 
     // Types inspired by
     // https://github.com/Microsoft/TypeScript/blob/9d3707d/src/lib/dom.generated.d.ts#L10581
@@ -160,13 +252,19 @@
       let isTooltipShown = false;
 
       const controls = select('.ytp-right-controls');
-      controls.insertAdjacentHTML('afterbegin', generateButtonHtml(buttonId, buttonSvg));
+      const btnHtml = generateButtonHtml(buttonId, buttonSvg);
+
+      // controls.insertAdjacentHTML('afterbegin', btnHtml);
+      var btnEL = createElementFromHTML(btnHtml);
+      controls.insertBefore(btnEL, controls.children[0]);
 
       if (hasMenu) {
         const settingsMenu = select('.ytp-settings-menu');
         const menuHtml = generateMenuHtml(menuId, menuItemGenerator, menuItems);
 
-        settingsMenu.insertAdjacentHTML('beforebegin', menuHtml);
+        // settingsMenu.insertAdjacentHTML('beforebegin', menuHtml);
+        var menuEL = createElementFromHTML(menuHtml);
+        settingsMenu.insertBefore(menuEL, settingsMenu.children[0]);
       }
 
       const button = document.getElementById(buttonId);
