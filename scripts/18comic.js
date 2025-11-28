@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ 18+漫画
 // @namespace    https://github.com/maijz128
-// @version      25.04.17
+// @version      25.09.12
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.18comic.org/*
@@ -32,7 +32,7 @@ function main(){
     }
 
     if (Mjztool.matchUrlList(["wnacg", "wnacg.com"])) {
-        wnacg();   
+        WNAcg();   
     }
 
 
@@ -45,15 +45,18 @@ function comic18() {
 }
 
 
-function wnacg() {
+function WNAcg() {
     var css = '';
     css += '';
     css += '';
     // 页数，大字体
     css += ".uwconn > label { font-size: x-large; } ";
     // 浏览页面缩放80%
+    // <!-- 宽度大于 1200px 的屏幕使用该样式 -->
+    css += '@media screen and (min-width: 1200px) { \n';
     css += '#img_list { width: 80%; margin: auto; overflow: hidden;}';
     css += '#img_list img { width: 100% !important; }';
+    css += '\n }';
     // 页数，上传日期
     css += '.grid .info .info_col { color: darkblue !important;}';
     // 汉化标签，高亮显示

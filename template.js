@@ -5,6 +5,7 @@
 // @description  描述
 // @author       MaiJZ
 // @match        *://*/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=baidu.com
 // @require      https://code.jquery.com/jquery-2.2.4.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -31,6 +32,15 @@ function main() {
 
 /*******************************************************************************/
 
+
+// 判断是否为移动设备（手机/平板）
+function isMobile() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    // 移动设备标识：Mobile、Android、iPhone、iPad、iPod、BlackBerry、Windows Phone等
+    const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone'];
+    return mobileKeywords.some(keyword => userAgent.includes(keyword));
+}
+
 function open_in_new_tab(selector){
     // $('a').attr('target', '_blank');
     $(selector).attr('target', '_blank');
@@ -46,9 +56,12 @@ if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTy
         ,createScript: string => string,
     });
 }
-escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
-    createHTML: (to_escape) => to_escape
-})
+var escapeHTMLPolicy = null;
+if (window.trustedTypes){
+    escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+        createHTML: (to_escape) => to_escape
+    })
+}
 function InnerHTML(styleContent)
 {
     return escapeHTMLPolicy.createHTML(styleContent);
@@ -56,7 +69,10 @@ function InnerHTML(styleContent)
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
-    elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
+    if (escapeHTMLPolicy)
+        elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
+    else
+        elStyle.innerHTML = styleContent;
     document.head.appendChild(elStyle);
 }
 

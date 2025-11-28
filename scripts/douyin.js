@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - 抖音优化
 // @namespace    https://github.com/maijz128
-// @version      25.07.27
+// @version      25.11.18
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.douyin.com/*
@@ -89,10 +89,17 @@ function DouYin_Live(){
     var css = '';
 
     // 视频区域内 - 顶栏信息 - 自动隐藏
-    css += '#live_outer_container #island_4264f > div:hover {opacity: 1 !important;}';
-    css += '#live_outer_container #island_4264f > div {opacity: 0 !important;}';
-    
+    css += '#HeaderLayout:hover {opacity: 1 !important;}';
+    css += '#HeaderLayout {opacity: 0 !important;}';
+    css += '#room_info_bar:hover {opacity: 1 !important;}';
+    css += '#room_info_bar {opacity: 0 !important;}';
     addStyle(css);
+    
+    // var HeaderLayout = document.getElementById('HeaderLayout');
+    // if (HeaderLayout){
+    //     HeaderLayout.style.opacity = 0;
+    // }
+
 }
 
 /*******************************************************************************/
@@ -104,15 +111,31 @@ function open_in_new_tab(selector){
 
 
 // How to fix TrustedHTML assignment error with Angular [innerHTML]
-if (window.trustedTypes && window.trustedTypes.createPolicy) {
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
     window.trustedTypes.createPolicy('default', {
-      createHTML: (string, sink) => string
+        createHTML: string => string
+        // Optional, only needed for script (url) tags
+        ,createScriptURL: string => string
+        ,createScript: string => string,
     });
+}
+var escapeHTMLPolicy = null;
+if (window.trustedTypes){
+    escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+        createHTML: (to_escape) => to_escape
+    })
+}
+function InnerHTML(styleContent)
+{
+    return escapeHTMLPolicy.createHTML(styleContent);
 }
 
 function addStyle(styleContent) {
     var elStyle = document.createElement("style");
-    elStyle.innerHTML = styleContent;
+    if (escapeHTMLPolicy)
+        elStyle.innerHTML = escapeHTMLPolicy.createHTML(styleContent);
+    else
+        elStyle.innerHTML = styleContent;
     document.head.appendChild(elStyle);
 }
 

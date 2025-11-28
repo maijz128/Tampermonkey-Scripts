@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JavTool - MaiJZ
 // @namespace    https://github.com/maijz128
-// @version      25.07.26
+// @version      25.11.21
 // @description  描述
 // @author       MaiJZ
 // @match        *://www.jav321.com/video/*
@@ -81,11 +81,19 @@ function JavDB() {
             var avid = '';
             avid = document.querySelector('div.video-detail  div.video-meta-panel  div.panel-block.first-block  span').innerText;
             var hrefNyaa = 'https://sukebei.nyaa.si/?f=0&c=0_0&q=' + avid;
+            var hrefJavBus = 'https://www.javbus.com/' + avid;
+
             var btnNyaa = document.createElement('a');
             btnNyaa.setAttribute('class', 'button');
             btnNyaa.setAttribute('href', hrefNyaa);
             btnNyaa.innerText = 'Nyaa';
             panel.appendChild(btnNyaa);
+
+            var btnJavBus = document.createElement('a');
+            btnJavBus.setAttribute('class', 'button');
+            btnJavBus.setAttribute('href', hrefJavBus);
+            btnJavBus.innerText = 'JavBus';
+            panel.appendChild(btnJavBus);
         }
 
     }
@@ -119,6 +127,12 @@ function JavLibrary() {
 }
 
 function JavBus() {
+    var css = '';
+
+    css += '.container h3 {margin-top: 60px;}';
+
+    Mjztool.addStyle(css);
+
 
     var inter = setInterval(function(){
 
