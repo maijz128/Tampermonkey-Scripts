@@ -97,6 +97,29 @@ function downloadText(filename, text) {
     document.body.removeChild(element);
 }
 
+
+// 使用示例
+// downloadImage('/path/to/your/image.jpg', 'my-image');
+/**
+ * 下载同源图片
+ * @param {string} imageUrl - 图片的URL（必须是同源）
+ * @param {string} fileName - 保存的文件名
+ */
+function downloadImage(imageUrl, fileName = 'download-image') {
+    // 创建一个临时的a标签
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = fileName; // 指定下载文件名
+    
+    // 将a标签添加到DOM并触发点击
+    document.body.appendChild(link);
+    link.click();
+    
+    // 清理DOM
+    document.body.removeChild(link);
+}
+  
+
 /**
  * 图片下载
  * @param {*} pic_url  图片链接

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ 18+漫画
 // @namespace    https://github.com/maijz128
-// @version      25.09.12
+// @version      26.02.01
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.18comic.org/*
@@ -65,8 +65,12 @@ function WNAcg() {
     css += '.grid .pic_box.cate-10::before { color: chartreuse !important;} ';
     css += '.grid .pic_box.cate-20::before { color: chartreuse !important;} ';
 
-    // 鼠标指针
-    css += '#img_list img { cursor: none !important;} ';
+    // 浏览，鼠标指针隐藏
+    css += '#viewport #content #v-container img { cursor: none !important;} ';
+
+    // 广告
+    css += '#bread .dlh{ display: none !important;}';
+
 
     if (Mjztool.isMatchUrl(".html")) {
         

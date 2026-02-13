@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      25.09.06
+// @version      26.02.13
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -28,6 +28,7 @@
 // @match        *://*.javbus.com/*
 // @match        *://sukebei.nyaa.si/*
 // @match        *://*.pornhub.com/*
+// @match        *://*.pornrips.to/*
 // @match        *://*.civitai.com/*
 // @match        *://*.douban.com/*
 // @match        *://*.youtube.com/*
@@ -81,6 +82,7 @@ function main() {
     if (matchURL("javbus.com")) { setTimeout(javbus, 2000); }
     if (matchURL("sukebei.nyaa.si")) { setTimeout(nyaa, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
+    if (matchURL("pornrips.to")) { setTimeout(PornRips, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
     if (matchURL("douban.com")) { setTimeout(DouBan, 2000); }
     if (matchURL("youtube.com")) { setTimeout(youtube, 5000); }
@@ -632,22 +634,29 @@ function nyaa(){
     };
 
 
-    var h3Title = jQuery('h3');
-    if (h3Title) {
-        var avidText = h3Title.text();
-        var elem = h3Title;
-        funcAV(avidText, elem);
+    const category = document.querySelector('body > div.container > div:nth-child(7) > div.panel-body > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)');
+    if (category) {
+        const cHref = category.getAttribute('href');
+        if (cHref == 'c=0_0' || cHref == 'c=2_0') {
+            var h3Title = jQuery('h3');
+            if (h3Title) {
+                var avidText = h3Title.text();
+                var elem = h3Title;
+                funcAV(avidText, elem);
+            }
+        }
     }
 
+    
 
-
-    jQuery(".container .table-responsive table td:nth-child(2) > a").each(function(){
-        var avidElem = jQuery(this);
-        var avidText = jQuery(this).text();
-        
-        funcAV(avidText, avidElem);
-    });
-
+    if (matchURL('c=0_0') || matchURL('c=2_0') || matchURL('c=2_1') || matchURL('c=2_2')) {
+        jQuery(".container .table-responsive table td:nth-child(2) > a").each(function(){
+            var avidElem = jQuery(this);
+            var avidText = jQuery(this).text();
+            
+            funcAV(avidText, avidElem);
+        });
+    }
 }
 
 
@@ -1386,6 +1395,65 @@ function DLSite(){
         }, 1000);
         
     }
+}
+
+
+function PornRips(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+
+    var params = getQueryParams();
+
+    var funcTitleEl = function(ahref, thisElem){
+        // https://pornrips.to/evilangel-26-02-05-scarlet-chase-oily-hand-tit-puss-and-ass-job-xxx-1080p-hevc-x265-prt/
+        ahref = ahref.replace('https://pornrips.to/', '');
+        var urlPaths = ahref.split('-1080p');
+        var searchText = '';
+
+        if (ahref.indexOf('-1080p')  > -1) {
+            searchText = urlPaths[0];
+        }
+        if (ahref.indexOf('-720p')  > -1) {
+            searchText = urlPaths[0];
+        }
+        
+        searchText = searchText.replaceAll('-', '.');
+        
+        if (searchText != '') { 
+            console.log('search local file:' + searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        thisElem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
+    
+
+    var headerTitle = jQuery("h1.entry-title");
+    if (headerTitle) {
+        funcTitleEl(href, headerTitle);
+    }
+
+   
+    setTimeout(() => {
+        var selector =  "h2.entry-title a";
+        jQuery(selector).each(function(){
+            var thisElem = jQuery(this);
+            var ahref = thisElem.attr('href');
+            funcTitleEl(ahref, thisElem);
+        });  
+    }, 1000);
+        
+    
 }
 
 

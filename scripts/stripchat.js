@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - StripChat
 // @namespace    https://github.com/maijz128
-// @version      25.11.28
+// @version      25.12.05
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.stripchat.com/*
@@ -99,10 +99,16 @@ class ModelsThumbCover{
             }
 
             let thumbCoverPath = parsedUrl.pathname;
+
             this.mModelsThumbCoverSave.models[hostIndex].push([modelId, thumbCoverPath]);
         }
 
         let jsonData = JSON.stringify(this.mModelsThumbCoverSave);
+        
+        for (let i=0; i < 10; i++) {
+            jsonData = jsonData.replace(/\/\//g, '/');
+            jsonData = jsonData.replaceAll('//', '/');
+        }
 
         if (this.jsonDataLast != jsonData) {
             this.jsonDataLast = jsonData;
@@ -131,9 +137,93 @@ class ModelsThumbCover{
 
         }
     }
-
-
 }
+
+
+class ModelBroadcasts{
+    /* API
+        https://stripchat.com/api/front/v2/models/username/{model.username}/cam
+        https://stripchat.com/api/front/v1/broadcasts/{model.username}
+    */
+
+    constructor(modelName) {
+        this.mModelName = modelName;
+        this.mCam = null;
+        this.mBroadcasts = null;
+    }
+
+    async _getCam() {
+        const self = this;
+        let url = 'https://stripchat.com/api/front/v2/models/username/' + this.mModelName + '/cam';
+        try {
+            const responseText = await makeGetRequest(url);
+            let json = JSON.parse(responseText);
+            self.mCam = json;
+            // do stuff with response
+        } catch (error) {
+            // in case the GET request fails
+            console.error(
+                "Request failed with error code", error.status,
+                ". Message is ", error.responseText
+            );
+        }
+    }
+
+    async _getBroadcasts() {
+        const self = this;
+        let url = 'https://stripchat.com/api/front/v1/broadcasts/' + this.mModelName;
+        try {
+            const responseText = await makeGetRequest(url);
+            // console.log(responseText);
+            let json = JSON.parse(responseText);
+            self.mBroadcasts = json;
+            // console.log(self.getSnapshot());
+            // do stuff with response
+        } catch (error) {
+            // in case the GET request fails
+            console.error(
+                "Request failed with error code", error.status,
+                ". Message is ", error.responseText
+            );
+        }
+    }
+
+    async fetchData(func){
+        await this._getBroadcasts();
+        await this._getCam();
+        if (func) func(this.mBroadcasts, this.mCam);
+    }    
+
+    isLive() {
+        return this.mBroadcasts && this.mBroadcasts['item']['isLive'];
+    }
+
+    getSnapshot() {
+        let imgUrl = 'https://img.doppiocdn.net/thumbs/{snapshotTimestamp}/{modelId}';
+        if (this.mBroadcasts) {
+            imgUrl = imgUrl.replace('{snapshotTimestamp}', this.mBroadcasts['item']['snapshotTimestamp']);
+            imgUrl = imgUrl.replace('{modelId}', this.mBroadcasts['item']['modelId']);
+            return imgUrl;
+        }
+        return null;
+    }
+
+    getPreviewUrl(){
+        if (this.mCam){
+            return this.mCam['cam']['previewUrl'];
+        }
+        return null;
+    }
+}
+
+// setTimeout(() => {
+//     let mb = new ModelBroadcasts('Victoriaxx_');
+//     mb.fetchData(function(broadcasts, cam){
+//         // console.log(broadcasts);
+//         // console.log(cam);
+//         console.log(mb.getSnapshot());
+//     });
+// }, 1000);
 
 class ModelsRecording {
 
@@ -348,9 +438,11 @@ class MyStripChat {
 
             // 最爱的主播（开播提醒）
             setInterval(function () {
-                self.RecordFavorite();
-                self.ShowFavoriteForNotification();
-
+                const notFullscreen = self.IsPlayerFullscreen() == false;
+                if (notFullscreen){
+                    self.RecordFavorite();
+                    self.ShowFavoriteForNotification();
+                }
             }, 6000);
 
             self.RecordModelThumbCover();
@@ -358,123 +450,161 @@ class MyStripChat {
         }
     }
 
- AddCss(){
-    var css = '';
+    AddCss(){
+        var css = '';
 
-    // 水印，隐藏
-    css += '.watermark { display: none !important; }';
+        // 水印，隐藏
+        css += '.watermark { display: none !important; }';
 
-    // 全屏模式下，右侧打赏按钮
-    css += '.plugin-panel--wheel-of-fortune, .plugin-panel--reactions { opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.plugin-panel--wheel-of-fortune:hover, .plugin-panel--reactions:hover { opacity: 1 !important; } ';
-    css += '} ';
-    // 右侧-炸弹按钮-Battleship
-    css += '.plugin-control-content__show-button-wrapper { opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.plugin-control-content__show-button-wrapper:hover { opacity: 1 !important; } ';
-    css += '} ';
-    // 开始录制按钮，自动隐藏
-    css += '#record-show-button-viewcam--with-text-enabled-not-started {opacity: 0 !important; } ';
-    css += '.record-show-button:hover #record-show-button-viewcam--with-text-enabled-not-started:hover {opacity: 1 !important; } '
-    // 虚拟实境按钮，自动隐藏
-    css += '.player-controls-user__watch-vr {opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.player-controls-user__watch-vr:hover {opacity: 1 !important; } '
-    css += '} ';
-    // 插件面板，战舰，自动隐藏
-    css += '.plugin-panel--battleships {opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.plugin-panel--battleships:hover {opacity: 1 !important; } '
-    css += '} ';
-
-
-    // 全屏模式下，左侧聊天框
-    css += '.player-controls-fullscreen__chat-wrapper { opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.player-controls-fullscreen__chat-wrapper:hover { opacity: 1 !important; } ';
-    css += '} ';
-
-    // 全屏模式下，底部打赏栏
-    css += '.player-controls-fullscreen__bottom-controls { opacity: 0 !important; } ';
-    css += '@media (min-width: 800px) {';
-    css += '.player-controls-fullscreen__bottom-controls:hover { opacity: 1 !important; } ';
-    css += '} ';
-
-    // 全屏模式下，顶部控制栏
-    css += '.fullscreen-top-controls { opacity: 0 !important; } ';
-    css += '.fullscreen-top-controls:hover { opacity: 1 !important; } ';
-
-    // 全屏模式下，下一个主播
-    css += '.next-model-button { display: none !important; } ';
+        // 全屏模式下，右侧打赏按钮
+        css += '.plugin-panel--wheel-of-fortune, .plugin-panel--reactions { opacity: 0 !important; } ';
+        css += '@media (min-width: 800px) {';
+        css += '.plugin-panel--wheel-of-fortune:hover, .plugin-panel--reactions:hover { opacity: 1 !important; } ';
+        css += '} ';
+        // 右侧-炸弹按钮-Battleship
+        css += '.plugin-control-content__show-button-wrapper { opacity: 0 !important; } ';
+        css += '@media (min-width: 800px) {';
+        css += '.plugin-control-content__show-button-wrapper:hover { opacity: 1 !important; } ';
+        css += '} ';
+        // 开始录制按钮，自动隐藏
+        css += '#record-show-button-viewcam--with-text-enabled-not-started {opacity: 0 !important; } ';
+        css += '.record-show-button:hover #record-show-button-viewcam--with-text-enabled-not-started:hover {opacity: 1 !important; } '
+        // 虚拟实境按钮，自动隐藏
+        css += '.player-controls-user__watch-vr {opacity: 0 !important; } ';
+        css += '@media (min-width: 800px) {';
+        css += '.player-controls-user__watch-vr:hover {opacity: 1 !important; } '
+        css += '} ';
+        // 插件面板，战舰，自动隐藏
+        css += '.plugin-panel--battleships {opacity: 0 !important; } ';
+        css += '@media (min-width: 800px) {';
+        css += '.plugin-panel--battleships:hover {opacity: 1 !important; } '
+        css += '} ';
 
 
-    //------------- 自定义 -------------
-    css += '.favorite-notification { border: 2px solid red;}';
+        // 全屏模式下，左侧聊天框
+        css += '@media (max-width: 780px) {';
+        css += '.player-controls-fullscreen__chat-wrapper { display: none !important; } ';
+        css += '} ';
+        css += '@media (min-width: 800px) {';
+        css += '.player-controls-fullscreen__chat-wrapper { opacity: 0 !important; } ';
+        css += '.player-controls-fullscreen__chat-wrapper:hover { opacity: 1 !important; } ';
+        css += '} ';
 
-    css += '.model-recording { border-top: 2px solid green !important;}';
+        // 全屏模式下，底部打赏栏
+        css += '@media (max-width: 780px) {';
+        css += '.player-controls-fullscreen__bottom-controls { display: none !important; } ';
+        css += '} ';
+        css += '@media (min-width: 800px) {';
+        css += '.player-controls-fullscreen__bottom-controls { opacity: 0 !important; } ';
+        css += '.player-controls-fullscreen__bottom-controls:hover { opacity: 1 !important; } ';
+        css += '} ';
 
-    //----------------------------------
+        // 全屏模式下，顶部控制栏
+        css += '.fullscreen-top-controls { opacity: 0 !important; } ';
+        css += '.fullscreen-top-controls:hover { opacity: 1 !important; } ';
 
-    addStyle(css);
-
-    console.log('stripchat.js: css loaded');
-}
-
-
- VideoFitForHeight(){
-    var css = ``;
-    css += '.video-element-fit { height: 100vh !important; object-fit: cover !important;} ';
-
-    addStyle(css);
-
-    var btnsSelector = '.fullscreen-top-controls__top-buttons';
-    // var btnHtml = '<button id="btnVideoFitForHeight" onclick="VideoFitForHeight()" class="btn ds-btn-inline-block overflow-visible player-top-button" type="button">Fit</button>';
-    
+        // 全屏模式下，下一个主播
+        css += '.next-model-button { display: none !important; } ';
 
 
-    var iterator = setInterval(function(){
-        var topBtns = document.querySelector(btnsSelector);
-        var btnFitHas = document.querySelector('#btnVideoFitForHeight');
-        if (topBtns != undefined){
-            if (btnFitHas == undefined){
-                console.log('add btnVideoFitForHeight');
+        //------------- 自定义 -------------
+        css += '.favorite-notification { border: 2px solid red;}';
 
-                // 1. 创建按钮元素
-                const btn = document.createElement('button');
-                btn.textContent = '↕Fit↕';  // 按钮文字
-                btn.title = 'Fit for height';      // 按钮标题
-                btn.id = 'btnVideoFitForHeight';
-                btn.className = 'btn ds-btn-inline-block overflow-visible fullscreen-top-controls__button fullscreen-top-controls__button--tokens player-tokens-button player-top-button';
-
-                // 2. 添加点击事件（可选）
-                btn.addEventListener('click', () => {
-                    var elVideo = document.querySelector('.mse-player video.video-element');
-                    elVideo.classList.toggle('video-element-fit');
-                });
-
-                topBtns.prepend(btn);
-                // clearInterval(iterator);
+        // 正在记录主播直播
+        // css += '.model-recording { border-top: 2px solid green !important;}';
+        css += `
+            /* 效果1：边框显示/隐藏闪动 */
+            .model-recording-1 {
+                border-top: 2px solid transparent;
+                animation: model-recording-1 1s infinite;
             }
-        }
-    }, 3000);
 
-}
+            @keyframes model-recording-1 {
+                0%, 100% { border-top-color: green; }
+                50% { border-top-color: transparent; }
+            }
+
+            /* 效果4：边框阴影闪动（更柔和） */
+            .model-recording {
+                border: 2px solid green;
+                animation: model-recording 1s infinite;
+            }
+
+            @keyframes model-recording {
+                0%, 100% { box-shadow: 0 0 5px green; }
+                50% { box-shadow: 0 0 15px green; }
+            }
+        `;
 
 
-// 判断是否为直播页面
- IsLivePage(){
-    // 是否直播页面
-    var profileLabel = document.querySelector('h1.viewcam-profile-menu-item__label');
-    // console.log('不是直播页面');
-    if (profileLabel != undefined) return true;
-    return false;
-}
+        //----------------------------------
 
-// 判断是否为Favorite页面
- IsFavoritePage(){
-    return window.location.pathname == '/favorites';
-}
+        addStyle(css);
+
+        console.log('stripchat.js: css loaded');
+    }
+
+
+    VideoFitForHeight(){
+        var css = ``;
+        css += '.video-element-fit { height: 100vh !important; object-fit: cover !important;} ';
+
+        addStyle(css);
+
+        var btnsSelector = '.fullscreen-top-controls__top-buttons';
+        // var btnHtml = '<button id="btnVideoFitForHeight" onclick="VideoFitForHeight()" class="btn ds-btn-inline-block overflow-visible player-top-button" type="button">Fit</button>';
+        
+
+
+        var iterator = setInterval(function(){
+            var topBtns = document.querySelector(btnsSelector);
+            var btnFitHas = document.querySelector('#btnVideoFitForHeight');
+            if (topBtns != undefined){
+                if (btnFitHas == undefined){
+                    console.log('add btnVideoFitForHeight');
+
+                    // 1. 创建按钮元素
+                    const btn = document.createElement('button');
+                    btn.textContent = '↕Fit↕';  // 按钮文字
+                    btn.title = 'Fit for height';      // 按钮标题
+                    btn.id = 'btnVideoFitForHeight';
+                    btn.className = 'btn ds-btn-inline-block overflow-visible fullscreen-top-controls__button fullscreen-top-controls__button--tokens player-tokens-button player-top-button';
+
+                    // 2. 添加点击事件（可选）
+                    btn.addEventListener('click', () => {
+                        var elVideo = document.querySelector('.mse-player video.video-element');
+                        elVideo.classList.toggle('video-element-fit');
+                    });
+
+                    topBtns.prepend(btn);
+                    // clearInterval(iterator);
+                }
+            }
+        }, 3000);
+
+    }
+
+
+    // 判断是否为直播页面
+    IsLivePage(){
+        // 是否直播页面
+        var profileLabel = document.querySelector('h1.viewcam-profile-menu-item__label');
+        // console.log('不是直播页面');
+        if (profileLabel != undefined) return true;
+        return false;
+    }
+
+    // 判断是否为Favorite页面
+    IsFavoritePage(){
+        return window.location.pathname == '/favorites';
+    }
+
+    // 判断是否为Player全屏
+    IsPlayerFullscreen(){
+        return document.querySelector('.fullscreen.player') != null;
+    }
+
+
 
 //-------------------------------------------------------------------------
 
@@ -940,14 +1070,16 @@ class MyStreaMonitor {
         if (window.location.pathname == '/') {
             this.OnMainPage();
         }
-        this.OnVideoListPage();
+        if (matchURL('/recordings/')) {
+            this.OnVideoListPage();
+        }
     }
 
     AddCss() {
         let css ='';
 
         css += '.streamer-card {height: 200px !important;}';
-        css += '.streamer-card .card-header {border: none !important;}';
+        css += '.streamer-card .card-header {border: none !important; background-color: transparent !important;}';
 
 
         css += '#add-streamer-form > div.col-md-7 > div > button{ position: absolute; }';
@@ -955,6 +1087,7 @@ class MyStreaMonitor {
 
         // 在线状态
         css += '.streamer-card .span-online { background-color: green !important; }';
+        css += '.streamer-card .span-offline { background-color: darkgray !important; }';
 
         // 网站名字
         css += '.streamer-card .card-header small { opacity: 0; } .card-header small:hover { opacity: 1; }';
@@ -962,7 +1095,7 @@ class MyStreaMonitor {
         css += '.streamer-card .card-body .small.text-muted { opacity: 0; } .card-body .small.text-muted:hover { opacity: 1; }';
 
         // model name
-        css += '.streamer-card .card-header h6.mb-0 { color: black !important;}';
+        // css += '.streamer-card .card-header h6.mb-0 { color: black !important;}';
 
         // 运行状态
         css +='.streamer-card .card-body > div.d-flex.justify-content-between.align-items-center.mb-2';
@@ -971,8 +1104,8 @@ class MyStreaMonitor {
         // Filters & Actions
         css += '#content > div > div:nth-child(3) .card-header .btn-group';
         css += '{ width: 70%; }';
-        css += '#content > div > div:nth-child(3) .card-header .btn-group button';
-        css += '{ min-width: 300px; }';
+        css += '#content > div > div:nth-child(3) .card-header .btn-group';
+        css += '{ min-width: 300px; min-height: 2rem;}';
         css += '.card-header .btn-group .stop-streamers,.card-header .btn-group .start-streamers ';  
         css += '{ display:none; }';
         css += '.card-header .btn-group .stop-streamers'; // , .start-streamers
@@ -990,15 +1123,36 @@ class MyStreaMonitor {
         const self = this;
 
         const runFunc = function () {
-            self.funcOpenSite();
-            self.funcOnlineHighlight();
-            self.funcModelThumbCover();
-            self.funcModelsRecording();
+            if (document.visibilityState === 'visible') {
+                self.funcOpenSite();
+                self.funcOnlineHighlight();
+                self.funcModelThumbCover();
+                self.funcModelsRecording();
+            }
         }
 
-        setInterval(runFunc, 6000);
+        setInterval(runFunc, 10000);
 
         runFunc();
+
+        const btnClearFilter = document.querySelector('.card-header .btn-group button.btn.btn-warning');
+        if (btnClearFilter) {
+            btnClearFilter.addEventListener('click', function () {
+                setTimeout(() => {
+                    runFunc();
+                }, 500);
+            })
+        }
+
+        // 点击标题打开新标签页
+        var h1Title = document.querySelector('#content div.row.mb-4 h1');
+        if (h1Title) {
+            h1Title.style = 'cursor: pointer;';
+            h1Title.addEventListener('click', function() {
+                var origin = window.location.origin;
+                window.open(origin);
+            });
+        }
     }
 
     // open site in new tab
@@ -1027,15 +1181,21 @@ class MyStreaMonitor {
         streamerCardList.forEach(function (streamerCard) {
             const spanOnline = streamerCard.querySelector('.card-body span.bg-secondary');
 
-            let isOnline = spanOnline != null;
             if (spanOnline) {
-                isOnline = spanOnline.innerHTML.trim() == 'Online';
+                const spanText = spanOnline.innerHTML.trim();
+                const isOnline = (spanText == 'Online');
+                const isOffline = (spanText == 'Offline');
+
+                // 默认css
+                spanOnline.classList.remove('bg-secondary');
+                spanOnline.classList.remove('span-online');
+                spanOnline.classList.remove('span-offline');
 
                 if (isOnline) {
                     spanOnline.classList.add('span-online');
-                    spanOnline.classList.remove('bg-secondary');
-                }else{
-                    spanOnline.classList.remove('span-online');
+                }else if (isOffline) {
+                    spanOnline.classList.add('span-offline');
+                }else {
                     spanOnline.classList.add('bg-secondary');
                 }
             }
@@ -1065,11 +1225,45 @@ class MyStreaMonitor {
         });
     }
 
+    funcModelThumbCover2(){
+        const self = this;
+        const streamerCardList = document.querySelectorAll('.streamer-card');
+        streamerCardList.forEach(function (streamerCard) {
+            const elId = streamerCard.getAttribute('id');
+            const elId_s = elId.split('-');
+            const siteId = elId_s[1];
+            let modelId = elId_s[2];
+            modelId = streamerCard.querySelector('.card-header h6').innerHTML;
+            
+
+            let mb = new ModelBroadcasts(modelId);
+            mb.fetchData(function(broadcasts, cam){
+                // console.log(mb.getSnapshot());
+                let modelThumbCover = mb.getSnapshot();
+                if (mb.isLive() == false){
+                    // modelThumbCover = self.myUserData.getModelThumbCover(modelId);
+                    modelThumbCover = mb.getPreviewUrl();
+                }
+                streamerCard.style.backgroundImage = "url('" + modelThumbCover + "')";
+
+            });
+
+            streamerCard.style.backgroundSize = 'contain'; // 'cover';
+            streamerCard.style.backgroundPosition = "center center";
+            streamerCard.style.height = "180px !important";
+
+            
+            // console.log( 'modelId: ' + modelId + ' modelThumbCover: ' + modelThumbCover );
+
+        });
+    }
+
     funcModelsRecording (){
         const self = this;
-        this.myModelsRecording.clearAll();
 
         const streamerCardList = document.querySelectorAll('.streamer-card');
+
+        this.myModelsRecording.clearAll();
 
         for (let i = 0; i < streamerCardList.length; i++) {
             const streamerCard = streamerCardList[i];
@@ -1084,14 +1278,16 @@ class MyStreaMonitor {
             self.myModelsRecording.set(modelId, isRecording);
             
             // console.log( 'modelId: ' + modelId + ' isRecording: ' + isRecording);
-
         }
 
         this.myModelsRecording.save();
     }
 
+
+
     OnVideoListPage() {
         // Files页
+        const self = this;
     
         var videoList = document.querySelector('#video-list');
         if (videoList) {
@@ -1101,7 +1297,7 @@ class MyStreaMonitor {
                 var videoListItems = videoList.querySelectorAll('.list-group-item a');
                 videoListItems.forEach(function(item) {
                     const videoHref =  item.href;
-                    let btn = createPotPlayerButton(videoHref);
+                    let btn = self.createPotPlayerButton(videoHref);
                     btn.classList.add('vli-potplayer');
                     item.parentElement.prepend(btn);
                 });
@@ -1112,15 +1308,15 @@ class MyStreaMonitor {
         var videoArea = document.querySelector('#video-area');
         var videoAreaCardFooter = document.querySelector('#video-area .card-footer');
     
-        if (videoArea) {
-            var videoBtn = document.querySelector('#video-area > div > div.card-footer > a');
+        if (videoArea) {    
+            var videoBtn = document.querySelector('#video-area .card-footer > a');
             if (videoBtn) {
                 const videoHref =  videoBtn.href;
                 console.log(videoHref);
-                videoAreaCardFooter.appendChild(createPotPlayerButton(videoHref));
+                videoAreaCardFooter.appendChild(self.createPotPlayerButton(videoHref));
             }
         }
-    }
+    }   
     
     
     createPotPlayerButton(videoHref) {
@@ -1145,6 +1341,9 @@ class MyStreaMonitor {
 
 
 /*******************************************************************************/
+
+
+
 
 // 判断是否为移动设备（手机/平板）
 function isMobile() {
@@ -1377,6 +1576,16 @@ function deleteCookie( name ) {
 }
 
 
+function makeGetRequest(url) {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: url,
+            onload: response => resolve(response.responseText),
+            onerror: error => reject(error)
+        });
+    });
+}
 
 
 function matchURL(url) {

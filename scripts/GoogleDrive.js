@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         MaiJZ - GoogleDrive
 // @namespace    https://github.com/maijz128
-// @version      0.1.0
+// @version      26.01.15
 // @description  描述
 // @author       MaiJZ
 // @match        *://drive.google.com/*
+// @icon         data:image/png;base64,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
 // @require      https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -26,6 +27,14 @@
 
 function main() {
     
+    // jump to download page
+    if (matchURL('drive.google.com/file/d/')) {
+        var url = location.href;
+        var newUrl = url.replace('drive.google.com/file/d/', 'drive.usercontent.google.com/download?id=');
+        newUrl = newUrl.replace('/view?usp=drive_link', '&export=download&authuser=0');
+        newUrl = newUrl.replace('/view', '');
+        location.href = newUrl; 
+    }
 }
 
 
