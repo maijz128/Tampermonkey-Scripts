@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         JavTool - MaiJZ
 // @namespace    https://github.com/maijz128
-// @version      25.11.30
+// @version      26.07.12
 // @description  描述
 // @author       MaiJZ
 // @match        *://www.jav321.com/video/*
@@ -97,6 +97,32 @@ function JavDB() {
         }
 
     }
+
+    if (matchURL('/actors/')) {
+        // 1. 获取所有 class 为 avatar 的 span 元素
+        const avatarSpans = document.querySelectorAll('span.avatar');
+
+        // 2. 循环遍历每一个 span 并替换成 img
+        avatarSpans.forEach(span => {
+            // 从 style 中提取 background-image 的图片 URL
+            const style = span.style.backgroundImage;
+            // 正则提取 url 中的真实链接（去掉括号和引号）
+            const imgUrl = style.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+
+            if (imgUrl) {
+                // 创建 img 标签
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                // 保留原有的 class 名
+                img.className = 'avatar';
+                // 可选：给图片添加 alt 属性（规范）
+                img.alt = '头像';
+
+                // 用 img 替换原来的 span
+                span.parentNode.replaceChild(img, span);
+            }
+        });
+    }
 }
 
 function JavLibrary() {
@@ -133,6 +159,41 @@ function JavBus() {
 
     Mjztool.addStyle(css);
 
+    let btnToDownload = function() {
+        const avid = document.querySelector('#avid > a').innerText;
+        const link = window.location.href;
+        const linkName = avid + '.javbus';
+        downloadText(linkName, link);
+
+        var avCoverUrl = document.querySelector('.bigImage > img').src;
+        downloadImage(avCoverUrl, avid + '.jpg');
+
+        document.querySelectorAll('#video_info span a').forEach((item) => {
+            if (item.innerText == 'javdb评:') {
+                const javDBUrl = item.href;
+                let javDbFileName = javDBUrl.replace('https://javdb.com/v/', 'v.');
+                javDbFileName += '.javdb';
+                downloadText(javDbFileName, javDBUrl);
+            }
+        });
+
+        
+    };
+
+    let btnToDownloadSample = function() {
+        // 樣品圖像
+        document.querySelectorAll('#sample-waterfall a.sample-box').forEach((item, index) => {
+            var aHref = item.href;
+            if (aHref.indexOf('.jpg') > 0) {
+                let fileName = aHref.split('/')[aHref.split('/').length - 1];
+                // console.log(fileName);
+                // console.log(aHref);
+                setTimeout(async function(){
+                    await downloadImageRequest(aHref, fileName);
+                }, (index +1) * 500);
+            }
+        });
+    };
 
     var inter = setInterval(function(){
 
@@ -150,25 +211,20 @@ function JavBus() {
         // btn.setAttribute('href', '#');
         btn.innerText = 'Download Metadata';
         btn.addEventListener('click', function(){
-            const avid = document.querySelector('#avid > a').innerText;
-            const link = window.location.href;
-            const linkName = avid + '.javbus';
-            downloadText(linkName, link);
-
-            var avCoverUrl = document.querySelector('.bigImage > img').src;
-            downloadImage(avCoverUrl, avid + '.jpg');
-
-            document.querySelectorAll('#video_info span a').forEach((item) => {
-                if (item.innerText == 'javdb评:') {
-                    const javDBUrl = item.href;
-                    let javDbFileName = javDBUrl.replace('https://javdb.com/v/', 'v.');
-                    javDbFileName += '.javdb';
-                    downloadText(javDbFileName, javDBUrl);
-                }
-            });
+            btnToDownload();
         });
     
         panel.appendChild(btn);
+
+        var btnSample= document.createElement('button');
+        btnSample.setAttribute('class', 'button');
+        // btn.setAttribute('href', '#');
+        btnSample.innerText = 'Download Sample';
+        btnSample.addEventListener('click', function(){
+            btnToDownloadSample();
+        });
+    
+        panel.appendChild(btnSample);
 
     }, 500);
 
@@ -213,6 +269,29 @@ function downloadText(filename, text) {
   
     document.body.removeChild(element);
 }
+
+
+// await downloadImage(imgs[i],`img_${i+1}.jpg`);
+async function downloadImageRequest(url,filename){
+    return new Promise(resolve=>{
+        GM_xmlhttpRequest({
+            method:"GET",
+            responseType:"blob",
+            url:url,
+            onload:(res)=>{
+                const blob = res.response;
+                const objUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = objUrl;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(objUrl);
+                resolve();
+            }
+        })
+    })
+}
+
 
 // 使用示例
 // downloadImage('/path/to/your/image.jpg', 'my-image');

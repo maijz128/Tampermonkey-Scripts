@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MJZ - 知乎
 // @namespace    https://github.com/maijz128
-// @version      25.04.25
+// @version      26.04.19
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.zhihu.com/*
@@ -13,7 +13,7 @@
 (function () {
     setTimeout(function(){
         main();
-    }, 10);
+    }, 500);
 })();
 
 function main() {
@@ -24,11 +24,41 @@ function main() {
     if (matchURL("/question/")) {
         CenterAnswer();
     }
+
+    if (window.location.pathname == "/") {
+        HomePage();
+    }
+}
+
+function HomePage() {
+    var css = "";
+    css += " ";
+    css += " ";
+    addStyle(css);
+
+    // .Topstory-mainColumn 后移
+    {
+        const targetElement = document.querySelector('.Topstory-mainColumn');
+
+        // 检查元素是否存在，避免报错
+        if (targetElement) {
+            // 获取父元素
+            const parentElement = targetElement.parentElement;
+            
+            // 将元素移动到父容器最后
+            parentElement.appendChild(targetElement);
+            
+            console.log('元素已移动到父容器最后位置');
+        } else {
+            console.log('未找到类名为 Topstory-mainColumn 的元素');
+        }
+    }
 }
 
 // 回答居中
 function CenterAnswer() {
     var css = "";
+    css += ".Question-main .ListShortcut {margin: auto !important;} ";
     css += ".Question-mainColumn {margin: 0 auto; width: 800px !important;} ";
     css += ".Question-sideColumn {display: none !important;} ";
     addStyle(css);

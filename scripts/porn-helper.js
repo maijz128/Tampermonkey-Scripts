@@ -1,13 +1,18 @@
 // ==UserScript==
 // @name         mjz-Porn helper
 // @namespace    https://github.com/maijz128
-// @version      24.04.22
+// @version      26.07.07
 // @description  remove AD.
 // @author       MaiJZ
 // @match        *://*.pornhub.com/*
 // @match        *://*.jable.tv/*
 //// @require      http://code.jquery.com/jquery-1.12.4.min.js
-// @grant        none
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_setClipboard
+// @grant        unsafeWindow
+// @grant        window.close
+// @grant        window.focus
 // ==/UserScript==
 
 (function () {
@@ -45,9 +50,9 @@ function removeAD() {
 function PornHub_ViewVideo() {
 
     var css = "";
-    css += ".mgp_progress{opacity: 0.4;}";
-    css += ".mgp_fullscreen .mgp_controlBar {opacity: 0.2;}";
-    css += ".mgp_fullscreen .mgp_controlBar:hover {opacity: 1.0;}";
+    css += ".mgp_seekbar{opacity: 0.4;}";
+    css += ".mgp_fullscreen-enabled .mgp_bottom-controls {opacity: 0.2;}";
+    css += ".mgp_fullscreen-enabled .mgp_bottom-controls:hover {opacity: 1.0;}";
     css += '.mgp_playbackParentHidePauseNoControls{opacity: 0;} ';
     css += '.mgp_playbackParentHidePauseNoControls:hover{opacity: 1;} ';
     addStyle(css);
@@ -82,9 +87,48 @@ function PornHub_ViewVideo() {
         }
     }
 
+    // 按钮，copy title and id
+    function AddCopyBtnForTitle() {
+        console.log('AddCopyBtnForTitle');
+        (async () => // onStart
+        {
+            let tryTimes = 0;
+            while(true)
+            {
+                var btnID = 'btnCopyTitle';
+                var btnClass = '';
+                var buttons = document.querySelector(".title-container");
+                if(buttons != null 
+                && document.querySelector(`#${btnID}`) == null)
+                {
+                    var btnToTop = `<button id="${btnID}" class="${btnClass}" >Copy Title</button>`;
+
+                    var elDiv = document.createElement("div");
+                    // elDiv.innerHTML = InnerHTML(btnToTop);
+                    elDiv.innerHTML = btnToTop;
+                    buttons.appendChild(elDiv);
+
+                    document.getElementById(btnID).addEventListener('click', function(){
+                        var titleAndId = '';
+                        var tSpan = document.querySelector(".title-container .title span");
+                        titleAndId = tSpan.innerText;
+                        var id = window.location.href.split('viewkey=').pop();
+                        titleAndId += ' [' + id + ']';
+                        copyToClipboard(titleAndId);
+                    });
+
+                    // return;
+                }
+                // if(++tryTimes>10000) return;
+                await delay(1000);
+            }
+        })();
+        
+    }
+
     // removeRightAD();
     // autoLargePlayer();
-
+    AddCopyBtnForTitle();
 
 }
 
@@ -109,7 +153,9 @@ function jable_ViewVideo() {
 
 
 
-
+function copyToClipboard(content) {
+    GM_setClipboard(content);
+}
 
 
 function matchURL(url) {
@@ -130,3 +176,21 @@ function addStyle(styleContent) {
     elStyle.innerHTML = styleContent;
     document.head.appendChild(elStyle);
 }
+
+// How to fix TrustedHTML assignment error with Angular [innerHTML]
+if (window.trustedTypes && window.trustedTypes.createPolicy && !window.trustedTypes.defaultPolicy) {
+    window.trustedTypes.createPolicy('default', {
+        createHTML: string => string
+        // Optional, only needed for script (url) tags
+        ,createScriptURL: string => string
+        ,createScript: string => string,
+    });
+}
+escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+    createHTML: (to_escape) => to_escape
+})
+function InnerHTML(styleContent)
+{
+    return escapeHTMLPolicy.createHTML(styleContent);
+}
+

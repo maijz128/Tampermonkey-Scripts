@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ-Everything（本地文件查找）
 // @namespace    https://github.com/maijz128
-// @version      26.02.13
+// @version      26.03.12
 // @description  描述
 // @author       MaiJZ
 // @match        *://steamcommunity.com/sharedfiles/filedetails/*
@@ -28,6 +28,7 @@
 // @match        *://*.javbus.com/*
 // @match        *://sukebei.nyaa.si/*
 // @match        *://*.pornhub.com/*
+// @match        *://*.xhamster.com/*
 // @match        *://*.pornrips.to/*
 // @match        *://*.civitai.com/*
 // @match        *://*.douban.com/*
@@ -82,6 +83,7 @@ function main() {
     if (matchURL("javbus.com")) { setTimeout(javbus, 2000); }
     if (matchURL("sukebei.nyaa.si")) { setTimeout(nyaa, 2000); }
     if (matchURL("pornhub.com")) { setTimeout(pornhub, 1000); }
+    if (matchURL("xhamster.com")) { setTimeout(XHamster, 1000); }
     if (matchURL("pornrips.to")) { setTimeout(PornRips, 1000); }
     if (matchURL("civitai.com")) { setTimeout(civitai, 2000); }
     if (matchURL("douban.com")) { setTimeout(DouBan, 2000); }
@@ -1395,6 +1397,58 @@ function DLSite(){
         }, 1000);
         
     }
+}
+
+function XHamster(){
+    EverythingHttpRequest_LOG = false;
+    var cssName = "Model_ExistsLocal_GreenColor";
+    var css = `.${cssName}, .${cssName} span, .${cssName} div { color: green !important; }`;
+    Mjztool.addStyle(css);
+
+    var href = window.location.href;
+
+    var params = getQueryParams();
+
+    var funcTitleEl = function(ahref, thisElem){
+        // https://pornrips.to/evilangel-26-02-05-scarlet-chase-oily-hand-tit-puss-and-ass-job-xxx-1080p-hevc-x265-prt/
+        ahref = ahref.replace('https://xhamster.com/videos/', '');
+        var urlPaths = ahref.split('-');
+        var searchText = '';
+
+        // last word is video id
+        searchText = urlPaths[urlPaths.length - 1];
+        
+        if (searchText != '') { 
+            console.log('search local file:' + searchText);
+            EverythingGetJSON(searchText, function(json){
+                if (json) {
+                    if (json["totalResults"] > 0) {
+                        thisElem.addClass(cssName);
+                    }
+                }
+            });
+        }
+
+    };
+
+    
+
+    var headerTitle = jQuery(".video-type-video h1");
+    if (headerTitle) {
+        funcTitleEl(href, headerTitle);
+    }
+
+   
+    setTimeout(() => {
+        var selector =  ".video-thumb-info a.video-thumb-info__name";
+        jQuery(selector).each(function(){
+            var thisElem = jQuery(this);
+            var ahref = thisElem.attr('href');
+            funcTitleEl(ahref, thisElem);
+        });  
+    }, 1000);
+        
+    
 }
 
 

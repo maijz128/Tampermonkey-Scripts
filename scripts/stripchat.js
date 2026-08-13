@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaiJZ - StripChat
 // @namespace    https://github.com/maijz128
-// @version      25.12.05
+// @version      26.06.14
 // @description  描述
 // @author       MaiJZ
 // @match        *://*.stripchat.com/*
@@ -25,7 +25,7 @@
 (function () {
     setTimeout(function(){
         main();
-    },10);
+    },100);
 })();
 
 function main() {
@@ -453,6 +453,9 @@ class MyStripChat {
     AddCss(){
         var css = '';
 
+        // 每行 item 数量，默认 5 -> 4
+        css += '@media screen and (min-width: 1024px) and (max-width: 1365px) { .ModelListPrimitives__containerRoot\\#o9 { --columns-count: 4 !important; } }';
+
         // 水印，隐藏
         css += '.watermark { display: none !important; }';
 
@@ -572,7 +575,7 @@ class MyStripChat {
 
                     // 2. 添加点击事件（可选）
                     btn.addEventListener('click', () => {
-                        var elVideo = document.querySelector('.mse-player video.video-element');
+                        var elVideo = document.querySelector('.player-wrapper video.video-element');
                         elVideo.classList.toggle('video-element-fit');
                     });
 
@@ -749,7 +752,7 @@ getModelData(modelId){
 
     // 检查是否启用了对指定主播的通知
 
-    const modelListItem = document.querySelectorAll('.model-list-item a');
+    const modelListItem = document.querySelectorAll('.list-items-container a');
     modelListItem.forEach(function (item) {
         const href = item.getAttribute('href');
         const modelId = href.split('/')[1];
@@ -1068,65 +1071,31 @@ class MyStreaMonitor {
     
     main() {
         if (window.location.pathname == '/') {
-            this.OnMainPage();
-        }
-        if (matchURL('/recordings/')) {
-            this.OnVideoListPage();
+            setTimeout(() => {
+                this.OnMainPage();
+            }, 500);
         }
     }
 
     AddCss() {
         let css ='';
 
-        css += '.streamer-card {height: 200px !important;}';
-        css += '.streamer-card .card-header {border: none !important; background-color: transparent !important;}';
 
+        // Groups start
+        css += '.items-stretch select.input-field {width: 50% !important;}';
 
-        css += '#add-streamer-form > div.col-md-7 > div > button{ position: absolute; }';
-        css += '#add-streamer-form  #site{ margin-left: 100px;}';
-
-        // 在线状态
-        css += '.streamer-card .span-online { background-color: green !important; }';
-        css += '.streamer-card .span-offline { background-color: darkgray !important; }';
-
-        // 网站名字
-        css += '.streamer-card .card-header small { opacity: 0; } .card-header small:hover { opacity: 1; }';
-        css += '.streamer-card .card-header .streamer-site { opacity: 0; } .card-header .streamer-site:hover { opacity: 1; }';
-        css += '.streamer-card .card-body .small.text-muted { opacity: 0; } .card-body .small.text-muted:hover { opacity: 1; }';
-
-        // model name
-        // css += '.streamer-card .card-header h6.mb-0 { color: black !important;}';
-
-        // 运行状态
-        css +='.streamer-card .card-body > div.d-flex.justify-content-between.align-items-center.mb-2';
-        css +='{ bottom: 0; position: absolute; width: 80%;}';
-
-        // Filters & Actions
-        css += '#content > div > div:nth-child(3) .card-header .btn-group';
-        css += '{ width: 70%; }';
-        css += '#content > div > div:nth-child(3) .card-header .btn-group';
-        css += '{ min-width: 300px; min-height: 2rem;}';
-        css += '.card-header .btn-group .stop-streamers,.card-header .btn-group .start-streamers ';  
-        css += '{ display:none; }';
-        css += '.card-header .btn-group .stop-streamers'; // , .start-streamers
-        css += '{ margin-left: 50% !important; }';
-        css += '.card-header .btn-group .btn-warning'; 
-        css += '{ margin-left: 7rem !important; position: absolute; }';
-
+        // Groups end
 
         addStyle(css);
     }
 
     OnMainPage() {
-        // Add Streamer Button 左移
         
         const self = this;
 
         const runFunc = function () {
             if (document.visibilityState === 'visible') {
-                self.funcOpenSite();
-                self.funcOnlineHighlight();
-                self.funcModelThumbCover();
+                // self.funcModelThumbCover();
                 self.funcModelsRecording();
             }
         }
@@ -1135,73 +1104,75 @@ class MyStreaMonitor {
 
         runFunc();
 
-        const btnClearFilter = document.querySelector('.card-header .btn-group button.btn.btn-warning');
-        if (btnClearFilter) {
-            btnClearFilter.addEventListener('click', function () {
-                setTimeout(() => {
-                    runFunc();
-                }, 500);
-            })
-        }
-
-        // 点击标题打开新标签页
-        var h1Title = document.querySelector('#content div.row.mb-4 h1');
-        if (h1Title) {
-            h1Title.style = 'cursor: pointer;';
-            h1Title.addEventListener('click', function() {
-                var origin = window.location.origin;
-                window.open(origin);
-            });
-        }
+        self.autoSelectStripChatForAddModel();
     }
 
-    // open site in new tab
-    funcOpenSite () {
-        const streamerCardList = document.querySelectorAll('.streamer-card');
-        streamerCardList.forEach(function (streamerCard) {
-            const openSiteBtn = streamerCard.querySelector('.card-header .dropdown ul li a');
 
-            const elId = streamerCard.getAttribute('id');
-            const elId_s = elId.split('-');
-            const siteId = elId_s[1];
-            let modelId = elId_s[2];
-            modelId = streamerCard.querySelector('.card-header h6').innerHTML;
-            let newHref = '';
-            if (siteId == 'sc') {
-                newHref = 'https://zh.stripchat.com/'
-            }
-            newHref += modelId;
+    autoSelectStripChatForAddModel(){
+        // 监听目标按钮点击
+        const targetBtn = document.querySelector('button.btn.btn-primary.ml-auto');
 
-            openSiteBtn.href = newHref;
-        });
-    }
+        if (targetBtn && targetBtn.innerText.trim() == 'Add') {
+            targetBtn.addEventListener('click', function() {
 
-    funcOnlineHighlight () {
-        const streamerCardList = document.querySelectorAll('.streamer-card');
-        streamerCardList.forEach(function (streamerCard) {
-            const spanOnline = streamerCard.querySelector('.card-body span.bg-secondary');
+                // 点击后 等待 select 出现并自动选中 StripChat
+                {
+                // 点击后 等待 select 出现并自动选中 StripChat
+                const checkSelect = setInterval(() => {
+                    const select = document.querySelector('select');
+                    
+                    // 找到 select 了
+                    if (select) {
+                        clearInterval(checkSelect); // 停止轮询
+                        
+                        // 自动选中 value = StripChat
+                        select.value = 'StripChat';
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                        
+                        console.log('✅ 已自动选中 StripChat');
+                    }
+                }, 100); // 每100ms检查一次
 
-            if (spanOnline) {
-                const spanText = spanOnline.innerHTML.trim();
-                const isOnline = (spanText == 'Online');
-                const isOffline = (spanText == 'Offline');
-
-                // 默认css
-                spanOnline.classList.remove('bg-secondary');
-                spanOnline.classList.remove('span-online');
-                spanOnline.classList.remove('span-offline');
-
-                if (isOnline) {
-                    spanOnline.classList.add('span-online');
-                }else if (isOffline) {
-                    spanOnline.classList.add('span-offline');
-                }else {
-                    spanOnline.classList.add('bg-secondary');
                 }
-            }
-            
-        });
+
+                // 点击后 等待 input 出现并自动删除 StripChat 的链接
+                {
+
+                const site_stripchat = 'https://zh.stripchat.com/';
+                const site_stripchat_short = ' [SC]';
+                let checkInputCount = 0;
+                const checkInput = setInterval(() => {
+                    checkInputCount++;
+                    if (checkInputCount > (10 * 60)) {
+                        clearInterval(checkInput);
+                        return;
+                    }
+
+                    document.querySelectorAll('input.input-field').forEach(el => {
+                        const elValue = el.value;
+                        if (elValue) {
+                            if (elValue.includes(site_stripchat) || elValue.includes(site_stripchat_short)){
+                                let newVal = elValue.replaceAll(site_stripchat, '');
+                                newVal = newVal.replaceAll(site_stripchat_short, '');
+                                // 强制赋值
+                                Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(el, newVal);
+    
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                                el.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+                    });
+
+                }, 100); // 每100ms检查一次
+
+                }
+            });
+
+            console.log('✅ 监听已启动，点击按钮后会自动选择 StripChat');
+        }
+
     }
+
 
     funcModelThumbCover(){
         const self = this;
@@ -1261,19 +1232,17 @@ class MyStreaMonitor {
     funcModelsRecording (){
         const self = this;
 
-        const streamerCardList = document.querySelectorAll('.streamer-card');
+        const streamerCardList = document.querySelectorAll('.model-grid .grid-card.recording');
 
         this.myModelsRecording.clearAll();
 
         for (let i = 0; i < streamerCardList.length; i++) {
             const streamerCard = streamerCardList[i];
-            const elId = streamerCard.getAttribute('id');
-            const elId_s = elId.split('-');
-            const siteId = elId_s[1];
-            let modelId = elId_s[2];
-            modelId = streamerCard.querySelector('.card-header h6').innerHTML;
+
+            let modelId = streamerCard.querySelector('.grid-card-info .truncate').innerHTML;
             
-            const isRecording = streamerCard.querySelector('.card-body .bi-record-fill') != null;
+            // const isRecording = streamerCard.querySelector('.animate-recording') != null;
+            const isRecording = true;
 
             self.myModelsRecording.set(modelId, isRecording);
             
@@ -1282,60 +1251,6 @@ class MyStreaMonitor {
 
         this.myModelsRecording.save();
     }
-
-
-
-    OnVideoListPage() {
-        // Files页
-        const self = this;
-    
-        var videoList = document.querySelector('#video-list');
-        if (videoList) {
-            setInterval (function(){
-                if (document.querySelectorAll('.vli-potplayer').length > 0) return;
-    
-                var videoListItems = videoList.querySelectorAll('.list-group-item a');
-                videoListItems.forEach(function(item) {
-                    const videoHref =  item.href;
-                    let btn = self.createPotPlayerButton(videoHref);
-                    btn.classList.add('vli-potplayer');
-                    item.parentElement.prepend(btn);
-                });
-            }, 500);
-        }
-    
-        // 视频播放页
-        var videoArea = document.querySelector('#video-area');
-        var videoAreaCardFooter = document.querySelector('#video-area .card-footer');
-    
-        if (videoArea) {    
-            var videoBtn = document.querySelector('#video-area .card-footer > a');
-            if (videoBtn) {
-                const videoHref =  videoBtn.href;
-                console.log(videoHref);
-                videoAreaCardFooter.appendChild(self.createPotPlayerButton(videoHref));
-            }
-        }
-    }   
-    
-    
-    createPotPlayerButton(videoHref) {
-        // 创建一个新的 <a> 元素
-        const link = document.createElement('a');
-    
-        var url = 'PotPlayer://' + videoHref;
-    
-        // 设置链接的属性
-        link.href = url; // 设置链接地址
-        link.textContent = 'PotPlayer'; // 设置链接显示的文本
-        link.target = '_self'; // 设置在新窗口打开
-        link.title = 'PotPlayer'; // 设置鼠标悬停提示
-    
-        link.classList.add('btn', 'btn-primary');
-    
-        return link;
-    }
-    
 }
 
 

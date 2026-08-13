@@ -298,11 +298,15 @@ function OnClickButtonToTop() {
             if(buttons != null 
             && document.querySelector(`#${btnToTopID}`) == null)
             {
-                var btnToTop = `<button id="${btnToTopID}" class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-leading" aria-label="To Top" title="To Top" onclick="window.scrollTo(0, 0);">Top</button>`;
+                var btnToTop = `<button id="${btnToTopID}" class="yt-spec-button-shape-next yt-spec-button-shape-next--tonal yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-m yt-spec-button-shape-next--icon-leading" aria-label="To Top" title="To Top" >Top</button>`;
 
                 var elDiv = document.createElement("div");
                 elDiv.innerHTML = InnerHTML(btnToTop);
                 buttons.appendChild(elDiv);
+
+                document.getElementById(btnToTopID).addEventListener('click', function(){
+                    window.scrollTo({ top:0, behavior:'smooth' });
+                });
 
                 // return;
             }
